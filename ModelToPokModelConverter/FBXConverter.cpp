@@ -228,3 +228,43 @@ void FBXConverter::skeletonRecurse( FbxNode* node , std::vector<JointData> &skel
 		skeletonRecurse( node->GetChild(i) , skeleton , skeleton.size() , index );
 	}
 }
+
+void FBXConverter::processAnimations( FbxNode* node, std::vector<JointData> &skeleton )
+{
+	FbxMesh* theMesh = node->GetMesh();
+	/*unsigned int numDeformers = theMesh->GetDeformerCount();*/
+
+	FbxAMatrix geometryTransform( node->GetGeometricTranslation( FbxNode::eSourcePivot ) , node->GetGeometricRotation( FbxNode::eSourcePivot ) , node->GetGeometricScaling( FbxNode::eSourcePivot ) );
+
+	for ( unsigned int i = 0; i < theMesh->GetDeformerCount(); i++ )
+	{
+		FbxSkin* theSkin = reinterpret_cast< FbxSkin* >( theMesh->GetDeformer( i , FbxDeformer::eSkin ) );
+		if ( !theSkin ) continue;
+
+		for ( unsigned int j = 0; j < theSkin->GetClusterCount(); j++ )
+		{
+			FbxCluster* cluster = theSkin->GetCluster( j );
+			std::string jointName = cluster->GetLink()->GetName();
+			unsigned int currentJointIndex = 0;
+			for ( unsigned int k = 0; k < skeleton.size(); k++ )
+			{
+				if ( !skeleton[k].name.compare( jointName ) )
+				{
+					currentJointIndex = k;
+					break;
+				}
+			}
+
+			FbxAMatrix transformMatrix;
+			FbxAMatrix transformLinkMatrix;
+			FbxAMatrix globalBindposeInverseMatrix;
+
+			cluster->GetTransformMatrix( transformMatrix );
+			cluster->GetTransformLinkMatrix( transformLinkMatrix );
+			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
+
+			skeleton[currentJointIndex].globalBindposeInverse = globalBindposeInverseMatrix;
+			skeleton[currentJointIndex].node = cluster->GetLink();
+		}
+	}
+}
