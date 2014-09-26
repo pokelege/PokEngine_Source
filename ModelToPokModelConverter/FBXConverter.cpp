@@ -28,7 +28,7 @@ void FBXConverter::convert( const char* input , const char* output )
 	if ( theMesh )
 	{
 		std::vector<VertexData> vertices;
-		std::vector<unsigned short> indices;
+		std::vector<IndexData> indices;
 
 		FbxStringList uvSets;
 		theMesh->GetUVSetNames( uvSets );
@@ -44,13 +44,23 @@ void FBXConverter::convert( const char* input , const char* output )
 
 		for ( int i = 0; i < vertices.size(); i++ )
 		{
-			stream.write( reinterpret_cast< const char* >( &vertices[i] ) , sizeof( VertexData ) );
+			stream.write( reinterpret_cast< const char* >( &vertices[i].position ) , sizeof( glm::vec3 ) );
+			stream.write( reinterpret_cast< const char* >( &vertices[i].uv ) , sizeof( glm::vec2) );
+			stream.write( reinterpret_cast< const char* >( &vertices[i].normal ) , sizeof( glm::vec3 ) );
+			stream.write( reinterpret_cast< const char* >( &vertices[i].tangent ) , sizeof( glm::vec3 ) );
+			stream.write( reinterpret_cast< const char* >( &vertices[i].bitangent ) , sizeof( glm::vec3 ) );
 		}
 
 		for ( int i = 0; i < indices.size(); i++ )
 		{
-			stream.write( reinterpret_cast< const char* >( &indices[i] ) , sizeof( unsigned short ) );
+			stream.write( reinterpret_cast< const char* >( &indices[i].index ) , sizeof( unsigned short ) );
 		}
+
+		std::vector<JointData> skeleton;
+		processSkeletonHierarchy( scene->GetRootNode(), skeleton );
+		processAnimations( theMesh->GetNode() , skeleton , vertices , indices );
+
+
 		stream.close();
 	}
 }
@@ -69,7 +79,7 @@ FbxMesh* FBXConverter::findMesh( FbxNode* node )
 	return NULL;
 }
 
-void FBXConverter::processPolygons( FbxMesh* theMesh , std::vector<VertexData> &vertices , std::vector<unsigned short> &indices , FbxStringList &uvSets )
+void FBXConverter::processPolygons( FbxMesh* theMesh , std::vector<VertexData> &vertices , std::vector<IndexData> &indices , FbxStringList &uvSets )
 {
 	for ( int i = 0; i < theMesh->GetPolygonCount(); i++ )
 	{
@@ -137,14 +147,20 @@ void FBXConverter::processPolygons( FbxMesh* theMesh , std::vector<VertexData> &
 
 		if ( index == -1 )
 		{
-			indices.push_back( ( unsigned short ) vertices.size() );
+			IndexData data;
+			data.index = ( unsigned short ) vertices.size();
+			data.oldControlPoint = theMesh->GetPolygonVertex( i , 0 );
+			indices.push_back( data );
 			theData0.tangent = tangent;
 			theData0.bitangent = bitangent;
 			vertices.push_back( theData0 );
 		}
 		else
 		{
-			indices.push_back( ( unsigned short ) index );
+			IndexData data;
+			data.index = ( unsigned short ) index;
+			data.oldControlPoint = theMesh->GetPolygonVertex( i , 0 );
+			indices.push_back( data );
 			vertices[index].tangent += tangent;
 			vertices[index].bitangent += bitangent;
 		}
@@ -163,14 +179,20 @@ void FBXConverter::processPolygons( FbxMesh* theMesh , std::vector<VertexData> &
 
 		if ( index1 == -1 )
 		{
-			indices.push_back( ( unsigned short ) vertices.size() );
+			IndexData data;
+			data.index = ( unsigned short ) vertices.size();
+			data.oldControlPoint = theMesh->GetPolygonVertex( i , 1 );
+			indices.push_back( data );
 			theData1.tangent = tangent;
 			theData1.bitangent = bitangent;
 			vertices.push_back( theData1 );
 		}
 		else
 		{
-			indices.push_back( ( unsigned short ) index1 );
+			IndexData data;
+			data.index = ( unsigned short ) index1;
+			data.oldControlPoint = theMesh->GetPolygonVertex( i , 1 );
+			indices.push_back( data );
 			vertices[index1].tangent += tangent;
 			vertices[index1].bitangent += bitangent;
 		}
@@ -189,14 +211,20 @@ void FBXConverter::processPolygons( FbxMesh* theMesh , std::vector<VertexData> &
 
 		if ( index2 == -1 )
 		{
-			indices.push_back( ( unsigned short ) vertices.size() );
+			IndexData data;
+			data.index = ( unsigned short ) vertices.size();
+			data.oldControlPoint = theMesh->GetPolygonVertex( i , 2 );
+			indices.push_back( data );
 			theData2.tangent = tangent;
 			theData2.bitangent = bitangent;
 			vertices.push_back( theData2 );
 		}
 		else
 		{
-			indices.push_back( ( unsigned short ) index2 );
+			IndexData data;
+			data.index = ( unsigned short ) index2;
+			data.oldControlPoint = theMesh->GetPolygonVertex( i , 2 );
+			indices.push_back( data );
 			vertices[index2].tangent += tangent;
 			vertices[index2].bitangent += bitangent;
 		}
@@ -212,41 +240,58 @@ void FBXConverter::processSkeletonHierarchy( FbxNode* node , std::vector<JointDa
 	}
 }
 
-void FBXConverter::skeletonRecurse( FbxNode* node , std::vector<JointData> &skeleton , unsigned int index , unsigned int parentIndex )
+void FBXConverter::skeletonRecurse( FbxNode* node , std::vector<JointData> &skeleton , unsigned int index , int parentIndex )
 {
 	if ( node->GetNodeAttribute() && node->GetNodeAttribute()->GetAttributeType() && node->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton )
 	{
 		JointData joint;
-		joint.parentIndex = parentIndex;
 		joint.name = node->GetName();
 		skeleton.push_back( joint );
+		if(parentIndex >= 0) skeleton[parentIndex].children.push_back( index );
 	}
-	//might be in if statement
 	for ( int i = 0; i < node->GetChildCount(); i++ )
 	{
-		//skeleton size changes so parent can change
 		skeletonRecurse( node->GetChild(i) , skeleton , skeleton.size() , index );
 	}
 }
 
-void FBXConverter::processAnimations( FbxNode* node, std::vector<JointData> &skeleton )
+void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &skeleton , std::vector<VertexData> &verts , std::vector<IndexData> &indices )
 {
 	FbxMesh* theMesh = node->GetMesh();
-	/*unsigned int numDeformers = theMesh->GetDeformerCount();*/
 
-	FbxAMatrix geometryTransform( node->GetGeometricTranslation( FbxNode::eSourcePivot ) , node->GetGeometricRotation( FbxNode::eSourcePivot ) , node->GetGeometricScaling( FbxNode::eSourcePivot ) );
+	FbxAnimStack* animationStack = node->GetScene()->GetSrcObject<FbxAnimStack>();
+	FbxAnimLayer* animationLayer = animationStack->GetMember<FbxAnimLayer>();
+	std::vector<FbxTime> frames;
+	for ( unsigned int curveNodeIndex = 0; curveNodeIndex < animationLayer->GetMemberCount(); ++curveNodeIndex )
+	{
+		FbxAnimCurveNode* currentCurve = animationLayer->GetMember<FbxAnimCurveNode>( curveNodeIndex );
 
-	for ( unsigned int i = 0; i < theMesh->GetDeformerCount(); i++ )
+		for ( unsigned int channelIndex = 0; channelIndex < currentCurve->GetChannelsCount(); ++channelIndex )
+		{
+			for ( unsigned int curve = 0; curve < currentCurve->GetCurveCount( channelIndex ); ++curve )
+			{
+				FbxAnimCurve* theCurveVictim = currentCurve->GetCurve( channelIndex , curve );
+				for ( unsigned int keyIndex = 0; keyIndex < theCurveVictim->KeyGetCount(); ++keyIndex )
+				{
+					frames.push_back(theCurveVictim->KeyGet( keyIndex ).GetTime());
+				}
+			}
+		}
+	}
+
+
+
+	for ( unsigned int i = 0; i < theMesh->GetDeformerCount(); ++i )
 	{
 		FbxSkin* theSkin = reinterpret_cast< FbxSkin* >( theMesh->GetDeformer( i , FbxDeformer::eSkin ) );
 		if ( !theSkin ) continue;
 
-		for ( unsigned int j = 0; j < theSkin->GetClusterCount(); j++ )
+		for ( unsigned int j = 0; j < theSkin->GetClusterCount(); ++j )
 		{
 			FbxCluster* cluster = theSkin->GetCluster( j );
 			std::string jointName = cluster->GetLink()->GetName();
 			unsigned int currentJointIndex = 0;
-			for ( unsigned int k = 0; k < skeleton.size(); k++ )
+			for ( unsigned int k = 0; k < skeleton.size(); ++k )
 			{
 				if ( !skeleton[k].name.compare( jointName ) )
 				{
@@ -255,16 +300,31 @@ void FBXConverter::processAnimations( FbxNode* node, std::vector<JointData> &ske
 				}
 			}
 
-			FbxAMatrix transformMatrix;
-			FbxAMatrix transformLinkMatrix;
-			FbxAMatrix globalBindposeInverseMatrix;
+			for ( unsigned int k = 0; k < cluster->GetControlPointIndicesCount(); ++k )
+			{
+				BlendingIndexWeightPair weightPair;
+				weightPair.blendingIndex = currentJointIndex;
+				weightPair.blendingWeight = (float)cluster->GetControlPointWeights()[k];
+				unsigned int controlPoint = cluster->GetControlPointIndices()[k];
+				for ( unsigned int z = 0; z < indices.size(); ++z )
+				{
+					if ( indices[z].oldControlPoint == controlPoint )
+					{
+						verts[indices[z].index].blendingInfo.push_back( weightPair );
+						break;
+					}
+				}
+			}
 
-			cluster->GetTransformMatrix( transformMatrix );
-			cluster->GetTransformLinkMatrix( transformLinkMatrix );
-			globalBindposeInverseMatrix = transformLinkMatrix.Inverse() * transformMatrix * geometryTransform;
-
-			skeleton[currentJointIndex].globalBindposeInverse = globalBindposeInverseMatrix;
-			skeleton[currentJointIndex].node = cluster->GetLink();
+			for ( unsigned int frameIndex = 0; frameIndex < frames.size(); ++frameIndex )
+			{
+				AnimationData animData;
+				animData.frame = frames[frameIndex].GetFrameCount();
+				animData.translation = cluster->GetLink()->EvaluateLocalTranslation( frames[frameIndex] );
+				animData.rotation = cluster->GetLink()->EvaluateLocalRotation( frames[frameIndex] );
+				animData.scale = cluster->GetLink()->EvaluateLocalScaling( frames[frameIndex] );
+				skeleton[currentJointIndex].animation.push_back( animData );
+			}
 		}
 	}
 }
