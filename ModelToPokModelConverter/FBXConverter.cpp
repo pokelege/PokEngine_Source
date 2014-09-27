@@ -2,6 +2,9 @@
 #include <iostream>
 #include <glm.hpp>
 #include <fstream>
+#include <string>
+#include <algorithm>
+#define DATASTRING(data) std::string( reinterpret_cast< const char* >( &data ) , sizeof( data ) );
 
 void FBXConverter::convert( const char* input , const char* output )
 {
@@ -35,31 +38,131 @@ void FBXConverter::convert( const char* input , const char* output )
 
 		processPolygons( theMesh , vertices , indices , uvSets );
 
-		std::fstream stream( output , std::ios_base::binary | std::ios_base::out | std::ios_base::trunc );
+		std::vector<JointData> skeleton;
+		processSkeletonHierarchy( scene->GetRootNode() , skeleton );
+		processAnimations( theMesh->GetNode() , skeleton , vertices , indices );
 
+		std::string modelData;
 		int sizeofVertices = vertices.size();
 		int sizeofIndices = indices.size();
-		stream.write( reinterpret_cast< const char* >( &sizeofVertices ) , sizeof( int ) );
-		stream.write( reinterpret_cast< const char* >( &sizeofIndices ) , sizeof( int ) );
+		modelData += DATASTRING( sizeofVertices );
+		modelData += DATASTRING( sizeofIndices );
 
+
+		std::vector<BlendingIndexWeightPair> blendingData;
 		for ( int i = 0; i < vertices.size(); i++ )
 		{
-			stream.write( reinterpret_cast< const char* >( &vertices[i].position ) , sizeof( glm::vec3 ) );
-			stream.write( reinterpret_cast< const char* >( &vertices[i].uv ) , sizeof( glm::vec2) );
-			stream.write( reinterpret_cast< const char* >( &vertices[i].normal ) , sizeof( glm::vec3 ) );
-			stream.write( reinterpret_cast< const char* >( &vertices[i].tangent ) , sizeof( glm::vec3 ) );
-			stream.write( reinterpret_cast< const char* >( &vertices[i].bitangent ) , sizeof( glm::vec3 ) );
+			modelData += DATASTRING( vertices[i].position );
+			modelData += DATASTRING( vertices[i].uv );
+			modelData += DATASTRING( vertices[i].normal );
+			modelData += DATASTRING( vertices[i].tangent );
+			modelData += DATASTRING( vertices[i].bitangent );
+			int blendingDataStart, blendingDataEnd;
+			if ( vertices[i].blendingInfo.size() )
+			{
+				blendingDataStart = blendingData.size();
+				for ( unsigned int j = 0; j < vertices[i].blendingInfo.size(); ++j )
+				{
+					blendingData.push_back( vertices[i].blendingInfo[j] );
+				}
+				blendingDataEnd = blendingData.size();
+			}
+			else
+			{
+				blendingDataStart = -1;
+				blendingDataEnd = -1;
+			}
+			modelData += DATASTRING( blendingDataStart );
+			modelData += DATASTRING( blendingDataEnd );
 		}
 
 		for ( int i = 0; i < indices.size(); i++ )
 		{
-			stream.write( reinterpret_cast< const char* >( &indices[i].index ) , sizeof( unsigned short ) );
+			modelData += DATASTRING( indices[i].index );
 		}
 
-		std::vector<JointData> skeleton;
-		processSkeletonHierarchy( scene->GetRootNode(), skeleton );
-		processAnimations( theMesh->GetNode() , skeleton , vertices , indices );
+		std::string boneData;
+		std::vector<int> boneChildren;
+		std::vector<AnimationData> boneAnimation;
+		for ( int i = 0; i < skeleton.size(); ++i )
+		{
+			boneData += DATASTRING( skeleton[i].offsetMatrix );
+			int childDataStart , childDataEnd , animationDataStart , animationDataEnd;
+			if ( skeleton[i].children.size() )
+			{
+				childDataStart = boneChildren.size();
+				for ( int j = 0; j < skeleton[i].children.size(); ++j )
+				{
+					boneChildren.push_back( skeleton[i].children[j] );
+				}
+				childDataEnd = boneChildren.size();
+			}
+			else
+			{
+				childDataStart = -1;
+				childDataEnd = -1;
+			}
 
+			if ( skeleton[i].animation.size() )
+			{
+				animationDataStart = boneAnimation.size();
+				for ( int j = 0; j < skeleton[i].animation.size(); ++j )
+				{
+					boneAnimation.push_back( skeleton[i].animation[j] );
+				}
+				animationDataEnd = boneAnimation.size();
+			}
+			else
+			{
+				animationDataStart = -1;
+				animationDataEnd = -1;
+			}
+			boneData += DATASTRING( childDataStart );
+			boneData += DATASTRING( childDataEnd );
+			boneData += DATASTRING( animationDataStart );
+			boneData += DATASTRING( animationDataEnd );
+		}
+
+		std::fstream stream( output , std::ios_base::binary | std::ios_base::out | std::ios_base::trunc );
+
+		unsigned int sizeofModelData = modelData.size();
+		stream.write( reinterpret_cast<char*>(&sizeofModelData), sizeof(sizeofModelData) );
+
+		unsigned int sizeofBlendingData = blendingData.size();
+		stream.write( reinterpret_cast<char*>( &sizeofBlendingData ) , sizeof( sizeofBlendingData ) );
+
+		unsigned int sizeofBoneData = boneData.size();
+		stream.write( reinterpret_cast<char*>( &sizeofBoneData ) , sizeof( sizeofBoneData ) );
+
+		unsigned int sizeofBoneChildData = boneChildren.size();
+		stream.write( reinterpret_cast< char* >( &sizeofBoneChildData ) , sizeof( sizeofBoneChildData ));
+
+		unsigned int sizeofBoneAnimationData = boneAnimation.size();
+		stream.write( reinterpret_cast< char* >( &sizeofBoneAnimationData ) , sizeof( sizeofBoneAnimationData ) );
+
+		stream.write( modelData.c_str() , modelData.size() );
+
+		for ( unsigned int i = 0; i < blendingData.size(); ++i )
+		{
+			stream.write( reinterpret_cast< char* >( &blendingData[i].blendingIndex ) , sizeof( blendingData[i].blendingIndex ) );
+		}
+
+		for ( unsigned int i = 0; i < blendingData.size(); ++i )
+		{
+			stream.write( reinterpret_cast< char* >( &blendingData[i].blendingWeight ) , sizeof( blendingData[i].blendingWeight ) );
+		}
+
+		stream.write( boneData.c_str() , boneData.size() );
+
+		for ( unsigned int i = 0; i < boneChildren.size(); ++i )
+		{
+			stream.write( reinterpret_cast< char* >( &boneChildren[i] ) , sizeof( boneChildren[i] ) );
+		}
+
+		for ( unsigned int i = 0; i < boneAnimation.size(); ++i )
+		{
+			stream.write( reinterpret_cast< char* >( &boneAnimation[i] ) , sizeof( boneAnimation[i] ) );
+		}
 
 		stream.close();
 	}
@@ -278,7 +381,10 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 			}
 		}
 	}
+	
+	std::sort( frames.begin() , frames.end() , frameCompare );
 
+	FbxAMatrix geoTransform( node->GetGeometricTranslation( FbxNode::eSourcePivot ) , node->GetGeometricRotation( FbxNode::eSourcePivot ) , node->GetGeometricScaling( FbxNode::eSourcePivot ) );
 
 
 	for ( unsigned int i = 0; i < theMesh->GetDeformerCount(); ++i )
@@ -300,6 +406,20 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 				}
 			}
 
+
+			FbxAMatrix transformMatrix, transformLinkMatrix, offsetMatrix;
+			cluster->GetTransformMatrix( transformMatrix );
+			cluster->GetTransformLinkMatrix( transformLinkMatrix );
+			offsetMatrix = transformLinkMatrix.Inverse() * transformMatrix * geoTransform;
+			
+			for ( unsigned int row = 0; row < 4; ++row )
+			{
+				for ( unsigned int column = 0; column < 4; ++column )
+				{
+					skeleton[currentJointIndex].offsetMatrix[row][column] = offsetMatrix.Get( row , column );
+				}
+			}
+
 			for ( unsigned int k = 0; k < cluster->GetControlPointIndicesCount(); ++k )
 			{
 				BlendingIndexWeightPair weightPair;
@@ -318,13 +438,18 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 
 			for ( unsigned int frameIndex = 0; frameIndex < frames.size(); ++frameIndex )
 			{
+				FbxVector4 translation = cluster->GetLink()->EvaluateLocalTranslation( frames[frameIndex] );
+				FbxVector4 rotation = cluster->GetLink()->EvaluateLocalRotation( frames[frameIndex] );
+				FbxVector4 scale = cluster->GetLink()->EvaluateLocalScaling( frames[frameIndex] );
 				AnimationData animData;
 				animData.frame = frames[frameIndex].GetFrameCount();
-				animData.translation = cluster->GetLink()->EvaluateLocalTranslation( frames[frameIndex] );
-				animData.rotation = cluster->GetLink()->EvaluateLocalRotation( frames[frameIndex] );
-				animData.scale = cluster->GetLink()->EvaluateLocalScaling( frames[frameIndex] );
+				animData.translation = glm::vec3(translation[0],translation[1],translation[2]);
+				animData.rotation = glm::vec3(rotation[0],rotation[1],rotation[2]);
+				animData.scale = glm::vec3(scale[0],scale[1],scale[2]);
 				skeleton[currentJointIndex].animation.push_back( animData );
 			}
 		}
 	}
 }
+
+bool frameCompare( FbxTime i , FbxTime j ) { return ( i.GetFrameCount() < j.GetFrameCount() ); }

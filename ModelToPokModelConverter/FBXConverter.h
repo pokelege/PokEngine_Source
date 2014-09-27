@@ -1,3 +1,4 @@
+#pragma once
 #include <fbxsdk.h>
 #include <vector>
 #include "JointData.h"
@@ -17,3 +18,5 @@ class FBXConverter
 public:
 	static void convert( const char* input , const char* output = "" );
 };
+
+bool frameCompare( FbxTime i , FbxTime j );

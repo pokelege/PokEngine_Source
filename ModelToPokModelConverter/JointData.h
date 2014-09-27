@@ -1,18 +1,18 @@
 #pragma once
 #include <string>
-#include <fbxsdk.h>
 #include <glm.hpp>
 #include <vector>
 struct AnimationData
 {
 	unsigned int frame;
-	FbxVector4 translation;
-	FbxVector4 rotation;
-	FbxVector4 scale;
+	glm::vec3 scale;
+	glm::vec3 translation;
+	glm::vec3 rotation;
 };
 struct JointData
 {
 	std::string name;
-	std::vector<AnimationData> animation;
+	glm::mat4 offsetMatrix;
 	std::vector<int> children;
+	std::vector<AnimationData> animation;
 };
