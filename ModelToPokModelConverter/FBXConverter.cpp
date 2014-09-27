@@ -43,11 +43,6 @@ void FBXConverter::convert( const char* input , const char* output )
 		processAnimations( theMesh->GetNode() , skeleton , vertices , indices );
 
 		std::string modelData;
-		int sizeofVertices = vertices.size();
-		int sizeofIndices = indices.size();
-		modelData += DATASTRING( sizeofVertices );
-		modelData += DATASTRING( sizeofIndices );
-
 
 		std::vector<BlendingIndexWeightPair> blendingData;
 		for ( int i = 0; i < vertices.size(); i++ )
@@ -125,8 +120,10 @@ void FBXConverter::convert( const char* input , const char* output )
 
 		std::fstream stream( output , std::ios_base::binary | std::ios_base::out | std::ios_base::trunc );
 
-		unsigned int sizeofModelData = modelData.size();
-		stream.write( reinterpret_cast<char*>(&sizeofModelData), sizeof(sizeofModelData) );
+		unsigned int sizeofVertices = vertices.size();
+		stream.write( reinterpret_cast< char* >( &sizeofVertices ) , sizeof( sizeofVertices ));
+		unsigned int sizeofIndices = indices.size();
+		stream.write( reinterpret_cast< char* >( &sizeofIndices ) , sizeof( sizeofIndices ) );
 
 		unsigned int sizeofBlendingData = blendingData.size();
 		stream.write( reinterpret_cast<char*>( &sizeofBlendingData ) , sizeof( sizeofBlendingData ) );

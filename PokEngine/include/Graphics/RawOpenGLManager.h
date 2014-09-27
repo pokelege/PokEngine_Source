@@ -50,6 +50,7 @@ public:
 	struct POKENGINE_SHARED GeometryInfo
 	{
 		BufferInfo* buffer;
+		char* animationData;
 		unsigned int dataArray;
 		unsigned int vertexOffset;
 		unsigned int numVertex;

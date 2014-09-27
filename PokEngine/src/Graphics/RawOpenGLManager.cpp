@@ -318,7 +318,7 @@ void RawOpenGLManager::setFrameBuffer( FrameBufferInfo* bufferID , unsigned int 
 RawOpenGLManager::GeometryInfo* RawOpenGLManager::addFileGeometry( const char* filename )
 {
 	std::ifstream stream( filename , std::ios::ios_base::binary | std::ios::ios_base::in );
-
+	
 	std::string buffer( ( std::istreambuf_iterator<char>( stream ) ) ,
 						std::istreambuf_iterator<char>() );
 	return addRawGeometry( buffer.c_str() );
