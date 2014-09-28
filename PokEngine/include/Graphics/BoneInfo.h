@@ -1,13 +1,10 @@
 #pragma once
+#pragma warning (disable:4251)
+#pragma warning (disable:4201)
 #include <PokEngineExportHeader.h>
 #include <glm.hpp>
-struct AnimationData
-{
-	unsigned int frame;
-	glm::vec3 scale;
-	glm::vec3 translation;
-	glm::vec3 rotation;
-};
+class PokEngineModelDataMap;
+struct AnimationInfo;
 struct POKENGINE_SHARED BoneInfo
 {
 	glm::mat4 offsetMatrix;
@@ -15,12 +12,10 @@ struct POKENGINE_SHARED BoneInfo
 	int childDataEnd;
 	int animationDataStart;
 	int animationDataEnd;
-};
 
-struct POKENGINE_SHARED FullBoneInfo
-{
-	unsigned int numBones;
-	BoneInfo* bones;
-	int* children;
-	AnimationData* animations;
+	const BoneInfo* getChild( unsigned int index , PokEngineModelDataMap& modelData );
+	unsigned int childrenSize();
+
+	AnimationInfo* getAnimation( unsigned int index , PokEngineModelDataMap& modelData );
+	unsigned int animationSize();
 };

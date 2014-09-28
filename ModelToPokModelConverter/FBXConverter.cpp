@@ -77,7 +77,7 @@ void FBXConverter::convert( const char* input , const char* output )
 		}
 
 		std::string boneData;
-		std::vector<int> boneChildren;
+		std::vector<unsigned int> boneChildren;
 		std::vector<AnimationData> boneAnimation;
 		for ( int i = 0; i < skeleton.size(); ++i )
 		{
@@ -128,7 +128,7 @@ void FBXConverter::convert( const char* input , const char* output )
 		unsigned int sizeofBlendingData = blendingData.size();
 		stream.write( reinterpret_cast<char*>( &sizeofBlendingData ) , sizeof( sizeofBlendingData ) );
 
-		unsigned int sizeofBoneData = boneData.size();
+		unsigned int sizeofBoneData = skeleton.size();
 		stream.write( reinterpret_cast<char*>( &sizeofBoneData ) , sizeof( sizeofBoneData ) );
 
 		unsigned int sizeofBoneChildData = boneChildren.size();
