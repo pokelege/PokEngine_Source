@@ -6,7 +6,7 @@
 #include <glm.hpp>
 #include <string>
 #include <Windows.h>
-
+#include <Graphics\PokEngineModelDataMap.h>
 class POKENGINE_SHARED RawOpenGLManager
 {
 #define MAX_BUFFERS 10
@@ -50,13 +50,13 @@ public:
 	struct POKENGINE_SHARED GeometryInfo
 	{
 		BufferInfo* buffer;
-		char* animationData;
 		unsigned int dataArray;
 		unsigned int vertexOffset;
 		unsigned int numVertex;
 		unsigned int indexOffset;
 		unsigned int numIndex;
 		unsigned int indexingMode;
+		PokEngineModelDataMap modelData;
 	};
 
 	struct POKENGINE_SHARED ShaderInfo

@@ -2,7 +2,8 @@
 #include <Graphics\VertexInfo.h>
 #include <Graphics\BoneInfo.h>
 #include <Graphics\AnimationInfo.h>
-PokEngineModelDataMap::PokEngineModelDataMap( std::fstream& stream )
+PokEngineModelDataMap::PokEngineModelDataMap() {}
+PokEngineModelDataMap::PokEngineModelDataMap( std::ifstream& stream )
 {
 	stream.read( reinterpret_cast< char* >( this ) , sizeof( unsigned int ) * 6 );
 	vertexData = new char[sizeof( VertexInfo ) * sizeofVertexData];

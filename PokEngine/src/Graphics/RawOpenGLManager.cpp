@@ -3,7 +3,7 @@
 #include <SOIL.h>
 #include <fstream>
 #include <gtx\transform.hpp>
-
+#include <Graphics\VertexInfo.h>
 RawOpenGLManager::BufferInfo RawOpenGLManager::bufferIds[MAX_BUFFERS];
 RawOpenGLManager::GeometryInfo RawOpenGLManager::geometryInfos[MAX_GEOMETRIES];
 RawOpenGLManager::ShaderInfo RawOpenGLManager::shaderInfos[MAX_SHADERS];
@@ -318,10 +318,76 @@ void RawOpenGLManager::setFrameBuffer( FrameBufferInfo* bufferID , unsigned int 
 RawOpenGLManager::GeometryInfo* RawOpenGLManager::addFileGeometry( const char* filename )
 {
 	std::ifstream stream( filename , std::ios::ios_base::binary | std::ios::ios_base::in );
-	
-	std::string buffer( ( std::istreambuf_iterator<char>( stream ) ) ,
-						std::istreambuf_iterator<char>() );
-	return addRawGeometry( buffer.c_str() );
+	PokEngineModelDataMap data( stream );
+	unsigned int numVertices;
+	unsigned int numIndices;
+	VertexInfo* verts = data.getVertexData( &numVertices );
+	unsigned short* indices = data.getIndexData( &numIndices );
+	unsigned int dataSize = (sizeof(VertexInfo) * numVertices) + ( sizeof( unsigned short ) * numIndices );
+
+	int i;
+
+	for ( i = 0; i < MAX_BUFFERS; i++ )
+	{
+		if ( glIsBuffer( bufferIds[i].bufferID ) == GL_FALSE )
+		{
+			BufferInfo newBuffer;
+			glGenBuffers( 1 , &newBuffer.bufferID );
+			glBindBuffer( GL_ARRAY_BUFFER , newBuffer.bufferID );
+
+			glBufferData( GL_ARRAY_BUFFER , MAX_BUFFER_SIZE , 0 , GL_DYNAMIC_DRAW );
+			newBuffer.bufferSpace = MAX_BUFFER_SIZE;
+			newBuffer.offsetAddress = 0;
+			bufferIds[i] = newBuffer;
+			break;
+		}
+		else if ( bufferIds[i].bufferSpace > dataSize )
+		{
+			glBindBuffer( GL_ARRAY_BUFFER , bufferIds[i].bufferID );
+			break;
+		}
+		else if ( i == MAX_BUFFERS - 1 ) throw std::exception( "No more geo space" );
+	}
+
+	int j;
+
+	for ( j = 0; j < MAX_GEOMETRIES; j++ )
+	{
+		if ( glIsVertexArray( geometryInfos[j].dataArray ) == GL_FALSE )
+		{
+			break;
+		}
+	}
+
+	geometryInfos[j].buffer = &bufferIds[i];
+	geometryInfos[j].indexingMode = GL_TRIANGLES;
+
+	glGenVertexArrays( 1 , &geometryInfos[j].dataArray );
+	glBindVertexArray( geometryInfos[j].dataArray );
+
+	geometryInfos[j].vertexOffset = bufferIds[i].offsetAddress;
+	geometryInfos[j].numVertex = numVertices;
+
+	geometryInfos[j].indexOffset = bufferIds[i].offsetAddress + ( sizeof( VertexInfo )  * numVertices );
+	geometryInfos[j].numIndex = numIndices;
+
+	/*glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress , dataSize , ( GLvoid* ) ( ( int* ) rawData + 2 ) );*/
+
+	glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress , ( sizeof( VertexInfo ) * numVertices ) , ( GLvoid* ) ( verts ) );
+
+	glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress + ( sizeof( VertexInfo ) * numVertices ) , ( sizeof( unsigned short ) * numIndices ) , ( GLvoid* ) ( indices ) );
+
+	bufferIds[i].offsetAddress += dataSize;
+	bufferIds[i].bufferSpace -= dataSize;
+
+	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER , bufferIds[i].bufferID );
+
+	return &geometryInfos[j];
+
+	//
+	//std::string buffer( ( std::istreambuf_iterator<char>( stream ) ) ,
+	//					std::istreambuf_iterator<char>() );
+	//return addRawGeometry( buffer.c_str() );
 }
 
 RawOpenGLManager::GeometryInfo* RawOpenGLManager::addRawGeometry( const char* rawData )

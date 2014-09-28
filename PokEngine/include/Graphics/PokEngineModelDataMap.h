@@ -21,7 +21,8 @@ class POKENGINE_SHARED PokEngineModelDataMap
 	char* boneChildrenData;
 	char* boneAnimationData;
 public:
-	PokEngineModelDataMap( std::fstream& stream );
+	PokEngineModelDataMap();
+	PokEngineModelDataMap( std::ifstream& stream );
 	VertexInfo* getVertexData(unsigned int* vertexInfoSize = 0);
 	unsigned short* getIndexData( unsigned int* indexSize = 0 );
 	unsigned int* getBlendingIndexData( unsigned int* blendingIndexSize = 0 );
