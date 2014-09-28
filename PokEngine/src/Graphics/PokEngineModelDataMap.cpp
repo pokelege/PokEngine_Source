@@ -5,7 +5,7 @@
 PokEngineModelDataMap::PokEngineModelDataMap() {}
 PokEngineModelDataMap::PokEngineModelDataMap( std::ifstream& stream )
 {
-	stream.read( reinterpret_cast< char* >( this ) , sizeof( unsigned int ) * 6 );
+	stream.read( reinterpret_cast< char* >( &sizeofVertexData ) , sizeof( unsigned int ) * 6 );
 	vertexData = new char[sizeof( VertexInfo ) * sizeofVertexData];
 	stream.read( vertexData , sizeof( VertexInfo ) * sizeofVertexData );
 	indexData = new char[sizeof( unsigned short ) * sizeofIndexData];
