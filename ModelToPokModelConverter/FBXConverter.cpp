@@ -373,7 +373,17 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 				FbxAnimCurve* theCurveVictim = currentCurve->GetCurve( channelIndex , curve );
 				for ( unsigned int keyIndex = 0; keyIndex < theCurveVictim->KeyGetCount(); ++keyIndex )
 				{
-					frames.push_back(theCurveVictim->KeyGet( keyIndex ).GetTime());
+					bool alreadyIn = false;
+					for ( unsigned int frameIndex = 0; frameIndex < frames.size(); ++frameIndex )
+					{
+						if ( ( unsigned int ) frames[frameIndex].GetFrameCount() == ( unsigned int ) theCurveVictim->KeyGet( keyIndex ).GetTime().GetFrameCount() )
+						{
+							alreadyIn = true;
+							//std::cout << frames[frameIndex].GetFrameCount() << " " << theCurveVictim->KeyGet( keyIndex ).GetTime().GetFrameCount() << " " << alreadyIn << std::endl;
+							break;
+						}
+					}
+					if(!alreadyIn) frames.push_back(theCurveVictim->KeyGet( keyIndex ).GetTime());
 				}
 			}
 		}
