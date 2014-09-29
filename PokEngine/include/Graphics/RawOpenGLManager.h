@@ -6,7 +6,7 @@
 #include <glm.hpp>
 #include <string>
 #include <Windows.h>
-
+#include <Graphics\PokEngineModelDataMap.h>
 class POKENGINE_SHARED RawOpenGLManager
 {
 #define MAX_BUFFERS 10
@@ -56,6 +56,7 @@ public:
 		unsigned int indexOffset;
 		unsigned int numIndex;
 		unsigned int indexingMode;
+		PokEngineModelDataMap modelData;
 	};
 
 	struct POKENGINE_SHARED ShaderInfo
@@ -100,13 +101,20 @@ public:
 		ShaderInfo* howShaderIndex;
 		glm::vec3 translate , rotate , scale;
 		std::string whereUniform;
+		std::string animationMatricesUniform;
+		std::string animationIndexUniform;
+		std::string animationWeightUniform;
+		glm::mat4* animationMatrices;
+		unsigned int sizeofAnimationMatrices;
 		bool visible;
 		bool depthTestEnabled;
 		bool alpha;
 		CullingType culling;
 		TextureInfo* textureID;
+		unsigned int animationFrameRate;
+		float currentFrame;
 		UniformInfo uniforms[MAX_UNIFORM_PARAMETERS];
-		Renderable() : whatGeometryIndex( nullptr ), depthTestEnabled(false), alpha(false), scale(glm::vec3(1.0f,1.0f,1.0f)) {}
+		Renderable() : whatGeometryIndex( nullptr ), depthTestEnabled(false), alpha(false), scale(glm::vec3(1.0f,1.0f,1.0f)), animationMatrices(0) {}
 	};
 
 	static BufferInfo bufferIds[MAX_BUFFERS];
@@ -164,7 +172,8 @@ public:
 		ShaderInfo* shader ,
 		const char* name ,
 		ParameterType parameterType ,
-		const float* value );
+		const float* value,
+		unsigned int size = 1);
 
 	static void setRenderableUniform(
 		Renderable* object ,
