@@ -370,7 +370,7 @@ RawOpenGLManager::GeometryInfo* RawOpenGLManager::addFileGeometry( const char* f
 
 	geometryInfos[j].indexOffset = bufferIds[i].offsetAddress + ( sizeof( VertexInfo )  * numVertices );
 	geometryInfos[j].numIndex = numIndices;
-
+	geometryInfos[j].modelData = data;
 	/*glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress , dataSize , ( GLvoid* ) ( ( int* ) rawData + 2 ) );*/
 
 	glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress , ( sizeof( VertexInfo ) * numVertices ) , ( GLvoid* ) ( verts ) );
@@ -379,7 +379,7 @@ RawOpenGLManager::GeometryInfo* RawOpenGLManager::addFileGeometry( const char* f
 
 	bufferIds[i].offsetAddress += dataSize;
 	bufferIds[i].bufferSpace -= dataSize;
-
+	
 	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER , bufferIds[i].bufferID );
 
 	return &geometryInfos[j];
@@ -505,24 +505,24 @@ void RawOpenGLManager::setUniformParameter(
 	ShaderInfo* shader ,
 	const char* name ,
 	ParameterType parameterType ,
-	const float* value )
+	const float* value ,
+	unsigned int size )
 {
 	GLint uniformID = glGetUniformLocation( shader->programID , name );
-	int toInt;
 	switch ( parameterType )
 	{
-		case( PT_INT ) : toInt = ( int ) *value; glUniform1iv( uniformID , 1 , &toInt ); break;
-		case ( PT_FLOAT ) : glUniform1fv( uniformID , 1 , value );
+		case( PT_INT ) : glUniform1iv( uniformID , size , reinterpret_cast<const int*>(value)); break;
+		case ( PT_FLOAT ) : glUniform1fv( uniformID , size , value );
 			break;
-		case ( PT_VEC2 ) : glUniform2fv( uniformID , 1 , value );
+		case ( PT_VEC2 ) : glUniform2fv( uniformID , size , value );
 			break;
-		case( PT_VEC3 ) : glUniform3fv( uniformID , 1 , value );
+		case( PT_VEC3 ) : glUniform3fv( uniformID , size , value );
 			break;
-		case( PT_VEC4 ) : glUniform4fv( uniformID , 1 , value );
+		case( PT_VEC4 ) : glUniform4fv( uniformID , size , value );
 			break;
-		case( PT_MAT3 ) : glUniformMatrix3fv( uniformID , 1 , GL_FALSE , value );
+		case( PT_MAT3 ) : glUniformMatrix3fv( uniformID , size , GL_FALSE , value );
 			break;
-		case( PT_MAT4 ) : glUniformMatrix4fv( uniformID , 1 , GL_FALSE , value );
+		case( PT_MAT4 ) : glUniformMatrix4fv( uniformID , size , GL_FALSE , value );
 			break;
 	}
 }
@@ -635,6 +635,28 @@ void RawOpenGLManager::drawSpecific( Renderable* toDraw )
 			const char* st = toDraw->whereUniform.c_str();
 			glm::mat4 transform = glm::translate( toDraw->translate ) * glm::rotate( toDraw->rotate.x , glm::vec3( 1 , 0 , 0 ) ) * glm::rotate( toDraw->rotate.y , glm::vec3( 0 , 1 , 0 ) )* glm::rotate( toDraw->rotate.z , glm::vec3( 0 , 0 , 1 ) ) * glm::scale( toDraw->scale );
 			setUniformParameter( toDraw->howShaderIndex , st , ParameterType::PT_MAT4 , &transform[0][0] );
+			if ( toDraw->animationMatrices )
+			{
+				setUniformParameter( toDraw->howShaderIndex ,
+									 toDraw->animationMatricesUniform.c_str() ,
+									 PT_MAT4 ,
+									 reinterpret_cast<const float*>(toDraw->animationMatrices),
+									 toDraw->sizeofAnimationMatrices);
+				unsigned int sizeofBlendingIndexData;
+				unsigned int* blendingIndex = toDraw->whatGeometryIndex->modelData.getBlendingIndexData( &sizeofBlendingIndexData );
+				setUniformParameter( toDraw->howShaderIndex ,
+									 toDraw->animationIndexUniform.c_str() ,
+									 PT_INT ,
+									 reinterpret_cast< float* >( blendingIndex ) ,
+									 sizeofBlendingIndexData );
+				unsigned int sizeofBlendingWeightData;
+				float* blendingWeight = toDraw->whatGeometryIndex->modelData.getBlendingWeightData( &sizeofBlendingWeightData );
+				setUniformParameter( toDraw->howShaderIndex ,
+									 toDraw->animationWeightUniform.c_str() ,
+									 PT_FLOAT ,
+									 blendingWeight ,
+									 sizeofBlendingWeightData );
+			}
 			glDrawElements( toDraw->whatGeometryIndex->indexingMode , toDraw->whatGeometryIndex->numIndex , GL_UNSIGNED_SHORT , ( void* ) toDraw->whatGeometryIndex->indexOffset );
 		}
 	}
@@ -699,6 +721,30 @@ void RawOpenGLManager::drawAll()
 			const char* st = renderableInfos[i].whereUniform.c_str();
 			glm::mat4 transform = glm::translate( renderableInfos[i].translate ) * glm::rotate( renderableInfos[i].rotate.x , glm::vec3( 1 , 0 , 0 ) ) * glm::rotate( renderableInfos[i].rotate.y , glm::vec3( 0 , 1 , 0 ) )* glm::rotate( renderableInfos[i].rotate.z , glm::vec3( 0 , 0 , 1 ) ) * glm::scale( renderableInfos[i].scale );
 			setUniformParameter( renderableInfos[i].howShaderIndex , st , ParameterType::PT_MAT4 , &transform[0][0] );
+
+			if ( renderableInfos[i].animationMatrices )
+			{
+				setUniformParameter( renderableInfos[i].howShaderIndex ,
+									 renderableInfos[i].animationMatricesUniform.c_str() ,
+									 PT_MAT4 ,
+									 reinterpret_cast<const float*>( renderableInfos[i].animationMatrices ) ,
+									 renderableInfos[i].sizeofAnimationMatrices );
+				unsigned int sizeofBlendingIndexData;
+				unsigned int* blendingIndex = renderableInfos[i].whatGeometryIndex->modelData.getBlendingIndexData( &sizeofBlendingIndexData );
+				setUniformParameter( renderableInfos[i].howShaderIndex ,
+									 renderableInfos[i].animationIndexUniform.c_str() ,
+									 PT_INT ,
+									 reinterpret_cast< float* >( blendingIndex ) ,
+									 sizeofBlendingIndexData );
+				unsigned int sizeofBlendingWeightData;
+				float* blendingWeight = renderableInfos[i].whatGeometryIndex->modelData.getBlendingWeightData( &sizeofBlendingWeightData );
+				setUniformParameter( renderableInfos[i].howShaderIndex ,
+									 renderableInfos[i].animationWeightUniform.c_str() ,
+									 PT_FLOAT ,
+									 blendingWeight ,
+									 sizeofBlendingWeightData );
+			}
+
 			glDrawElements( renderableInfos[i].whatGeometryIndex->indexingMode , renderableInfos[i].whatGeometryIndex->numIndex , GL_UNSIGNED_SHORT , ( void* ) renderableInfos[i].whatGeometryIndex->indexOffset );
 		}
 	}
