@@ -23,12 +23,17 @@ public:
 	enum POKENGINE_SHARED ParameterType
 	{
 		// These values matter:
-		PT_INT = 1,
+		PT_INT = ( int )sizeof( int ) * -1 ,
 		PT_FLOAT = sizeof( float ) * 1 ,
+		PT_IVEC2 = ( int )sizeof( int ) * -2 ,
 		PT_VEC2 = sizeof( float ) * 2 ,
+		PT_IVEC3 = ( int )sizeof( int ) * -3 ,
 		PT_VEC3 = sizeof( float ) * 3 ,
+		PT_IVEC4 = ( int )sizeof( int ) * -4 ,
 		PT_VEC4 = sizeof( float ) * 4 ,
+		//PT_IMAT3 = -sizeof(int) * 9,
 		PT_MAT3 = sizeof( float ) * 9 ,
+		//PT_IMAT4 = -sizeof(int) * 16,
 		PT_MAT4 = sizeof( float ) * 16 ,
 	};
 
@@ -102,8 +107,6 @@ public:
 		glm::vec3 translate , rotate , scale;
 		std::string whereUniform;
 		std::string animationMatricesUniform;
-		std::string animationIndexUniform;
-		std::string animationWeightUniform;
 		glm::mat4* animationMatrices;
 		unsigned int sizeofAnimationMatrices;
 		bool visible;
@@ -135,6 +138,8 @@ public:
 	static void enable( unsigned int toEnable );
 	static void drawAll();
 	static void drawSpecific(Renderable* toDraw);
+	static void updateAnimation( Renderable& toUpdate , const float& dt );
+	static void updateAnimationMatricesRecurse( unsigned int boneIndex, BoneInfo* bones , Renderable& toUpdate, glm::mat4& parentMatrix );
 	static void reset();
 
 	static ShaderInfo* createShaderInfo(
