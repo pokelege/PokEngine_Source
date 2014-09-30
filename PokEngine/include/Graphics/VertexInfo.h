@@ -3,7 +3,6 @@
 #pragma warning (disable:4251)
 #include <PokEngineExportHeader.h>
 #include <glm.hpp>
-class PokEngineModelDataMap;
 struct POKENGINE_SHARED VertexInfo
 {
 	glm::vec3 position;
@@ -13,7 +12,6 @@ struct POKENGINE_SHARED VertexInfo
 	glm::vec3 bitangent;
 	glm::ivec4 blendingIndex;
 	glm::vec4 blendingWeight;
-	int blendingDataEnd;
 	static unsigned int POSITION_OFFSET;
 	static unsigned int UV_OFFSET;
 	static unsigned int NORMAL_OFFSET;

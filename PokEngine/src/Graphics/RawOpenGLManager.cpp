@@ -326,7 +326,12 @@ RawOpenGLManager::GeometryInfo* RawOpenGLManager::addFileGeometry( const char* f
 	unsigned int numIndices;
 	VertexInfo* verts = data.getVertexData( &numVertices );
 	unsigned short* indices = data.getIndexData( &numIndices );
-	unsigned int dataSize = (sizeof(VertexInfo) * numVertices) + ( sizeof( unsigned short ) * numIndices );
+	unsigned int dataSize = ( sizeof( VertexInfo ) * numVertices ) + ( sizeof( unsigned short ) * numIndices );
+
+	//for ( unsigned int lolz = 0; lolz < numVertices; ++lolz )
+	//{
+	//	std::cout << verts[lolz].blendingIndex.y << std::endl;
+	//}
 	int i;
 
 	for ( i = 0; i < MAX_BUFFERS; i++ )
@@ -495,7 +500,8 @@ void RawOpenGLManager::addShaderStreamedParameter(
 
 	if ( parameterType < 0 )
 	{
-		glVertexAttribPointer( layoutLocation , -parameterType / sizeof(int) , GL_INT , GL_FALSE , bufferStride , ( void* ) ( geometryID->vertexOffset + bufferOffset ) );
+		int pt = -parameterType / sizeof( int );
+		glVertexAttribPointer( layoutLocation , pt , GL_INT , GL_FALSE , bufferStride , ( void* ) ( geometryID->vertexOffset + bufferOffset ) );
 	}
 	else
 	{
@@ -665,7 +671,7 @@ void RawOpenGLManager::updateAnimation( Renderable& toUpdate , const float& dt )
 			toUpdate.animationMatrices = new glm::mat4[boneDataSize];
 			toUpdate.sizeofAnimationMatrices = boneDataSize;
 		}
-		toUpdate.currentFrame += toUpdate.animationFrameRate / dt;
+		toUpdate.currentFrame += toUpdate.animationFrameRate * dt;
 		glm::mat4 parent;
 		updateAnimationMatricesRecurse( 0, bones , toUpdate , parent );
 	}

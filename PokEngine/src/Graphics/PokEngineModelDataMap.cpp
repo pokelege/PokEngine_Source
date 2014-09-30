@@ -5,15 +5,11 @@
 PokEngineModelDataMap::PokEngineModelDataMap() {}
 PokEngineModelDataMap::PokEngineModelDataMap( std::ifstream& stream )
 {
-	stream.read( reinterpret_cast< char* >( &sizeofVertexData ) , sizeof( unsigned int ) * 6 );
+	stream.read( reinterpret_cast< char* >( &sizeofVertexData ) , sizeof( unsigned int ) * 5 );
 	vertexData = new char[sizeof( VertexInfo ) * sizeofVertexData];
 	stream.read( vertexData , sizeof( VertexInfo ) * sizeofVertexData );
 	indexData = new char[sizeof( unsigned short ) * sizeofIndexData];
 	stream.read( indexData , sizeof( unsigned short ) * sizeofIndexData );
-	blendingIndexData = new char[sizeof( unsigned int ) * sizeofBlendingData];
-	stream.read( blendingIndexData , sizeof( unsigned int ) * sizeofBlendingData );
-	blendingWeightData = new char[sizeof( float ) * sizeofBlendingData];
-	stream.read( blendingWeightData , sizeof( float ) * sizeofBlendingData );
 	boneData = new char[sizeof( BoneInfo ) * sizeofBoneData];
 	stream.read( boneData , sizeof( BoneInfo ) * sizeofBoneData );
 	boneChildrenData = new char[sizeof( unsigned int ) * sizeofBoneChildData];
@@ -30,16 +26,6 @@ unsigned short* PokEngineModelDataMap::getIndexData( unsigned int* indexSize  )
 {
 	if(indexSize) *indexSize = sizeofIndexData;
 	return reinterpret_cast<unsigned short*>(indexData);
-}
-unsigned int* PokEngineModelDataMap::getBlendingIndexData( unsigned int* blendingIndexSize )
-{
-	if(blendingIndexSize) *blendingIndexSize = sizeofBlendingData;
-	return reinterpret_cast< unsigned int* >( blendingIndexData );
-}
-float* PokEngineModelDataMap::getBlendingWeightData( unsigned int* blendingWeightSize )
-{
-	if ( blendingWeightSize ) *blendingWeightSize = sizeofBlendingData;
-	return reinterpret_cast< float* >( blendingWeightData );
 }
 BoneInfo* PokEngineModelDataMap::getBoneData( unsigned int* boneDataSize )
 {
