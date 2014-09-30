@@ -43,8 +43,6 @@ void FBXConverter::convert( const char* input , const char* output )
 		processAnimations( theMesh->GetNode() , skeleton , vertices , indices );
 
 		std::string modelData;
-
-		std::vector<BlendingIndexWeightPair> blendingData;
 		for ( int i = 0; i < vertices.size(); i++ )
 		{
 			modelData += DATASTRING( vertices[i].position );
@@ -52,23 +50,33 @@ void FBXConverter::convert( const char* input , const char* output )
 			modelData += DATASTRING( vertices[i].normal );
 			modelData += DATASTRING( vertices[i].tangent );
 			modelData += DATASTRING( vertices[i].bitangent );
-			int blendingDataStart, blendingDataEnd;
-			if ( vertices[i].blendingInfo.size() )
+			
+			for ( unsigned int j = 0; j < 4 ; ++j )
 			{
-				blendingDataStart = blendingData.size();
-				for ( unsigned int j = 0; j < vertices[i].blendingInfo.size(); ++j )
+				if ( j < vertices[i].blendingInfo.size() )
 				{
-					blendingData.push_back( vertices[i].blendingInfo[j] );
+					int blendingIndex = vertices[i].blendingInfo[j].blendingIndex;
+					modelData += DATASTRING( blendingIndex );
 				}
-				blendingDataEnd = blendingData.size();
+				else
+				{
+					int blendingIndex = -1;
+					modelData += DATASTRING( blendingIndex );
+				}
 			}
-			else
+			for ( unsigned int j = 0; j < 4; ++j )
 			{
-				blendingDataStart = -1;
-				blendingDataEnd = -1;
+				if ( j < vertices[i].blendingInfo.size() )
+				{
+					float blendingIndex = vertices[i].blendingInfo[j].blendingWeight;
+					modelData += DATASTRING( blendingIndex );
+				}
+				else
+				{
+					float blendingIndex = -1;
+					modelData += DATASTRING( blendingIndex );
+				}
 			}
-			modelData += DATASTRING( blendingDataStart );
-			modelData += DATASTRING( blendingDataEnd );
 		}
 
 		for ( int i = 0; i < indices.size(); i++ )
@@ -125,9 +133,6 @@ void FBXConverter::convert( const char* input , const char* output )
 		unsigned int sizeofIndices = indices.size();
 		stream.write( reinterpret_cast< char* >( &sizeofIndices ) , sizeof( sizeofIndices ) );
 
-		unsigned int sizeofBlendingData = blendingData.size();
-		stream.write( reinterpret_cast<char*>( &sizeofBlendingData ) , sizeof( sizeofBlendingData ) );
-
 		unsigned int sizeofBoneData = skeleton.size();
 		stream.write( reinterpret_cast<char*>( &sizeofBoneData ) , sizeof( sizeofBoneData ) );
 
@@ -138,16 +143,6 @@ void FBXConverter::convert( const char* input , const char* output )
 		stream.write( reinterpret_cast< char* >( &sizeofBoneAnimationData ) , sizeof( sizeofBoneAnimationData ) );
 
 		stream.write( modelData.c_str() , modelData.size() );
-
-		for ( unsigned int i = 0; i < blendingData.size(); ++i )
-		{
-			stream.write( reinterpret_cast< char* >( &blendingData[i].blendingIndex ) , sizeof( blendingData[i].blendingIndex ) );
-		}
-
-		for ( unsigned int i = 0; i < blendingData.size(); ++i )
-		{
-			stream.write( reinterpret_cast< char* >( &blendingData[i].blendingWeight ) , sizeof( blendingData[i].blendingWeight ) );
-		}
 
 		stream.write( boneData.c_str() , boneData.size() );
 
@@ -437,7 +432,11 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 				{
 					if ( indices[z].oldControlPoint == controlPoint )
 					{
-						verts[indices[z].index].blendingInfo.push_back( weightPair );
+						if ( verts[indices[z].index].blendingInfo.size() > 4 )
+						{
+							std::cout << "Warning: vert has more than 4 bones connected, ignoring additional bone." << std::endl;
+						}
+						else verts[indices[z].index].blendingInfo.push_back( weightPair );
 						break;
 					}
 				}
