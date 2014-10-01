@@ -2,8 +2,12 @@
 #include <GL\glew.h>
 #include <SOIL.h>
 #include <fstream>
-#include <gtx\transform.hpp>
+#include <gtc\matrix_transform.hpp>
+#include <gtc\quaternion.hpp>
 #include <Graphics\VertexInfo.h>
+#include <Graphics\BoneInfo.h>
+#include <Graphics\AnimationInfo.h>
+#include <iostream>
 RawOpenGLManager::BufferInfo RawOpenGLManager::bufferIds[MAX_BUFFERS];
 RawOpenGLManager::GeometryInfo RawOpenGLManager::geometryInfos[MAX_GEOMETRIES];
 RawOpenGLManager::ShaderInfo RawOpenGLManager::shaderInfos[MAX_SHADERS];
@@ -323,8 +327,12 @@ RawOpenGLManager::GeometryInfo* RawOpenGLManager::addFileGeometry( const char* f
 	unsigned int numIndices;
 	VertexInfo* verts = data.getVertexData( &numVertices );
 	unsigned short* indices = data.getIndexData( &numIndices );
-	unsigned int dataSize = (sizeof(VertexInfo) * numVertices) + ( sizeof( unsigned short ) * numIndices );
+	unsigned int dataSize = ( sizeof( VertexInfo ) * numVertices ) + ( sizeof( unsigned short ) * numIndices );
 
+	//for ( unsigned int lolz = 0; lolz < numVertices; ++lolz )
+	//{
+	//	std::cout << verts[lolz].blendingIndex.y << std::endl;
+	//}
 	int i;
 
 	for ( i = 0; i < MAX_BUFFERS; i++ )
@@ -491,9 +499,10 @@ void RawOpenGLManager::addShaderStreamedParameter(
 
 	glEnableVertexAttribArray( layoutLocation );
 
-	if ( parameterType == PT_INT )
+	if ( parameterType < 0 )
 	{
-		glVertexAttribPointer( layoutLocation , 1 , GL_INT , GL_FALSE , bufferStride , ( void* ) ( geometryID->vertexOffset + bufferOffset ) );
+		int pt = -parameterType / sizeof( int );
+		glVertexAttribPointer( layoutLocation , pt , GL_INT , GL_FALSE , bufferStride , ( void* ) ( geometryID->vertexOffset + bufferOffset ) );
 	}
 	else
 	{
@@ -512,6 +521,10 @@ void RawOpenGLManager::setUniformParameter(
 	switch ( parameterType )
 	{
 		case( PT_INT ) : glUniform1iv( uniformID , size , reinterpret_cast<const int*>(value)); break;
+		case( PT_IVEC2 ) : glUniform2iv( uniformID , size , reinterpret_cast< const int* >( value ) ); break;
+		case( PT_IVEC3 ) : glUniform3iv( uniformID , size , reinterpret_cast< const int* >( value ) );
+			break;
+		case( PT_IVEC4 ) : glUniform3iv( uniformID , size , reinterpret_cast< const int* >( value ) ); break;
 		case ( PT_FLOAT ) : glUniform1fv( uniformID , size , value );
 			break;
 		case ( PT_VEC2 ) : glUniform2fv( uniformID , size , value );
@@ -633,7 +646,10 @@ void RawOpenGLManager::drawSpecific( Renderable* toDraw )
 			}
 
 			const char* st = toDraw->whereUniform.c_str();
-			glm::mat4 transform = glm::translate( toDraw->translate ) * glm::rotate( toDraw->rotate.x , glm::vec3( 1 , 0 , 0 ) ) * glm::rotate( toDraw->rotate.y , glm::vec3( 0 , 1 , 0 ) )* glm::rotate( toDraw->rotate.z , glm::vec3( 0 , 0 , 1 ) ) * glm::scale( toDraw->scale );
+			glm::quat quaternion = glm::rotate(glm::quat(), toDraw->rotate.x, glm::vec3(1,0,0)) *
+				glm::rotate( glm::quat() , toDraw->rotate.y , glm::vec3( 0 , 1 , 0 ) ) *
+				glm::rotate( glm::quat() , toDraw->rotate.z , glm::vec3( 0 , 0 , 1 ) );
+			glm::mat4 transform = glm::translate(glm::mat4() , toDraw->translate) * glm::mat4_cast(quaternion) * glm::scale(glm::mat4(), toDraw->scale);
 			setUniformParameter( toDraw->howShaderIndex , st , ParameterType::PT_MAT4 , &transform[0][0] );
 			if ( toDraw->animationMatrices )
 			{
@@ -642,26 +658,89 @@ void RawOpenGLManager::drawSpecific( Renderable* toDraw )
 									 PT_MAT4 ,
 									 reinterpret_cast<const float*>(toDraw->animationMatrices),
 									 toDraw->sizeofAnimationMatrices);
-				unsigned int sizeofBlendingIndexData;
-				unsigned int* blendingIndex = toDraw->whatGeometryIndex->modelData.getBlendingIndexData( &sizeofBlendingIndexData );
-				setUniformParameter( toDraw->howShaderIndex ,
-									 toDraw->animationIndexUniform.c_str() ,
-									 PT_INT ,
-									 reinterpret_cast< float* >( blendingIndex ) ,
-									 sizeofBlendingIndexData );
-				unsigned int sizeofBlendingWeightData;
-				float* blendingWeight = toDraw->whatGeometryIndex->modelData.getBlendingWeightData( &sizeofBlendingWeightData );
-				setUniformParameter( toDraw->howShaderIndex ,
-									 toDraw->animationWeightUniform.c_str() ,
-									 PT_FLOAT ,
-									 blendingWeight ,
-									 sizeofBlendingWeightData );
 			}
 			glDrawElements( toDraw->whatGeometryIndex->indexingMode , toDraw->whatGeometryIndex->numIndex , GL_UNSIGNED_SHORT , ( void* ) toDraw->whatGeometryIndex->indexOffset );
 		}
 	}
 }
 
+void RawOpenGLManager::updateAnimation( Renderable& toUpdate , const float& dt )
+{
+	unsigned int boneDataSize;
+	BoneInfo* bones = toUpdate.whatGeometryIndex->modelData.getBoneData( &boneDataSize );
+	if ( bones )
+	{
+		if ( !toUpdate.animationMatrices )
+		{
+			toUpdate.animationMatrices = new glm::mat4[boneDataSize];
+			toUpdate.sizeofAnimationMatrices = boneDataSize;
+		}
+		toUpdate.currentFrame += toUpdate.animationFrameRate * dt;
+		glm::mat4 parent;
+		updateAnimationMatricesRecurse( 0, bones , toUpdate , parent );
+	}
+}
+
+void RawOpenGLManager::updateAnimationMatricesRecurse( unsigned int boneIndex , BoneInfo* bones , Renderable& toUpdate , glm::mat4& parentMatrix )
+{
+	glm::mat4 animateTransform;
+	if ( bones[boneIndex].animationSize() > 0 )
+	{
+		AnimationInfo* start = 0;
+		AnimationInfo* end = 0;
+
+		unsigned int animationEndTime = bones[boneIndex].getAnimation( bones[boneIndex].animationSize() - 1 , toUpdate.whatGeometryIndex->modelData )->frame;
+		while ( toUpdate.currentFrame > animationEndTime ) toUpdate.currentFrame -= animationEndTime;
+		for ( unsigned int i = 0; i < bones[boneIndex].animationSize(); ++i )
+		{
+			AnimationInfo* test = bones[boneIndex].getAnimation( i , toUpdate.whatGeometryIndex->modelData );
+			if ( test->frame <= ( unsigned int ) toUpdate.currentFrame )
+			{
+				start = test;
+			}
+			if ( test->frame >= toUpdate.currentFrame )
+			{
+				end = test;
+				break;
+			}
+		}
+		float interpolation = toUpdate.currentFrame;
+		glm::vec3 lerpedTranslate;
+		glm::vec3 lerpedScale;
+		glm::vec3 lerpedRotation;
+		if ( start )
+		{
+			interpolation = ( interpolation - start->frame ) / ( end->frame - start->frame );
+			lerpedTranslate = ( ( 1 - interpolation ) * start->translation ) + ( interpolation * end->translation );
+			lerpedScale = ( ( 1 - interpolation ) * start->scale ) + ( interpolation * end->scale );
+			lerpedRotation = ( ( 1 - interpolation ) * start->rotation ) + ( interpolation * end->rotation );
+		}
+		else
+		{
+			interpolation /= end->frame;
+			lerpedTranslate = ( interpolation * end->translation );
+			lerpedScale = ( ( 1 - interpolation ) * glm::vec3(1,1,1) ) + ( interpolation * end->scale );
+			lerpedRotation = ( interpolation * end->rotation );
+		}
+
+		glm::quat quaternion = glm::rotate( glm::quat() , lerpedRotation.x , glm::vec3( 1 , 0 , 0 ) ) *
+			glm::rotate( glm::quat() , lerpedRotation.y , glm::vec3( 0 , 1 , 0 ) ) *
+			glm::rotate( glm::quat() , lerpedRotation.z , glm::vec3( 0 , 0 , 1 ) );
+
+		animateTransform = parentMatrix * ( glm::translate( glm::mat4(), lerpedTranslate ) * glm::mat4_cast(quaternion) * glm::scale( glm::mat4(), lerpedScale ) );
+		toUpdate.animationMatrices[boneIndex] = animateTransform * bones[boneIndex].offsetMatrix;
+	}
+	else
+	{
+		animateTransform = parentMatrix;
+		toUpdate.animationMatrices[boneIndex] = animateTransform * bones[boneIndex].offsetMatrix;
+	}
+
+	for ( unsigned int i = 0; i < bones[boneIndex].childrenSize(); ++i )
+	{
+		updateAnimationMatricesRecurse( toUpdate.whatGeometryIndex->modelData.getBoneChildren()[bones[boneIndex].childDataStart + i], bones, toUpdate, animateTransform );
+	}
+}
 
 void RawOpenGLManager::enable( unsigned int toEnable)
 {
@@ -719,7 +798,11 @@ void RawOpenGLManager::drawAll()
 			}
 
 			const char* st = renderableInfos[i].whereUniform.c_str();
-			glm::mat4 transform = glm::translate( renderableInfos[i].translate ) * glm::rotate( renderableInfos[i].rotate.x , glm::vec3( 1 , 0 , 0 ) ) * glm::rotate( renderableInfos[i].rotate.y , glm::vec3( 0 , 1 , 0 ) )* glm::rotate( renderableInfos[i].rotate.z , glm::vec3( 0 , 0 , 1 ) ) * glm::scale( renderableInfos[i].scale );
+			glm::quat quaternion = glm::rotate( glm::quat() , renderableInfos[i].rotate.x , glm::vec3( 1 , 0 , 0 ) ) *
+				glm::rotate( glm::quat() , renderableInfos[i].rotate.y , glm::vec3( 0 , 1 , 0 ) ) *
+				glm::rotate( glm::quat() , renderableInfos[i].rotate.z , glm::vec3( 0 , 0 , 1 ) );
+			glm::mat4 transform = glm::translate( glm::mat4() , renderableInfos[i].translate ) * glm::mat4_cast( quaternion ) * glm::scale( glm::mat4() , renderableInfos[i].scale );
+
 			setUniformParameter( renderableInfos[i].howShaderIndex , st , ParameterType::PT_MAT4 , &transform[0][0] );
 
 			if ( renderableInfos[i].animationMatrices )
@@ -729,20 +812,6 @@ void RawOpenGLManager::drawAll()
 									 PT_MAT4 ,
 									 reinterpret_cast<const float*>( renderableInfos[i].animationMatrices ) ,
 									 renderableInfos[i].sizeofAnimationMatrices );
-				unsigned int sizeofBlendingIndexData;
-				unsigned int* blendingIndex = renderableInfos[i].whatGeometryIndex->modelData.getBlendingIndexData( &sizeofBlendingIndexData );
-				setUniformParameter( renderableInfos[i].howShaderIndex ,
-									 renderableInfos[i].animationIndexUniform.c_str() ,
-									 PT_INT ,
-									 reinterpret_cast< float* >( blendingIndex ) ,
-									 sizeofBlendingIndexData );
-				unsigned int sizeofBlendingWeightData;
-				float* blendingWeight = renderableInfos[i].whatGeometryIndex->modelData.getBlendingWeightData( &sizeofBlendingWeightData );
-				setUniformParameter( renderableInfos[i].howShaderIndex ,
-									 renderableInfos[i].animationWeightUniform.c_str() ,
-									 PT_FLOAT ,
-									 blendingWeight ,
-									 sizeofBlendingWeightData );
 			}
 
 			glDrawElements( renderableInfos[i].whatGeometryIndex->indexingMode , renderableInfos[i].whatGeometryIndex->numIndex , GL_UNSIGNED_SHORT , ( void* ) renderableInfos[i].whatGeometryIndex->indexOffset );
