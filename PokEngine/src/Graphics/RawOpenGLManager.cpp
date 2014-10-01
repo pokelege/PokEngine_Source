@@ -2,7 +2,8 @@
 #include <GL\glew.h>
 #include <SOIL.h>
 #include <fstream>
-#include <gtx\transform.hpp>
+#include <gtc\matrix_transform.hpp>
+#include <gtc\quaternion.hpp>
 #include <Graphics\VertexInfo.h>
 #include <Graphics\BoneInfo.h>
 #include <Graphics\AnimationInfo.h>
@@ -645,7 +646,10 @@ void RawOpenGLManager::drawSpecific( Renderable* toDraw )
 			}
 
 			const char* st = toDraw->whereUniform.c_str();
-			glm::mat4 transform = glm::translate( toDraw->translate ) * glm::rotate( toDraw->rotate.x , glm::vec3( 1 , 0 , 0 ) ) * glm::rotate( toDraw->rotate.y , glm::vec3( 0 , 1 , 0 ) )* glm::rotate( toDraw->rotate.z , glm::vec3( 0 , 0 , 1 ) ) * glm::scale( toDraw->scale );
+			glm::quat quaternion = glm::rotate(glm::quat(), toDraw->rotate.x, glm::vec3(1,0,0)) *
+				glm::rotate( glm::quat() , toDraw->rotate.y , glm::vec3( 0 , 1 , 0 ) ) *
+				glm::rotate( glm::quat() , toDraw->rotate.z , glm::vec3( 0 , 0 , 1 ) );
+			glm::mat4 transform = glm::translate(glm::mat4() , toDraw->translate) * glm::mat4_cast(quaternion) * glm::scale(glm::mat4(), toDraw->scale);
 			setUniformParameter( toDraw->howShaderIndex , st , ParameterType::PT_MAT4 , &transform[0][0] );
 			if ( toDraw->animationMatrices )
 			{
@@ -719,7 +723,11 @@ void RawOpenGLManager::updateAnimationMatricesRecurse( unsigned int boneIndex , 
 			lerpedRotation = ( interpolation * end->rotation );
 		}
 
-		animateTransform = parentMatrix * ( glm::translate( lerpedTranslate ) * glm::rotate( 1.0f , glm::vec3( 1 , 0 , 0 ) ) * glm::rotate( 1.0f , glm::vec3( 0 , 1 , 0 ) )* glm::rotate( 1.0f , glm::vec3( 0 , 0 , 1 ) ) * glm::scale( lerpedScale ) );
+		glm::quat quaternion = glm::rotate( glm::quat() , lerpedRotation.x , glm::vec3( 1 , 0 , 0 ) ) *
+			glm::rotate( glm::quat() , lerpedRotation.y , glm::vec3( 0 , 1 , 0 ) ) *
+			glm::rotate( glm::quat() , lerpedRotation.z , glm::vec3( 0 , 0 , 1 ) );
+
+		animateTransform = parentMatrix * ( glm::translate( glm::mat4(), lerpedTranslate ) * glm::mat4_cast(quaternion) * glm::scale( glm::mat4(), lerpedScale ) );
 		toUpdate.animationMatrices[boneIndex] = animateTransform * bones[boneIndex].offsetMatrix;
 	}
 	else
@@ -790,7 +798,11 @@ void RawOpenGLManager::drawAll()
 			}
 
 			const char* st = renderableInfos[i].whereUniform.c_str();
-			glm::mat4 transform = glm::translate( renderableInfos[i].translate ) * glm::rotate( renderableInfos[i].rotate.x , glm::vec3( 1 , 0 , 0 ) ) * glm::rotate( renderableInfos[i].rotate.y , glm::vec3( 0 , 1 , 0 ) )* glm::rotate( renderableInfos[i].rotate.z , glm::vec3( 0 , 0 , 1 ) ) * glm::scale( renderableInfos[i].scale );
+			glm::quat quaternion = glm::rotate( glm::quat() , renderableInfos[i].rotate.x , glm::vec3( 1 , 0 , 0 ) ) *
+				glm::rotate( glm::quat() , renderableInfos[i].rotate.y , glm::vec3( 0 , 1 , 0 ) ) *
+				glm::rotate( glm::quat() , renderableInfos[i].rotate.z , glm::vec3( 0 , 0 , 1 ) );
+			glm::mat4 transform = glm::translate( glm::mat4() , renderableInfos[i].translate ) * glm::mat4_cast( quaternion ) * glm::scale( glm::mat4() , renderableInfos[i].scale );
+
 			setUniformParameter( renderableInfos[i].howShaderIndex , st , ParameterType::PT_MAT4 , &transform[0][0] );
 
 			if ( renderableInfos[i].animationMatrices )
