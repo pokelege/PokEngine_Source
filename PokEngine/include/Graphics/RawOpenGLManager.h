@@ -11,7 +11,6 @@
 class POKENGINE_SHARED RawOpenGLManager
 {
 #define MAX_SHADERS 10
-#define MAX_TEXTURES 50
 #define MAX_RENDERABLES 100
 
 #define MAX_UNIFORM_PARAMETERS 50
@@ -46,23 +45,6 @@ public:
 	struct POKENGINE_SHARED ShaderInfo
 	{
 		unsigned int programID;
-	};
-
-	struct POKENGINE_SHARED TextureInfo
-	{
-		friend class RawOpenGLManager;
-	private:
-		struct SubTextureInfo
-		{
-			unsigned int textureID;
-			unsigned int type;
-			SubTextureInfo() : textureID( NULL ) , type( 0 ) {}
-		};
-	public:
-		SubTextureInfo* textureIDs;
-		unsigned int size;
-		TextureInfo() : textureIDs(NULL) , size(0){}
-		~TextureInfo() { delete[] textureIDs; }
 	};
 
 	struct POKENGINE_SHARED FrameBufferInfo
@@ -100,7 +82,6 @@ public:
 	};
 
 	static ShaderInfo shaderInfos[MAX_SHADERS];
-	static TextureInfo textureInfos[MAX_TEXTURES];
 	static UniformInfo globalUniforms[MAX_UNIFORM_PARAMETERS];
 	static Renderable renderableInfos[MAX_RENDERABLES];
 	static FrameBufferInfo frameBufferInfos[MAX_TEXTURES];
@@ -130,10 +111,6 @@ public:
 		const char* fragmentShaderCode,
 		std::string* errorLog = nullptr);
 
-	static TextureInfo* addTexture( const char ** files , unsigned int number , unsigned int wrap = 0x2901 );
-	static void addCubeTexture( TextureInfo* theTexture , const char* X , const char* x , const char* Y , const char* y , const char* Z , const char* z , unsigned int index , unsigned int wrap = 0x812F );
-	static void editTexture( TextureInfo* theTexture , const char* file , unsigned int index , unsigned int wrap = 0x2901 );
-	static void editTexture( TextureInfo* theTexture , const char* data , unsigned int width , unsigned int height , unsigned int index , unsigned int inputFormat = 0x1908 , unsigned int outputFormat = 0x1908 , unsigned int dataType = 0x1401 , unsigned int wrap = 0x2901 );
 	static Renderable* addRenderable(
 		GeometryInfo* whatGeometry ,
 		const char* whereUniform ,
