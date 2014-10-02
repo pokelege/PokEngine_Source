@@ -8,7 +8,6 @@
 #include <Graphics\BoneInfo.h>
 #include <Graphics\AnimationInfo.h>
 #include <iostream>
-RawOpenGLManager::BufferInfo RawOpenGLManager::bufferIds[MAX_BUFFERS];
 RawOpenGLManager::GeometryInfo RawOpenGLManager::geometryInfos[MAX_GEOMETRIES];
 RawOpenGLManager::ShaderInfo RawOpenGLManager::shaderInfos[MAX_SHADERS];
 RawOpenGLManager::TextureInfo RawOpenGLManager::textureInfos[MAX_TEXTURES];
@@ -317,148 +316,6 @@ void RawOpenGLManager::setFrameBuffer( FrameBufferInfo* bufferID , unsigned int 
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER , bufferID->bufferID );
 	glFramebufferTexture2D( GL_DRAW_FRAMEBUFFER , attatchment , GL_TEXTURE_2D , textureID , 0 );
 	glBindFramebuffer( GL_DRAW_FRAMEBUFFER , 0);
-}
-
-RawOpenGLManager::GeometryInfo* RawOpenGLManager::addFileGeometry( const char* filename )
-{
-	std::ifstream stream( filename , std::ios::ios_base::binary | std::ios::ios_base::in );
-	PokEngineModelDataMap data( stream );
-	unsigned int numVertices;
-	unsigned int numIndices;
-	VertexInfo* verts = data.getVertexData( &numVertices );
-	unsigned short* indices = data.getIndexData( &numIndices );
-	unsigned int dataSize = ( sizeof( VertexInfo ) * numVertices ) + ( sizeof( unsigned short ) * numIndices );
-
-	//for ( unsigned int lolz = 0; lolz < numVertices; ++lolz )
-	//{
-	//	std::cout << verts[lolz].blendingIndex.y << std::endl;
-	//}
-	int i;
-
-	for ( i = 0; i < MAX_BUFFERS; i++ )
-	{
-		if ( glIsBuffer( bufferIds[i].bufferID ) == GL_FALSE )
-		{
-			BufferInfo newBuffer;
-			glGenBuffers( 1 , &newBuffer.bufferID );
-			glBindBuffer( GL_ARRAY_BUFFER , newBuffer.bufferID );
-
-			glBufferData( GL_ARRAY_BUFFER , MAX_BUFFER_SIZE , 0 , GL_DYNAMIC_DRAW );
-			newBuffer.bufferSpace = MAX_BUFFER_SIZE;
-			newBuffer.offsetAddress = 0;
-			bufferIds[i] = newBuffer;
-			break;
-		}
-		else if ( bufferIds[i].bufferSpace > dataSize )
-		{
-			glBindBuffer( GL_ARRAY_BUFFER , bufferIds[i].bufferID );
-			break;
-		}
-		else if ( i == MAX_BUFFERS - 1 ) throw std::exception( "No more geo space" );
-	}
-
-	int j;
-
-	for ( j = 0; j < MAX_GEOMETRIES; j++ )
-	{
-		if ( glIsVertexArray( geometryInfos[j].dataArray ) == GL_FALSE )
-		{
-			break;
-		}
-	}
-
-	geometryInfos[j].buffer = &bufferIds[i];
-	geometryInfos[j].indexingMode = GL_TRIANGLES;
-
-	glGenVertexArrays( 1 , &geometryInfos[j].dataArray );
-	glBindVertexArray( geometryInfos[j].dataArray );
-
-	geometryInfos[j].vertexOffset = bufferIds[i].offsetAddress;
-	geometryInfos[j].numVertex = numVertices;
-
-	geometryInfos[j].indexOffset = bufferIds[i].offsetAddress + ( sizeof( VertexInfo )  * numVertices );
-	geometryInfos[j].numIndex = numIndices;
-	geometryInfos[j].modelData = data;
-	/*glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress , dataSize , ( GLvoid* ) ( ( int* ) rawData + 2 ) );*/
-
-	glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress , ( sizeof( VertexInfo ) * numVertices ) , ( GLvoid* ) ( verts ) );
-
-	glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress + ( sizeof( VertexInfo ) * numVertices ) , ( sizeof( unsigned short ) * numIndices ) , ( GLvoid* ) ( indices ) );
-
-	bufferIds[i].offsetAddress += dataSize;
-	bufferIds[i].bufferSpace -= dataSize;
-	
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER , bufferIds[i].bufferID );
-
-	return &geometryInfos[j];
-
-	//
-	//std::string buffer( ( std::istreambuf_iterator<char>( stream ) ) ,
-	//					std::istreambuf_iterator<char>() );
-	//return addRawGeometry( buffer.c_str() );
-}
-
-RawOpenGLManager::GeometryInfo* RawOpenGLManager::addRawGeometry( const char* rawData )
-{
-	int numVertices = *( int* ) rawData;
-	int numIndices = *( ( int* ) rawData + 1 );
-
-	unsigned int dataSize = ( ( sizeof( float ) * 14 ) * numVertices ) + ( sizeof( unsigned short ) * numIndices );
-
-	int i;
-
-	for ( i = 0; i < MAX_BUFFERS; i++ )
-	{
-		if ( glIsBuffer( bufferIds[i].bufferID ) == GL_FALSE )
-		{
-			BufferInfo newBuffer;
-			glGenBuffers( 1 , &newBuffer.bufferID );
-			glBindBuffer( GL_ARRAY_BUFFER , newBuffer.bufferID );
-
-			glBufferData( GL_ARRAY_BUFFER , MAX_BUFFER_SIZE , 0 , GL_DYNAMIC_DRAW );
-			newBuffer.bufferSpace = MAX_BUFFER_SIZE;
-			newBuffer.offsetAddress = 0;
-			bufferIds[i] = newBuffer;
-			break;
-		}
-		else if ( bufferIds[i].bufferSpace > dataSize )
-		{
-			glBindBuffer( GL_ARRAY_BUFFER , bufferIds[i].bufferID );
-			break;
-		}
-		else if ( i == MAX_BUFFERS - 1 ) throw std::exception( "No more geo space" );
-	}
-
-	int j;
-
-	for ( j = 0; j < MAX_GEOMETRIES; j++ )
-	{
-		if ( glIsVertexArray( geometryInfos[j].dataArray ) == GL_FALSE )
-		{
-			break;
-		}
-	}
-
-	geometryInfos[j].buffer = &bufferIds[i];
-	geometryInfos[j].indexingMode = GL_TRIANGLES;
-
-	glGenVertexArrays( 1 , &geometryInfos[j].dataArray );
-	glBindVertexArray( geometryInfos[j].dataArray );
-
-	geometryInfos[j].vertexOffset = bufferIds[i].offsetAddress;
-	geometryInfos[j].numVertex = numVertices;
-
-	geometryInfos[j].indexOffset = bufferIds[i].offsetAddress + ( ( sizeof( float ) * 14 ) * numVertices );
-	geometryInfos[j].numIndex = numIndices;
-
-	glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress , dataSize , ( GLvoid* ) ( ( int* ) rawData + 2 ) );
-
-	bufferIds[i].offsetAddress += dataSize;
-	bufferIds[i].bufferSpace -= dataSize;
-
-	glBindBuffer( GL_ELEMENT_ARRAY_BUFFER , bufferIds[i].bufferID );
-
-	return &geometryInfos[j];
 }
 
 RawOpenGLManager::Renderable* RawOpenGLManager::addRenderable(
@@ -819,33 +676,8 @@ void RawOpenGLManager::drawAll()
 	}
 }
 
-std::string RawOpenGLManager::saveGeometry( GeometryInfo* geo )
-{
-	std::string toSend( reinterpret_cast< const char* >( &geo->numVertex ) , sizeof( geo->numVertex ) );
-	toSend += std::string( reinterpret_cast< const char* >( &geo->numIndex) , sizeof( geo->numIndex ) );
-	glBindVertexArray( geo->dataArray );
-	glBindBuffer( GL_ARRAY_BUFFER , geo->buffer->bufferID );
-	unsigned int dataSize = ( ( sizeof( float ) * 8 ) * geo->numVertex ) + ( sizeof( unsigned short ) * geo->numIndex );
-	char* pointer = new char[dataSize];
-	glGetBufferSubData( GL_ARRAY_BUFFER , geo->vertexOffset , dataSize , pointer );
-	std::string test( pointer , dataSize );
-	toSend += test;
-	delete[] pointer;
-	return toSend;
-}
-
 void RawOpenGLManager::reset()
 {
-	for ( int i = 0; i < MAX_BUFFERS; i++ )
-	{
-		if ( glIsBuffer( bufferIds[i].bufferID ) ) glDeleteBuffers( 1 , &bufferIds[i].bufferID );
-	}
-
-	for ( int i = 0; i < MAX_GEOMETRIES; i++ )
-	{
-		if ( glIsVertexArray( geometryInfos[i].dataArray ) ) glDeleteVertexArrays( 1 , &geometryInfos[i].dataArray );
-	}
-
 	for ( int i = 0; i < MAX_SHADERS; i++ )
 	{
 		if ( glIsProgram( shaderInfos[i].programID ) ) glDeleteProgram( shaderInfos[i].programID );

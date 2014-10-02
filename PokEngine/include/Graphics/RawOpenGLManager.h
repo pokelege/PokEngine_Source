@@ -2,21 +2,19 @@
 #pragma warning ( disable : 4201)
 #pragma warning ( disable : 4127)
 #pragma warning ( disable : 4251)
-#include "../PokEngineExportHeader.h"
+#include <PokEngineExportHeader.h>
 #include <glm.hpp>
 #include <string>
 #include <Windows.h>
 #include <Graphics\PokEngineModelDataMap.h>
+#include <Graphics\GraphicsBufferManager.h>
 class POKENGINE_SHARED RawOpenGLManager
 {
-#define MAX_BUFFERS 10
-#define MAX_GEOMETRIES 20
 #define MAX_SHADERS 10
 #define MAX_TEXTURES 50
 #define MAX_RENDERABLES 100
 
 #define MAX_UNIFORM_PARAMETERS 50
-#define MAX_BUFFER_SIZE sizeof(char) * (int)1.049e+7
 
 public:
 
@@ -43,25 +41,6 @@ public:
 		CT_BACK = 1,
 		CT_FRONT = 2,
 		CT_BOTH = 3
-	};
-
-	struct POKENGINE_SHARED BufferInfo
-	{
-		unsigned int bufferID;
-		unsigned int bufferSpace;
-		unsigned int offsetAddress;
-	};
-
-	struct POKENGINE_SHARED GeometryInfo
-	{
-		BufferInfo* buffer;
-		unsigned int dataArray;
-		unsigned int vertexOffset;
-		unsigned int numVertex;
-		unsigned int indexOffset;
-		unsigned int numIndex;
-		unsigned int indexingMode;
-		PokEngineModelDataMap modelData;
 	};
 
 	struct POKENGINE_SHARED ShaderInfo
@@ -120,8 +99,6 @@ public:
 		Renderable() : whatGeometryIndex( nullptr ), depthTestEnabled(false), alpha(false), scale(glm::vec3(1.0f,1.0f,1.0f)), animationMatrices(0) {}
 	};
 
-	static BufferInfo bufferIds[MAX_BUFFERS];
-	static GeometryInfo geometryInfos[MAX_GEOMETRIES];
 	static ShaderInfo shaderInfos[MAX_SHADERS];
 	static TextureInfo textureInfos[MAX_TEXTURES];
 	static UniformInfo globalUniforms[MAX_UNIFORM_PARAMETERS];
@@ -193,71 +170,4 @@ public:
 
 	static FrameBufferInfo* addFrameBuffer();
 	static void setFrameBuffer( FrameBufferInfo* bufferID, unsigned int textureID, unsigned int attatchment );
-
-	static GeometryInfo* addFileGeometry( const char* filename );
-	static GeometryInfo* addRawGeometry( const char* rawData );
-	static std::string saveGeometry( GeometryInfo* geo );
-
-	template <class Tvert>
-	static GeometryInfo* addGeometry(
-		const Tvert* verts , const unsigned int& numVerts ,
-		const unsigned short* indices , const unsigned int& numIndices ,
-		const unsigned int& indexingMode )
-	{
-		unsigned int dataSize = sizeof( *verts ) * numVerts;
-		dataSize += sizeof( unsigned short ) * numIndices;
-		int i;
-		glewInit();
-		for ( i = 0; i < MAX_BUFFERS; i++ )
-		{
-			if ( glIsBuffer( bufferIds[i].bufferID ) == GL_FALSE )
-			{
-				BufferInfo newBuffer;
-				glGenBuffers( 1 , &newBuffer.bufferID );
-				glBindBuffer( GL_ARRAY_BUFFER , newBuffer.bufferID );
-
-				glBufferData( GL_ARRAY_BUFFER , MAX_BUFFER_SIZE , 0 , GL_DYNAMIC_DRAW );
-				newBuffer.bufferSpace = MAX_BUFFER_SIZE;
-				newBuffer.offsetAddress = 0;
-				bufferIds[i] = newBuffer;
-				break;
-			}
-			else if ( bufferIds[i].bufferSpace > dataSize )
-			{
-				glBindBuffer( GL_ARRAY_BUFFER , bufferIds[i].bufferID );
-				break;
-			}
-			else if ( i == MAX_BUFFERS - 1 ) throw std::exception( "No more geo space" );
-		}
-
-		int j;
-
-		for ( j = 0; j < MAX_GEOMETRIES; j++ )
-		{
-			if ( glIsVertexArray( geometryInfos[j].dataArray ) == GL_FALSE )
-			{
-				break;
-			}
-		}
-
-		geometryInfos[j].buffer = &bufferIds[i];
-		geometryInfos[j].indexingMode = indexingMode;
-
-		glGenVertexArrays( 1 , &geometryInfos[j].dataArray );
-		glBindVertexArray( geometryInfos[j].dataArray );
-
-		geometryInfos[j].vertexOffset = bufferIds[i].offsetAddress;
-		geometryInfos[j].numVertex = numVerts;
-		glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress , sizeof( *verts )* numVerts , ( GLvoid* ) verts );
-		bufferIds[i].offsetAddress += sizeof( *verts )* numVerts;
-		bufferIds[i].bufferSpace -= sizeof( *verts )* numVerts;
-
-		geometryInfos[j].indexOffset = bufferIds[i].offsetAddress;
-		geometryInfos[j].numIndex = numIndices;
-		glBufferSubData( GL_ARRAY_BUFFER , bufferIds[i].offsetAddress , sizeof( *indices )* numIndices , ( GLvoid* ) indices );
-		bufferIds[i].offsetAddress += sizeof( *indices )* numIndices;
-		bufferIds[i].bufferSpace -= sizeof( *indices )* numIndices;
-		glBindBuffer( GL_ELEMENT_ARRAY_BUFFER , bufferIds[i].bufferID );
-		return &geometryInfos[j];
-	}
 };

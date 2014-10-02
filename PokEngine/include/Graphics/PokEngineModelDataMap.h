@@ -20,6 +20,7 @@ class POKENGINE_SHARED PokEngineModelDataMap
 public:
 	PokEngineModelDataMap();
 	PokEngineModelDataMap( std::ifstream& stream );
+	PokEngineModelDataMap( const char* rawData );
 	VertexInfo* getVertexData(unsigned int* vertexInfoSize = 0);
 	unsigned short* getIndexData( unsigned int* indexSize = 0 );
 	BoneInfo* getBoneData( unsigned int* boneDataSize = 0 );

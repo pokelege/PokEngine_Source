@@ -17,6 +17,32 @@ PokEngineModelDataMap::PokEngineModelDataMap( std::ifstream& stream )
 	boneAnimationData = new char[sizeof( AnimationInfo ) * sizeofBoneAnimationData];
 	stream.read( boneAnimationData , sizeof( AnimationInfo ) * sizeofBoneAnimationData );
 }
+PokEngineModelDataMap::PokEngineModelDataMap( const char* rawData )
+{
+	unsigned int index = 0;
+	memcpy( &sizeofVertexData , &rawData[index] , sizeof( unsigned int ) * 5 );
+	index += sizeof( unsigned int ) * 5;
+
+	vertexData = new char[sizeof( VertexInfo ) * sizeofVertexData];
+	memcpy( vertexData , &rawData[index], sizeof( VertexInfo ) * sizeofVertexData );
+	index += sizeof( VertexInfo ) * sizeofVertexData;
+
+	indexData = new char[sizeof( unsigned short ) * sizeofIndexData];
+	memcpy( indexData , &rawData[index], sizeof( unsigned short ) * sizeofIndexData );
+	index += sizeof( unsigned short ) * sizeofIndexData;
+
+	boneData = new char[sizeof( BoneInfo ) * sizeofBoneData];
+	memcpy( boneData, &rawData[index] , sizeof( BoneInfo ) * sizeofBoneData );
+	index += sizeof( BoneInfo ) * sizeofBoneData;
+
+	boneChildrenData = new char[sizeof( unsigned int ) * sizeofBoneChildData];
+	memcpy( boneChildrenData, &rawData[index] , sizeof( unsigned int ) * sizeofBoneChildData );
+	index += sizeof( unsigned int ) * sizeofBoneChildData;
+
+	boneAnimationData = new char[sizeof( AnimationInfo ) * sizeofBoneAnimationData];
+	memcpy( boneAnimationData, &rawData[index] , sizeof( AnimationInfo ) * sizeofBoneAnimationData );
+
+}
 VertexInfo* PokEngineModelDataMap::getVertexData( unsigned int* vertexInfoSize)
 {
 	if(vertexInfoSize) *vertexInfoSize = sizeofVertexData;
