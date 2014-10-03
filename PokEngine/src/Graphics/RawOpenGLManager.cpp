@@ -8,9 +8,6 @@
 #include <Graphics\BoneInfo.h>
 #include <Graphics\AnimationInfo.h>
 #include <iostream>
-RawOpenGLManager::GeometryInfo RawOpenGLManager::geometryInfos[MAX_GEOMETRIES];
-RawOpenGLManager::ShaderInfo RawOpenGLManager::shaderInfos[MAX_SHADERS];
-RawOpenGLManager::TextureInfo RawOpenGLManager::textureInfos[MAX_TEXTURES];
 RawOpenGLManager::UniformInfo RawOpenGLManager::globalUniforms[MAX_UNIFORM_PARAMETERS];
 RawOpenGLManager::Renderable RawOpenGLManager::renderableInfos[MAX_RENDERABLES];
 RawOpenGLManager::FrameBufferInfo RawOpenGLManager::frameBufferInfos[MAX_TEXTURES];
@@ -20,155 +17,6 @@ unsigned int RawOpenGLManager::base = 0;
 void RawOpenGLManager::initialize()
 {
 	glewInit();
-}
-
-RawOpenGLManager::ShaderInfo* RawOpenGLManager::createShaderInfo(
-	const char* vertexShaderCode ,
-	const char* fragmentShaderCode,
-	std::string* errorLog)
-{
-	unsigned int vertexShaderID = glCreateShader( GL_VERTEX_SHADER );
-	unsigned int fragmentShaderID = glCreateShader( GL_FRAGMENT_SHADER );
-
-	glShaderSource( vertexShaderID , 1 , &vertexShaderCode , 0 );
-
-	glShaderSource( fragmentShaderID , 1 , &fragmentShaderCode , 0 );
-
-	glCompileShader( vertexShaderID );
-	glCompileShader( fragmentShaderID );
-
-	int i;
-
-	for ( i = 0; i < MAX_SHADERS; i++ )
-	{
-		if ( glIsProgram( shaderInfos[i].programID ) == GL_FALSE ) break;
-	}
-
-	shaderInfos[i].programID = glCreateProgram();
-	glAttachShader( shaderInfos[i].programID , vertexShaderID );
-	glAttachShader( shaderInfos[i].programID , fragmentShaderID );
-
-	glLinkProgram( shaderInfos[i].programID );
-
-	if ( errorLog != nullptr )
-	{
-		GLint compileStatus;
-		glGetShaderiv( vertexShaderID , GL_COMPILE_STATUS , &compileStatus );
-		if ( compileStatus != GL_TRUE )
-		{
-			GLint messageLen;
-			glGetShaderiv( vertexShaderID , GL_INFO_LOG_LENGTH , &messageLen );
-			char* buffer = new char[messageLen];
-			GLsizei bitbucket;
-			glGetShaderInfoLog( vertexShaderID , messageLen , &bitbucket , buffer );
-			*errorLog += buffer;
-			*errorLog += '\n';
-			delete[] buffer;
-		}
-
-		glGetShaderiv( fragmentShaderID , GL_COMPILE_STATUS , &compileStatus );
-		if ( compileStatus != GL_TRUE )
-		{
-			GLint messageLen;
-			glGetShaderiv( fragmentShaderID , GL_INFO_LOG_LENGTH , &messageLen );
-			char* buffer = new char[messageLen];
-			GLsizei bitbucket;
-			glGetShaderInfoLog( fragmentShaderID , messageLen , &bitbucket , buffer );
-			*errorLog += buffer;
-			*errorLog += '\n';
-			delete[] buffer;
-		}
-
-
-		glGetProgramiv( shaderInfos[i].programID , GL_LINK_STATUS , &compileStatus );
-		if ( compileStatus != GL_TRUE )
-		{
-			GLint messageLen;
-			glGetProgramiv( shaderInfos[i].programID , GL_INFO_LOG_LENGTH , &messageLen );
-			char* buffer = new char[messageLen];
-			GLsizei bitbucket;
-			glGetProgramInfoLog( shaderInfos[i].programID , messageLen , &bitbucket , buffer );
-			*errorLog += buffer;
-			*errorLog += '\n';
-			delete[] buffer;
-		}
-	}
-	glDeleteShader( vertexShaderID );
-	glDeleteShader( fragmentShaderID );
-
-	return &shaderInfos[i];
-}
-
-void RawOpenGLManager::updateShaderInfo(
-	ShaderInfo* shaderInfoIndex ,
-	const char* vertexShaderCode ,
-	const char* fragmentShaderCode,
-	std::string* errorLog)
-{
-	unsigned int vertexShaderID = glCreateShader( GL_VERTEX_SHADER );
-	unsigned int fragmentShaderID = glCreateShader( GL_FRAGMENT_SHADER );
-
-	glShaderSource( vertexShaderID , 1 , &vertexShaderCode , 0 );
-
-	glShaderSource( fragmentShaderID , 1 , &fragmentShaderCode , 0 );
-
-	glCompileShader( vertexShaderID );
-	glCompileShader( fragmentShaderID );
-
-	glDeleteProgram( shaderInfoIndex->programID );
-	shaderInfoIndex->programID = glCreateProgram();
-	glAttachShader( shaderInfoIndex->programID , vertexShaderID );
-	glAttachShader( shaderInfoIndex->programID , fragmentShaderID );
-
-	glLinkProgram( shaderInfoIndex->programID );
-
-	if ( errorLog != nullptr )
-	{
-		GLint compileStatus;
-		glGetShaderiv( vertexShaderID , GL_COMPILE_STATUS , &compileStatus );
-		if ( compileStatus != GL_TRUE )
-		{
-			GLint messageLen;
-			glGetShaderiv( vertexShaderID , GL_INFO_LOG_LENGTH , &messageLen );
-			char* buffer = new char[messageLen];
-			GLsizei bitbucket;
-			glGetShaderInfoLog( vertexShaderID , messageLen , &bitbucket , buffer );
-			*errorLog += buffer;
-			*errorLog += '\n';
-			delete[] buffer;
-		}
-
-		glGetShaderiv( fragmentShaderID , GL_COMPILE_STATUS , &compileStatus );
-		if ( compileStatus != GL_TRUE )
-		{
-			GLint messageLen;
-			glGetShaderiv( fragmentShaderID , GL_INFO_LOG_LENGTH , &messageLen );
-			char* buffer = new char[messageLen];
-			GLsizei bitbucket;
-			glGetShaderInfoLog( fragmentShaderID , messageLen , &bitbucket , buffer );
-			*errorLog += buffer;
-			*errorLog += '\n';
-			delete[] buffer;
-		}
-
-
-		glGetProgramiv( shaderInfoIndex->programID , GL_LINK_STATUS , &compileStatus );
-		if ( compileStatus != GL_TRUE )
-		{
-			GLint messageLen;
-			glGetProgramiv( shaderInfoIndex->programID , GL_INFO_LOG_LENGTH , &messageLen );
-			char* buffer = new char[messageLen];
-			GLsizei bitbucket;
-			glGetProgramInfoLog( shaderInfoIndex->programID , messageLen , &bitbucket , buffer );
-			*errorLog += buffer;
-			*errorLog += '\n';
-			delete[] buffer;
-		}
-	}
-
-
-	glDeleteShader( vertexShaderID );
-	glDeleteShader( fragmentShaderID );
 }
 
 RawOpenGLManager::FrameBufferInfo* RawOpenGLManager::addFrameBuffer()
@@ -241,36 +89,6 @@ void RawOpenGLManager::addShaderStreamedParameter(
 	}
 }
 
-void RawOpenGLManager::setUniformParameter(
-	ShaderInfo* shader ,
-	const char* name ,
-	ParameterType parameterType ,
-	const float* value ,
-	unsigned int size )
-{
-	GLint uniformID = glGetUniformLocation( shader->programID , name );
-	switch ( parameterType )
-	{
-		case( PT_INT ) : glUniform1iv( uniformID , size , reinterpret_cast<const int*>(value)); break;
-		case( PT_IVEC2 ) : glUniform2iv( uniformID , size , reinterpret_cast< const int* >( value ) ); break;
-		case( PT_IVEC3 ) : glUniform3iv( uniformID , size , reinterpret_cast< const int* >( value ) );
-			break;
-		case( PT_IVEC4 ) : glUniform3iv( uniformID , size , reinterpret_cast< const int* >( value ) ); break;
-		case ( PT_FLOAT ) : glUniform1fv( uniformID , size , value );
-			break;
-		case ( PT_VEC2 ) : glUniform2fv( uniformID , size , value );
-			break;
-		case( PT_VEC3 ) : glUniform3fv( uniformID , size , value );
-			break;
-		case( PT_VEC4 ) : glUniform4fv( uniformID , size , value );
-			break;
-		case( PT_MAT3 ) : glUniformMatrix3fv( uniformID , size , GL_FALSE , value );
-			break;
-		case( PT_MAT4 ) : glUniformMatrix4fv( uniformID , size , GL_FALSE , value );
-			break;
-	}
-}
-
 void RawOpenGLManager::setRenderableUniform(
 	Renderable* object ,
 	const char* name ,
@@ -293,27 +111,6 @@ void RawOpenGLManager::setRenderableUniform(
 
 		object->uniforms[i] = uni;
 	}
-}
-
-RawOpenGLManager::UniformInfo* RawOpenGLManager::setGlobalUniform(
-	const char* name ,
-	ParameterType parameterType ,
-	const float* dataPointer )
-{
-	int i = 0;
-
-	while ( i < MAX_UNIFORM_PARAMETERS && globalUniforms[i].uniformName.compare( name ) && globalUniforms[i].location != nullptr )
-	{
-		i++;
-	}
-
-	UniformInfo uni;
-	uni.uniformName = name;
-	uni.type = parameterType;
-	uni.location = dataPointer;
-
-	globalUniforms[i] = uni;
-	return &globalUniforms[i];
 }
 
 void RawOpenGLManager::setViewPort( int x , int y , int width , int height )
@@ -552,12 +349,6 @@ void RawOpenGLManager::drawAll()
 
 void RawOpenGLManager::reset()
 {
-	for ( int i = 0; i < MAX_SHADERS; i++ )
-	{
-		if ( glIsProgram( shaderInfos[i].programID ) ) glDeleteProgram( shaderInfos[i].programID );
-	}
-	for ( int i = 0; i < MAX_UNIFORM_PARAMETERS; i++ ) globalUniforms[i].location = nullptr;
-
 	for ( int i = 0; i < MAX_RENDERABLES; i++ )
 	{
 		renderableInfos[i].whatGeometryIndex = nullptr;
