@@ -24,11 +24,4 @@ public:
 		const char* vertexShaderCode ,
 		const char* fragmentShaderCode ,
 		std::string* errorLog = nullptr );
-
-	void setUniformParameter(
-		ShaderInfo* shader ,
-		const char* name ,
-		ParameterType parameterType ,
-		const float* value ,
-		unsigned int size = 1 );
 };

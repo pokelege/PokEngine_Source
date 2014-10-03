@@ -1,5 +1,6 @@
 #include <Graphics\GraphicsSharedUniformManager.h>
 #include <Graphics\UniformInfo.h>
+#include <Graphics\ShaderInfo.h>
 GraphicsSharedUniformManager GraphicsSharedUniformManager::globalSharedUniformManager;
 
 GraphicsSharedUniformManager::GraphicsSharedUniformManager(): globalUniforms(0) {}
@@ -12,7 +13,6 @@ void GraphicsSharedUniformManager::initialize( unsigned int numSharedUniformSlot
 void GraphicsSharedUniformManager::destroy()
 {
 	if ( !globalUniforms ) return;
-	for ( int i = 0; i < numSharedUniformSlots; i++ ) globalUniforms[i].location = nullptr;
 	numSharedUniformSlots = 0;
 	delete[] globalUniforms;
 }
@@ -49,4 +49,16 @@ UniformInfo* GraphicsSharedUniformManager::setSharedUniform(
 	}
 	
 	return uniform;
+}
+
+void GraphicsSharedUniformManager::applySharedUniforms( ShaderInfo* targetShader )
+{
+	for ( unsigned int i = 0; i < numSharedUniformSlots; ++i )
+	{
+		UniformInfo* target = &globalUniforms[i];
+		if (target->uniformName.size() )
+		{
+			targetShader->setUniformParameter( target->uniformName.c_str() , target->type , target->location );
+		}
+	}
 }

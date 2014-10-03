@@ -180,32 +180,3 @@ void GraphicsShaderManager::updateShaderInfo(
 	glDeleteShader( fragmentShaderID );
 }
 
-void GraphicsShaderManager::setUniformParameter(
-	ShaderInfo* shader ,
-	const char* name ,
-	ParameterType parameterType ,
-	const float* value ,
-	unsigned int size )
-{
-	GLint uniformID = glGetUniformLocation( shader->programID , name );
-	switch ( parameterType )
-	{
-		case( PT_INT ) : glUniform1iv( uniformID , size , reinterpret_cast<const int*>( value ) ); break;
-		case( PT_IVEC2 ) : glUniform2iv( uniformID , size , reinterpret_cast< const int* >( value ) ); break;
-		case( PT_IVEC3 ) : glUniform3iv( uniformID , size , reinterpret_cast< const int* >( value ) );
-			break;
-		case( PT_IVEC4 ) : glUniform3iv( uniformID , size , reinterpret_cast< const int* >( value ) ); break;
-		case ( PT_FLOAT ) : glUniform1fv( uniformID , size , value );
-			break;
-		case ( PT_VEC2 ) : glUniform2fv( uniformID , size , value );
-			break;
-		case( PT_VEC3 ) : glUniform3fv( uniformID , size , value );
-			break;
-		case( PT_VEC4 ) : glUniform4fv( uniformID , size , value );
-			break;
-		case( PT_MAT3 ) : glUniformMatrix3fv( uniformID , size , GL_FALSE , value );
-			break;
-		case( PT_MAT4 ) : glUniformMatrix4fv( uniformID , size , GL_FALSE , value );
-			break;
-	}
-}

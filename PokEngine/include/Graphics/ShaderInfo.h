@@ -6,5 +6,10 @@ struct POKENGINE_SHARED ShaderInfo
 	const char* vertexShader;
 	const char* fragmentShader;
 	bool shaderCodePersisted;
-	ShaderInfo() :shaderCodePersisted(false) , vertexShader(0) , fragmentShader(0) {}
+	ShaderInfo();
+	void setUniformParameter(
+		const char* name ,
+		ParameterType parameterType ,
+		const void* value ,
+		unsigned int size = 1 );
 };

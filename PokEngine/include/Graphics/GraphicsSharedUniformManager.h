@@ -4,6 +4,7 @@
 #define MAX_UNIFORM_PARAMETERS 50
 
 struct UniformInfo;
+struct ShaderInfo;
 class POKENGINE_SHARED GraphicsSharedUniformManager
 {
 	UniformInfo* globalUniforms;
@@ -20,4 +21,6 @@ public:
 		const char* name ,
 		ParameterType parameterType ,
 		const void* dataPointer );
+
+	void applySharedUniforms( ShaderInfo* targetShader );
 };
