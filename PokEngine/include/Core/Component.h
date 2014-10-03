@@ -14,5 +14,5 @@ public:
 	virtual void earlyDraw() = 0;
 	virtual void draw() = 0;
 	virtual void lateDraw() = 0;
-	virtual ~Component() = 0;
+	virtual ~Component() {};
 };

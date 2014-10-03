@@ -30,7 +30,7 @@ void GraphicsGeometryManager::destroy()
 
 bool GraphicsGeometryManager::initialized()
 {
-	return geometryInfos;
+	return geometryInfos != 0;
 }
 
 GeometryInfo* GraphicsGeometryManager::addPMDGeometry( const char* filename , GraphicsBufferManager& bufferManager )
@@ -131,5 +131,5 @@ GeometryInfo* GraphicsGeometryManager::addRawGeometry( const char* rawData , Gra
 //implementation later
 const char* GraphicsGeometryManager::saveGeometry( GeometryInfo* geo )
 {
-	return 0;
+	return reinterpret_cast<const char*>(&geo->modelData);
 }

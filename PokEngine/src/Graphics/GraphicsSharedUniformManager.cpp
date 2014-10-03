@@ -4,7 +4,7 @@
 GraphicsSharedUniformManager GraphicsSharedUniformManager::globalSharedUniformManager;
 
 GraphicsSharedUniformManager::GraphicsSharedUniformManager(): globalUniforms(0) {}
-void GraphicsSharedUniformManager::initialize( unsigned int numSharedUniformSlots = MAX_UNIFORM_PARAMETERS )
+void GraphicsSharedUniformManager::initialize( unsigned int numSharedUniformSlots)
 {
 	if ( globalUniforms ) destroy();
 	this->numSharedUniformSlots = numSharedUniformSlots;
@@ -18,7 +18,7 @@ void GraphicsSharedUniformManager::destroy()
 }
 bool GraphicsSharedUniformManager::initialized()
 {
-	return globalUniforms;
+	return globalUniforms != 0;
 }
 
 UniformInfo* GraphicsSharedUniformManager::setSharedUniform(

@@ -6,7 +6,7 @@
 GraphicsTextureManager GraphicsTextureManager::globalTextureManager;
 
 GraphicsTextureManager::GraphicsTextureManager() : numTextureSlots(0) {}
-void GraphicsTextureManager::initialize( unsigned int numTextureSlots = MAX_TEXTURES )
+void GraphicsTextureManager::initialize( unsigned int numTextureSlots )
 {
 	if ( textureInfos ) destroy();
 
@@ -16,7 +16,7 @@ void GraphicsTextureManager::initialize( unsigned int numTextureSlots = MAX_TEXT
 void GraphicsTextureManager::destroy()
 {
 	if ( textureInfos ) return;
-	for ( int i = 0; i < numTextureSlots; i++ )
+	for ( unsigned int i = 0; i < numTextureSlots; i++ )
 	{
 		if ( glIsTexture( textureInfos[i].textureID ) ) glDeleteTextures(1, &textureInfos[i].textureID);
 	}
@@ -26,15 +26,15 @@ void GraphicsTextureManager::destroy()
 }
 bool GraphicsTextureManager::initialized()
 {
-	return textureInfos;
+	return textureInfos != 0;
 }
 
 TextureInfo* GraphicsTextureManager::addTexture( const char * file, unsigned int slot , unsigned int wrap )
 {
 	if ( !strlen( file ) ) return 0;
 
-	TextureInfo* texture;
-	for (int i = 0; i < numTextureSlots; ++i )
+	TextureInfo* texture = 0;
+	for (unsigned int i = 0; i < numTextureSlots; ++i )
 	{
 		if ( !glIsTexture(textureInfos[i].textureID) )
 		{
@@ -42,7 +42,7 @@ TextureInfo* GraphicsTextureManager::addTexture( const char * file, unsigned int
 			break;
 		}
 	}
-
+	if ( !texture ) return texture;
 	
 	texture->textureID = SOIL_load_OGL_texture( file , SOIL_LOAD_RGBA , SOIL_CREATE_NEW_ID , SOIL_FLAG_INVERT_Y );
 
@@ -64,8 +64,8 @@ TextureInfo* GraphicsTextureManager::addTexture(  const char* X , const char* x 
 {
 	if ( !strlen( X ) || !strlen( x ) || !strlen( y ) || !strlen( Y ) || !strlen( z ) || !strlen( Z ) ) return 0;
 
-	TextureInfo* texture;
-	for ( int i = 0; i < numTextureSlots; ++i )
+	TextureInfo* texture = 0;
+	for ( unsigned int i = 0; i < numTextureSlots; ++i )
 	{
 		if ( !glIsTexture( textureInfos[i].textureID ) )
 		{
@@ -73,7 +73,7 @@ TextureInfo* GraphicsTextureManager::addTexture(  const char* X , const char* x 
 			break;
 		}
 	}
-
+	if ( !texture ) return texture;
 	texture->textureID = SOIL_load_OGL_cubemap( X , x , Y , y , Z , z , SOIL_LOAD_RGBA , SOIL_CREATE_NEW_ID , 0 );
 
 	glBindTexture( GL_TEXTURE_CUBE_MAP , texture->textureID );
@@ -86,12 +86,13 @@ TextureInfo* GraphicsTextureManager::addTexture(  const char* X , const char* x 
 	glTexEnvf( GL_TEXTURE_ENV , GL_TEXTURE_ENV_MODE , GL_MODULATE );
 	texture->type = GL_TEXTURE_CUBE_MAP;
 	texture->textureSlot = slot;
+	return texture;
 }
 
 TextureInfo* GraphicsTextureManager::addTexture(  const char* data , unsigned int width , unsigned int height , unsigned int slot , unsigned int inputFormat , unsigned int outputFormat , unsigned int dataType , unsigned int wrap )
 {
-	TextureInfo* texture;
-	for ( int i = 0; i < numTextureSlots; ++i )
+	TextureInfo* texture = 0;
+	for ( unsigned int i = 0; i < numTextureSlots; ++i )
 	{
 		if ( !glIsTexture( textureInfos[i].textureID ) )
 		{
@@ -99,7 +100,7 @@ TextureInfo* GraphicsTextureManager::addTexture(  const char* data , unsigned in
 			break;
 		}
 	}
-
+	if ( !texture ) return texture;
 	glGenTextures( 1 , &texture->textureID );
 	glBindTexture( GL_TEXTURE_2D , texture->textureID );
 	glPixelStorei( GL_UNPACK_ALIGNMENT , 1 );
@@ -112,23 +113,7 @@ TextureInfo* GraphicsTextureManager::addTexture(  const char* data , unsigned in
 	glTexImage2D( GL_TEXTURE_2D , 0 , inputFormat , width , height , 0 , outputFormat , dataType , data );
 	texture->type = GL_TEXTURE_2D;
 	texture->textureSlot = slot;
-}
-
-void GraphicsTextureManager::editTexture( TextureInfo* theTexture , const char* data , unsigned int width , unsigned int height , unsigned int slot , unsigned int inputFormat , unsigned int outputFormat , unsigned int dataType , unsigned int wrap )
-{
-	if ( glIsTexture( theTexture->textureID ) ) glDeleteTextures( 1 , &theTexture->textureID );
-	glGenTextures( 1 , &theTexture->textureID );
-	glBindTexture( GL_TEXTURE_2D , theTexture->textureID );
-	glPixelStorei( GL_UNPACK_ALIGNMENT , 1 );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_WRAP_S , wrap );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_WRAP_T , wrap );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_WRAP_R , wrap );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_LINEAR );
-	glTexEnvf( GL_TEXTURE_ENV , GL_TEXTURE_ENV_MODE , GL_MODULATE );
-	glTexImage2D( GL_TEXTURE_2D , 0 , inputFormat , width , height , 0 , outputFormat , dataType , data );
-	theTexture->type = GL_TEXTURE_2D;
-	theTexture->textureSlot = slot;
+	return texture;
 }
 
 void GraphicsTextureManager::editTexture( TextureInfo* theTexture , const char* file , unsigned int slot , unsigned int wrap )

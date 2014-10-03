@@ -1,5 +1,6 @@
 #pragma once
 #include <PokEngineExportHeader.h>
+#include <Graphics\ParameterType.h>
 struct POKENGINE_SHARED ShaderInfo
 {
 	unsigned int programID;

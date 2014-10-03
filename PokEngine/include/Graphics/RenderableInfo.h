@@ -1,5 +1,6 @@
 #pragma once
 #include <PokEngineExportHeader.h>
+#include <Graphics\ParameterType.h>
 struct UniformInfo;
 struct GeometryInfo;
 struct ShaderInfo;

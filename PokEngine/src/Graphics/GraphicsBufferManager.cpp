@@ -20,7 +20,7 @@ BufferInfo* GraphicsBufferManager::getBuffer( const unsigned int& requiredBuffer
 	BufferInfo* bufferInfo = 0;
 	if ( bufferIds && requiredBufferSpace < numSizePerBufferSlot )
 	{
-		for ( int i = 0; i < numBufferSlots; ++i )
+		for ( unsigned int i = 0; i < numBufferSlots; ++i )
 		{
 			if ( glIsBuffer( bufferIds[i].bufferID ) == GL_FALSE )
 			{
@@ -49,7 +49,7 @@ void GraphicsBufferManager::destroy()
 {
 	if ( bufferIds )
 	{
-		for ( int i = 0; i < numBufferSlots; i++ )
+		for ( unsigned int i = 0; i < numBufferSlots; i++ )
 		{
 			unsigned int bufferid = bufferIds[i].bufferID;
 			if ( glIsBuffer( bufferid ) ) glDeleteBuffers( 1 , &bufferid );
@@ -63,5 +63,5 @@ void GraphicsBufferManager::destroy()
 
 bool GraphicsBufferManager::initialized()
 {
-	return bufferIds;
+	return bufferIds != 0;
 }

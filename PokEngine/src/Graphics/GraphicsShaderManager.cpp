@@ -23,7 +23,7 @@ void GraphicsShaderManager::destroy()
 }
 bool GraphicsShaderManager::initialized()
 {
-	return shaderInfos;
+	return shaderInfos != 0;
 }
 
 ShaderInfo* GraphicsShaderManager::createShaderInfo(

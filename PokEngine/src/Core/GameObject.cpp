@@ -25,10 +25,10 @@ bool GameObject::removeComponent( Component& component )
 	}
 	return found;
 }
-bool GameObject::removeComponent( const int& component )
+bool GameObject::removeComponent( const unsigned int& component )
 {
 	bool toReturn = false;
-	if ( component > -1 && component < components.size() )
+	if ( component < components.size() )
 	{
 		components[component]->detatch();
 		components.erase( components.begin() + component );
@@ -56,10 +56,10 @@ bool GameObject::removeChild( GameObject& child )
 	}
 	return found;
 }
-bool GameObject::removeChild( const int& child )
+bool GameObject::removeChild( const unsigned int& child )
 {
 	bool toReturn = false;
-	if ( child > -1 && child < children.size() )
+	if ( child < children.size() )
 	{
 		children.erase( children.begin() + child );
 		toReturn = true;

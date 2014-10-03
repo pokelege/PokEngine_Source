@@ -1,4 +1,5 @@
 #pragma once
+#include <Core\CommonWarningDisables.h>
 #include <PokEngineExportHeader.h>
 #include <Core\Component.h>
 #include <glm.hpp>
@@ -19,5 +20,8 @@ public:
 	virtual void earlyUpdate();
 	virtual void update();
 	virtual void lateUpdate();
+	virtual void earlyDraw();
+	virtual void draw();
+	virtual void lateDraw();
 	virtual ~Camera();
 };

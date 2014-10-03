@@ -1,4 +1,5 @@
 #pragma once
+#include <Core\CommonWarningDisables.h>
 #include <PokEngineExportHeader.h>
 #include <glm.hpp>
 struct MouseInput
