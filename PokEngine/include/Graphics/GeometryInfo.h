@@ -1,6 +1,7 @@
 #pragma once
 #include <PokEngineExportHeader.h>
 #include <Graphics\PokEngineModelDataMap.h>
+#include <Graphics\ParameterType.h>
 struct BufferInfo;
 struct POKENGINE_SHARED GeometryInfo
 {
@@ -12,4 +13,10 @@ struct POKENGINE_SHARED GeometryInfo
 	unsigned int numIndex;
 	unsigned int indexingMode;
 	PokEngineModelDataMap modelData;
+
+	void addShaderStreamedParameter(
+		unsigned int layoutLocation ,
+		ParameterType parameterType ,
+		unsigned int bufferStride ,
+		unsigned int bufferOffset );
 };

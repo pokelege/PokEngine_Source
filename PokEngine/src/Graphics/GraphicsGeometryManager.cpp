@@ -4,7 +4,7 @@
 #include <Graphics\VertexInfo.h>
 #include <GL\glew.h>
 #include <Graphics\BufferInfo.h>
-GraphicsGeometryManager globalGeometryManager;
+GraphicsGeometryManager GraphicsGeometryManager::globalGeometryManager;
 GraphicsGeometryManager::GraphicsGeometryManager() : geometryInfos(0) {}
 
 void GraphicsGeometryManager::initialize( unsigned int numGeometrySlots )

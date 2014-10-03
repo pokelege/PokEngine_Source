@@ -5,7 +5,18 @@
 #include <Graphics\TextureInfo.h>
 #include <Graphics\GraphicsSharedUniformManager.h>
 #include <GL\glew.h>
-RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ) {}
+#include <Core\GameObject.h>
+RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ), sharedUniforms (0) {}
+
+void RenderableInfo::attatch( GameObject* parent )
+{
+	this->parent = parent;
+}
+void RenderableInfo::detatch()
+{
+	parent = 0;
+}
+
 void RenderableInfo::initialize( unsigned int numUniformSlots , unsigned int numTextureSlots )
 {
 	if ( textures || uniforms ) destroy();
@@ -79,7 +90,12 @@ bool RenderableInfo::addTexture( TextureInfo* texture )
 	return toReturn;
 }
 
-void RenderableInfo::draw( GraphicsSharedUniformManager* sharedUniforms )
+void RenderableInfo::earlyUpdate() {}
+void RenderableInfo::update() {}
+void RenderableInfo::lateUpdate() {}
+void RenderableInfo::earlyDraw() {}
+
+void RenderableInfo::draw()
 {
 	if ( !visible ) return;
 	if(shaderInfo) glUseProgram( shaderInfo->programID );
@@ -129,3 +145,5 @@ void RenderableInfo::draw( GraphicsSharedUniformManager* sharedUniforms )
 
 	if(geometryInfo) glDrawElements( geometryInfo->indexingMode , geometryInfo->numIndex , GL_UNSIGNED_SHORT , ( void* ) geometryInfo->indexOffset );
 }
+
+void RenderableInfo::lateDraw() {}
