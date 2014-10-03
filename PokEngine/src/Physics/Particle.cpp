@@ -1,4 +1,4 @@
-#include "Physics\Particle.h"
+#include <Physics\Particle.h>
 
 Particle::Particle( glm::vec3& position , glm::vec3& velocity , glm::vec3& acceleration , const float mass , const float damping ) : position( position ) , velocity( velocity ) , acceleration( acceleration ) , mass( mass ) , damping(damping) {}
 
