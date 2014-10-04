@@ -4,7 +4,7 @@
 #include <Core\WindowInfo.h>
 #include <Graphics\GraphicsRenderingManager.h>
 #include <Graphics\CommonGraphicsCommands.h>
-Camera::Camera() : toRender(0) {}
+Camera::Camera() : toRender(0), parent(0) {}
 
 void Camera::attatch( GameObject* parent ) { this->parent = parent; }
 void Camera::detatch() { parent = 0; }

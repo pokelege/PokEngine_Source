@@ -7,7 +7,6 @@
 class GraphicsRenderingManager;
 class POKENGINE_SHARED Camera : public Component
 {
-	GameObject* parent;
 	GraphicsRenderingManager** toRender;
 	unsigned int numRenders;
 protected:
@@ -15,6 +14,7 @@ protected:
 	virtual void attatch( GameObject* parent );
 	virtual void detatch();
 public:
+	GameObject* parent;
 	glm::vec3 direction;
 	glm::vec3 up;
 	float x , y , width , height;
