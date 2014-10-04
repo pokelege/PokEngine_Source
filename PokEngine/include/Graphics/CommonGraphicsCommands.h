@@ -3,7 +3,7 @@
 #include <PokEngineExportHeader.h>
 #include <Windows.h>
 #include <glm.hpp>
-class POKENGINE_SHARED CommonGraphicsCommands
+struct POKENGINE_SHARED CommonGraphicsCommands
 {
 	static int base;
 	static void initialize();

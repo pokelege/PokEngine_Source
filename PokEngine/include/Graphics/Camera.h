@@ -3,9 +3,13 @@
 #include <PokEngineExportHeader.h>
 #include <Core\Component.h>
 #include <glm.hpp>
+#define MAXRENDERS 1
+class GraphicsRenderingManager;
 class POKENGINE_SHARED Camera : public Component
 {
 	GameObject* parent;
+	GraphicsRenderingManager** toRender;
+	unsigned int numRenders;
 protected:
 	friend class GameObject;
 	virtual void attatch( GameObject* parent );
@@ -13,9 +17,15 @@ protected:
 public:
 	glm::vec3 direction;
 	glm::vec3 up;
-
+	float x , y , width , height;
+	float FOV;
+	float nearestObject;
 	Camera();
+	void initializeRenderManagers( unsigned int numRenders = MAXRENDERS );
+	void destroyRenderManagers();
+	bool addRenderList( GraphicsRenderingManager* list );
 	glm::mat4 worldToView() const;
+	glm::mat4 viewToProjection() const;
 
 	virtual void earlyUpdate();
 	virtual void update();

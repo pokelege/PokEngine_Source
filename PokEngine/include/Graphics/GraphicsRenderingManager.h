@@ -3,6 +3,7 @@
 
 #define MAX_RENDERABLES 100
 struct RenderableInfo;
+struct Camera;
 class POKENGINE_SHARED GraphicsRenderingManager
 {
 	RenderableInfo* renderables;
@@ -16,5 +17,5 @@ public:
 	bool initialized();
 
 	RenderableInfo* addRenderable();
-	void drawAll();
+	void drawAll(const Camera& camera);
 };

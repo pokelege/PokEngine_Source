@@ -6,6 +6,7 @@
 #include <Graphics\GraphicsSharedUniformManager.h>
 #include <GL\glew.h>
 #include <Core\GameObject.h>
+#include <Graphics\CommonUniformNames.h>
 RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ), sharedUniforms (0) {}
 
 void RenderableInfo::attatch( GameObject* parent )
@@ -98,6 +99,18 @@ void RenderableInfo::earlyDraw() {}
 void RenderableInfo::draw()
 {
 	if ( !visible ) return;
+	if ( parent )
+	{
+		glm::mat4 modelToWorld = parent->getWorldTransform();
+		if ( sharedUniforms )
+		{
+			sharedUniforms->setSharedUniform( MODELTOWORLD , PT_MAT4 , reinterpret_cast< const void* >( &modelToWorld ) );
+		}
+		else
+		{
+			setRenderableUniform( MODELTOWORLD , PT_MAT4 , reinterpret_cast< const void* >( &modelToWorld ) );
+		}
+	}
 	if(shaderInfo) glUseProgram( shaderInfo->programID );
 	if(geometryInfo) glBindVertexArray( geometryInfo->dataArray );
 
