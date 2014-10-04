@@ -4,6 +4,8 @@
 #include <Graphics\GraphicsGeometryManager.h>
 #include <Graphics\GraphicsSharedUniformManager.h>
 #include <Graphics\GraphicsTextureManager.h>
+#include <Graphics\GraphicsRenderingManager.h>
+#include <Graphics\GraphicsCameraManager.h>
 #include <GL\glew.h>
 int CommonGraphicsCommands::base = 0;
 void CommonGraphicsCommands::initialize()
@@ -19,6 +21,8 @@ void CommonGraphicsCommands::initializeGlobalGraphics()
 	GraphicsGeometryManager::globalGeometryManager.initialize();
 	GraphicsSharedUniformManager::globalSharedUniformManager.initialize();
 	GraphicsTextureManager::globalTextureManager.initialize();
+	GraphicsRenderingManager::globalRenderingManager.initialize();
+	GraphicsCameraManager::globalCameraManager.initialize();
 }
 
 void CommonGraphicsCommands::initializePrinting( HDC hdc , int sizex , int sizey , int fontWeight )

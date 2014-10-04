@@ -11,6 +11,7 @@ public:
 	glm::vec3 rotate;
 	glm::vec3 scale;
 private:
+	friend class GameObjectManager;
 	std::vector<Component*> components;
 	std::vector<GameObject*> children;
 	GameObject* parent;

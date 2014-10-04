@@ -39,6 +39,7 @@ bool GameObject::removeComponent( const unsigned int& component )
 int GameObject::addChild( GameObject& child )
 {
 	int toReturn = children.size();
+	child.parent = this;
 	children.push_back( &child );
 	return toReturn;
 }
@@ -73,6 +74,10 @@ void GameObject::earlyUpdate()
 	{
 		components[i]->earlyUpdate();
 	}
+	for ( unsigned int i = 0; i < children.size(); ++i )
+	{
+		children[i]->earlyUpdate();
+	}
 }
 void GameObject::update()
 {
@@ -80,12 +85,20 @@ void GameObject::update()
 	{
 		components[i]->update();
 	}
+	for ( unsigned int i = 0; i < children.size(); ++i )
+	{
+		children[i]->update();
+	}
 }
 void GameObject::lateUpdate()
 {
 	for ( unsigned int i = 0; i < components.size(); ++i )
 	{
 		components[i]->lateUpdate();
+	}
+	for ( unsigned int i = 0; i < children.size(); ++i )
+	{
+		children[i]->lateUpdate();
 	}
 }
 
