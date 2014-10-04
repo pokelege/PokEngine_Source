@@ -56,7 +56,7 @@ void Camera::earlyDraw() {}
 void Camera::draw()
 {
 	CommonGraphicsCommands::clearCommon();
-	CommonGraphicsCommands::setViewPort( x * WindowInfo::width , y * WindowInfo::height , width * WindowInfo::width , height * WindowInfo::height );
+	CommonGraphicsCommands::setViewPort( (int)(WindowInfo::width * x),  (int)(WindowInfo::height * y) , (int)(WindowInfo::width * width ), (int)(WindowInfo::height * height) );
 	for ( unsigned int i = 0; i < numRenders; ++i )
 	{
 		if ( toRender[i] )
