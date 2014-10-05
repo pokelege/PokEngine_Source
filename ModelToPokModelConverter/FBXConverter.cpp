@@ -40,7 +40,7 @@ void FBXConverter::convert( const char* input , const char* output )
 
 		std::vector<JointData> skeleton;
 		processSkeletonHierarchy( scene->GetRootNode() , skeleton );
-		processAnimations( theMesh->GetNode() , skeleton , vertices , indices );
+		if ( skeleton.size() ) processAnimations( theMesh->GetNode() , skeleton , vertices , indices );
 
 		std::string modelData;
 		for ( int i = 0; i < vertices.size(); i++ )
