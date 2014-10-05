@@ -7,7 +7,7 @@
 #include <GL\glew.h>
 #include <Core\GameObject.h>
 #include <Graphics\CommonUniformNames.h>
-RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ), sharedUniforms (0) {}
+RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ), sharedUniforms (0), geometryInfo(0), shaderInfo(0), parent(0) {}
 
 void RenderableInfo::attatch( GameObject* parent )
 {
@@ -98,7 +98,8 @@ void RenderableInfo::earlyDraw() {}
 
 void RenderableInfo::draw()
 {
-	if ( !visible ) return;
+	if ( !visible || !parent ) return;
+	if ( shaderInfo ) glUseProgram( shaderInfo->programID );
 	if ( parent )
 	{
 		glm::mat4 modelToWorld = parent->getWorldTransform();
@@ -111,7 +112,6 @@ void RenderableInfo::draw()
 			setRenderableUniform( MODELTOWORLD , PT_MAT4 , reinterpret_cast< const void* >( &modelToWorld ) );
 		}
 	}
-	if(shaderInfo) glUseProgram( shaderInfo->programID );
 	if(geometryInfo) glBindVertexArray( geometryInfo->dataArray );
 
 	if ( depthTestEnabled ) glEnable( GL_DEPTH_TEST );
@@ -148,14 +148,19 @@ void RenderableInfo::draw()
 		}
 	}
 
-	if ( sharedUniforms ) sharedUniforms->applySharedUniforms( shaderInfo );
-	else GraphicsSharedUniformManager::globalSharedUniformManager.applySharedUniforms( shaderInfo );
-
-	for ( unsigned int i = 0; i < numUniformSlots; ++i )
+	if ( shaderInfo )
 	{
-		shaderInfo->setUniformParameter( uniforms[i].uniformName.c_str() , uniforms[i].type , uniforms[i].location );
-	}
+		glm::mat4 modelToWorld = parent->getWorldTransform();
+		shaderInfo->setUniformParameter( MODELTOWORLD , PT_MAT4 , reinterpret_cast< const void* >( &modelToWorld ) );
+		if ( sharedUniforms ) sharedUniforms->applySharedUniforms( shaderInfo );
+		else GraphicsSharedUniformManager::globalSharedUniformManager.applySharedUniforms( shaderInfo );
 
+
+		for ( unsigned int i = 0; i < numUniformSlots; ++i )
+		{
+			shaderInfo->setUniformParameter( uniforms[i].uniformName.c_str() , uniforms[i].type , uniforms[i].location );
+		}
+	}
 	if(geometryInfo) glDrawElements( geometryInfo->indexingMode , geometryInfo->numIndex , GL_UNSIGNED_SHORT , ( void* ) geometryInfo->indexOffset );
 }
 

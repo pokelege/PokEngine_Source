@@ -3,7 +3,7 @@
 #include <PokEngineExportHeader.h>
 #include <Core\Component.h>
 #include <glm.hpp>
-class FirstPersonCameraInput : public Component
+class POKENGINE_SHARED FirstPersonCameraInput : public Component
 {
 	GameObject* parent;
 	glm::vec2 oldMousePosition;
@@ -20,4 +20,7 @@ public:
 	virtual void update();
 	virtual void lateUpdate();
 	virtual ~FirstPersonCameraInput();
+	virtual void earlyDraw();
+	virtual void draw();
+	virtual void lateDraw();
 };

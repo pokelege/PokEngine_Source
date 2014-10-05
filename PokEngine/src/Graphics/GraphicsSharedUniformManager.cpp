@@ -35,11 +35,13 @@ UniformInfo* GraphicsSharedUniformManager::setSharedUniform(
 		if ( !globalUniforms[i].location )
 		{
 			uniform = &globalUniforms[i];
-			uniform->uniformName = name;
+			uniform->uniformName = std::string(name);
+			break;
 		}
 		else if ( !globalUniforms[i].uniformName.compare( name ) )
 		{
 			uniform = &globalUniforms[i];
+			break;
 		}
 	}
 	if ( uniform )

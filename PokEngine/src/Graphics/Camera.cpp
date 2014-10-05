@@ -4,7 +4,7 @@
 #include <Core\WindowInfo.h>
 #include <Graphics\GraphicsRenderingManager.h>
 #include <Graphics\CommonGraphicsCommands.h>
-Camera::Camera() : toRender(0), parent(0) {}
+Camera::Camera() : toRender(0), parent(0), up(glm::vec3(0,1,0)), direction(glm::vec3(0,0,-1)), x(0), y(0), width(1), height(1) {}
 
 void Camera::attatch( GameObject* parent ) { this->parent = parent; }
 void Camera::detatch() { parent = 0; }
@@ -17,7 +17,8 @@ glm::mat4 Camera::worldToView() const
 
 glm::mat4 Camera::viewToProjection() const
 {
-	return glm::infinitePerspective( FOV , (width * WindowInfo::width ) / (height / WindowInfo::height), nearestObject );
+	float apect = ( width * WindowInfo::width ) / ( height * WindowInfo::height );
+	return glm::infinitePerspective( FOV ,apect, nearestObject );
 }
 
 void Camera::initializeRenderManagers( unsigned int numRenders )

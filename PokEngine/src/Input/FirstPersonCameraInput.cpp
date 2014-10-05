@@ -21,7 +21,7 @@ void FirstPersonCameraInput::earlyUpdate()
 	Camera* camera = parent->getComponent<Camera>();
 	if ( !camera ) return;
 	glm::vec2 delta = MouseInput::globalMouseInput.mousePosition - oldMousePosition;
-
+	oldMousePosition = MouseInput::globalMouseInput.mousePosition;
 	glm::vec3 b = glm::cross( camera->direction , camera->up );
 
 	camera->direction = glm::mat3( glm::rotate( glm::mat4() , -delta.x * rotationSensitivity , camera->up ) * glm::rotate( glm::mat4() , -delta.y * rotationSensitivity , b ) ) *camera->direction;
@@ -59,3 +59,6 @@ void FirstPersonCameraInput::earlyUpdate()
 void FirstPersonCameraInput::update() {}
 void FirstPersonCameraInput::lateUpdate() {}
 FirstPersonCameraInput::~FirstPersonCameraInput() {}
+void FirstPersonCameraInput::earlyDraw() {}
+void FirstPersonCameraInput::draw() {}
+void FirstPersonCameraInput::lateDraw() {}

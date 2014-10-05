@@ -1,5 +1,5 @@
 #include "Misc\Clock.h"
-
+Clock Clock::globalClock;
 Clock::Clock()
 {
 	QueryPerformanceFrequency(&clockSpeed);
@@ -31,4 +31,10 @@ float Clock::fromStart()
 	LARGE_INTEGER lastinterval;
 	QueryPerformanceCounter(&lastinterval);
 	return (float)(lastinterval.QuadPart - startTick.QuadPart) / (float)clockSpeed.QuadPart;
+}
+
+float Clock::dt = 0;
+void Clock::update()
+{
+	Clock::dt = Clock::globalClock.Interval();
 }

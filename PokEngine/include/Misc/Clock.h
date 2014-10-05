@@ -13,4 +13,8 @@ public:
 	float Stop();
 	float Interval();
 	float fromStart();
+
+	static Clock globalClock;
+	static float dt;
+	static void update();
 };
