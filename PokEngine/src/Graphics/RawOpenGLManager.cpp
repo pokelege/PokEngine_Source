@@ -67,131 +67,6 @@ RawOpenGLManager::Renderable* RawOpenGLManager::addRenderable(
 	return &renderableInfos[i];
 }
 
-void RawOpenGLManager::addShaderStreamedParameter(
-	GeometryInfo* geometryID ,
-	unsigned int layoutLocation ,
-	ParameterType parameterType ,
-	unsigned int bufferStride ,
-	unsigned int bufferOffset )
-{
-	glBindVertexArray( geometryID->dataArray );
-
-	glEnableVertexAttribArray( layoutLocation );
-
-	if ( parameterType < 0 )
-	{
-		int pt = -parameterType / sizeof( int );
-		glVertexAttribPointer( layoutLocation , pt , GL_INT , GL_FALSE , bufferStride , ( void* ) ( geometryID->vertexOffset + bufferOffset ) );
-	}
-	else
-	{
-		glVertexAttribPointer( layoutLocation , parameterType / sizeof( float ) , GL_FLOAT , GL_FALSE , bufferStride , ( void* ) ( geometryID->vertexOffset + bufferOffset ) );
-	}
-}
-
-void RawOpenGLManager::setRenderableUniform(
-	Renderable* object ,
-	const char* name ,
-	ParameterType parameterType ,
-	const float* dataPointer )
-{
-	if ( object != nullptr )
-	{
-		int i = 0;
-
-		while ( i < MAX_UNIFORM_PARAMETERS && object->uniforms[i].uniformName.compare( name ) && object->uniforms[i].location != nullptr )
-		{
-			i++;
-		}
-
-		UniformInfo uni;
-		uni.uniformName = name;
-		uni.type = parameterType;
-		uni.location = dataPointer;
-
-		object->uniforms[i] = uni;
-	}
-}
-
-void RawOpenGLManager::setViewPort( int x , int y , int width , int height )
-{
-	glViewport( x , y , width , height );
-}
-
-void RawOpenGLManager::clear( unsigned int toClear )
-{
-	glClear( toClear );
-}
-
-void RawOpenGLManager::drawSpecific( Renderable* toDraw )
-{
-	if ( toDraw != nullptr )
-	{
-		if ( toDraw->visible )
-		{
-			glUseProgram( toDraw->howShaderIndex->programID );
-			glBindVertexArray( toDraw->whatGeometryIndex->dataArray );
-
-			if ( toDraw->depthTestEnabled ) glEnable( GL_DEPTH_TEST );
-			else glDisable( GL_DEPTH_TEST );
-
-			if ( toDraw->alpha )
-			{
-				glEnable( GL_BLEND );
-				glBlendFunc( GL_SRC_ALPHA , GL_ONE_MINUS_SRC_ALPHA );
-			}
-			else
-			{
-				glDisable(GL_BLEND);
-			}
-
-			if ( toDraw->culling == CT_NONE ) glDisable( GL_CULL_FACE );
-			else
-			{
-				glEnable( GL_CULL_FACE );
-				if ( toDraw->culling == CT_FRONT ) glCullFace( GL_FRONT );
-				else if ( toDraw->culling == CT_BOTH ) glCullFace( GL_FRONT_AND_BACK );
-				else glCullFace( GL_BACK );
-			}
-
-			if ( toDraw->textureID != NULL )
-			{
-				for ( unsigned int i = 0; i < toDraw->textureID->size; i++ )
-				{
-					glActiveTexture( GL_TEXTURE0 + i );
-					glBindTexture( toDraw->textureID->textureIDs[i].type , toDraw->textureID->textureIDs[i].textureID );
-				}
-			}
-
-			for ( int j = 0; globalUniforms[j].location != nullptr; j++ )
-			{
-				setUniformParameter( toDraw->howShaderIndex , globalUniforms[j].uniformName.c_str() , globalUniforms[j].type , globalUniforms[j].location );
-			}
-
-			for ( int j = 0; toDraw->uniforms[j].location != nullptr; j++ )
-			{
-				setUniformParameter( toDraw->howShaderIndex , toDraw->uniforms[j].uniformName.c_str() , toDraw->uniforms[j].type , toDraw->uniforms[j].location );
-			}
-
-			const char* st = toDraw->whereUniform.c_str();
-			glm::quat quaternion = glm::rotate(glm::quat(), toDraw->rotate.x, glm::vec3(1,0,0)) *
-				glm::rotate( glm::quat() , toDraw->rotate.y , glm::vec3( 0 , 1 , 0 ) ) *
-				glm::rotate( glm::quat() , toDraw->rotate.z , glm::vec3( 0 , 0 , 1 ) );
-			glm::mat4 transform = glm::translate(glm::mat4() , toDraw->translate) * glm::mat4_cast(quaternion) * glm::scale(glm::mat4(), toDraw->scale);
-			setUniformParameter( toDraw->howShaderIndex , st , ParameterType::PT_MAT4 , &transform[0][0] );
-			if ( toDraw->animationMatrices )
-			{
-				setUniformParameter( toDraw->howShaderIndex ,
-									 toDraw->animationMatricesUniform.c_str() ,
-									 PT_MAT4 ,
-									 reinterpret_cast<const float*>(toDraw->animationMatrices),
-									 toDraw->sizeofAnimationMatrices);
-			}
-			glDrawElements( toDraw->whatGeometryIndex->indexingMode , toDraw->whatGeometryIndex->numIndex , GL_UNSIGNED_SHORT , ( void* ) toDraw->whatGeometryIndex->indexOffset );
-		}
-	}
-}
-
 void RawOpenGLManager::updateAnimation( Renderable& toUpdate , const float& dt )
 {
 	unsigned int boneDataSize;
@@ -270,11 +145,6 @@ void RawOpenGLManager::updateAnimationMatricesRecurse( unsigned int boneIndex , 
 	}
 }
 
-void RawOpenGLManager::enable( unsigned int toEnable)
-{
-	glEnable( toEnable );
-}
-
 void RawOpenGLManager::drawAll()
 {
 	for ( int i = 0; i < MAX_RENDERABLES && renderableInfos[i].whatGeometryIndex != nullptr; i++ )
@@ -347,55 +217,12 @@ void RawOpenGLManager::drawAll()
 	}
 }
 
-void RawOpenGLManager::reset()
-{
-	for ( int i = 0; i < MAX_RENDERABLES; i++ )
-	{
-		renderableInfos[i].whatGeometryIndex = nullptr;
-		renderableInfos[i].depthTestEnabled = false;
-		for ( int j = 0; j < MAX_UNIFORM_PARAMETERS; j++ ) renderableInfos[i].uniforms[j].location = nullptr;
-	}
-}
-
-void RawOpenGLManager::initializePrinting( HDC hdc, int sizex, int sizey, int fontWeight )
-{
-	if ( glIsList( base ) ) glDeleteLists( base , 96 );
-	HFONT	font;										// Windows Font ID
-	HFONT	oldfont;									// Used For Good House Keeping
-
-	base = glGenLists( 96 );								// Storage For 96 Characters
-
-	font = CreateFont( -sizex ,							// Height Of Font
-					   sizey ,								// Width Of Font
-					   0 ,								// Angle Of Escapement
-					   0 ,								// Orientation Angle
-					   fontWeight ,						// Font Weight
-					   FALSE ,							// Italic
-					   FALSE ,							// Underline
-					   FALSE ,							// Strikeout
-					   ANSI_CHARSET ,					// Character Set Identifier
-					   OUT_TT_PRECIS ,					// Output Precision
-					   CLIP_DEFAULT_PRECIS ,			// Clipping Precision
-					   ANTIALIASED_QUALITY ,			// Output Quality
-					   FF_DONTCARE | DEFAULT_PITCH ,		// Family And Pitch
-					   "Courier New" );					// Font Name
-
-	oldfont = ( HFONT ) SelectObject( hdc , font );           // Selects The Font We Want
-	wglUseFontBitmaps( hdc , 32 , 96 , base );				// Builds 96 Characters Starting At Character 32
-	SelectObject( hdc , oldfont );							// Selects The Font We Want
-	DeleteObject( font );
-}
-
-void RawOpenGLManager::printString( const char* string , const float& x , const float& y , glm::vec4 color )
-{
-	if ( glIsList( base ) )
-	{
-		glUseProgram( 0 );
-		glRasterPos2f( x , y );
-		glColor4f( color.x , color.y , color.z , color.w );
-		glPushAttrib( GL_LIST_BIT );
-		glListBase( base - 32 );
-		glCallLists( strlen( string ) , GL_UNSIGNED_BYTE , string );
-		glPopAttrib();
-	}
-}
+//void RawOpenGLManager::reset()
+//{
+//	for ( int i = 0; i < MAX_RENDERABLES; i++ )
+//	{
+//		renderableInfos[i].whatGeometryIndex = nullptr;
+//		renderableInfos[i].depthTestEnabled = false;
+//		for ( int j = 0; j < MAX_UNIFORM_PARAMETERS; j++ ) renderableInfos[i].uniforms[j].location = nullptr;
+//	}
+//}
