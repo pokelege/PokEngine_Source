@@ -93,10 +93,10 @@ vec4 getLighting(vec4 theColor)
 
 void main()
 {
-	vec4 theColor = getColor();
+	//vec4 theColor = getColor();
 
 	//if(useLighting)
-	theColor = getLighting(theColor);
+	//theColor = getLighting(theColor);
 
 	newColor = vec4(1,1,1,1);
 };

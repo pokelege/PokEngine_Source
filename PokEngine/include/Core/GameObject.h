@@ -17,11 +17,11 @@ private:
 	GameObject* parent;
 public:
 	GameObject();
-	int addComponent(Component& component);
-	bool removeComponent( Component& component );
+	int addComponent(Component* component);
+	bool removeComponent( Component* component );
 	bool removeComponent( const unsigned int& component );
-	int addChild( GameObject& child );
-	bool removeChild( GameObject& child );
+	int addChild( GameObject* child );
+	bool removeChild( GameObject* child );
 	bool removeChild( const unsigned int& child );
 	void earlyUpdate();
 	void update();

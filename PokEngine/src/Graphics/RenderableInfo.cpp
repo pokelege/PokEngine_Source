@@ -102,6 +102,7 @@ void RenderableInfo::draw()
 {
 	if ( !visible || !parent ) return;
 	if ( shaderInfo ) glUseProgram( shaderInfo->programID );
+
 	if(geometryInfo) glBindVertexArray( geometryInfo->dataArray );
 
 	if ( depthTestEnabled ) glEnable( GL_DEPTH_TEST );

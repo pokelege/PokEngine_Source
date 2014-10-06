@@ -3,6 +3,8 @@
 #include "FBXConverter.h"
 #include <Qt\qapplication.h>
 #include "Preview.h"
+#include <Graphics\CommonGraphicsCommands.h>
+
 int main( int argc , char** argv )
 {
 	QApplication app( argc , argv );

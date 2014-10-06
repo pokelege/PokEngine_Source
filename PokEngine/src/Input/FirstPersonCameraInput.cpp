@@ -20,11 +20,10 @@ void FirstPersonCameraInput::earlyUpdate()
 
 	Camera* camera = parent->getComponent<Camera>();
 	if ( !camera ) return;
-	glm::vec2 delta = MouseInput::globalMouseInput.mousePosition - oldMousePosition;
-	oldMousePosition = MouseInput::globalMouseInput.mousePosition;
-	glm::vec3 b = glm::cross( camera->direction , camera->up );
+	glm::vec2 delta = MouseInput::globalMouseInput.mouseDelta;
+	glm::vec3 b = glm::normalize(glm::cross( camera->direction , camera->up ));
 
-	camera->direction = glm::mat3( glm::rotate( glm::mat4() , -delta.x * rotationSensitivity , camera->up ) * glm::rotate( glm::mat4() , -delta.y * rotationSensitivity , b ) ) *camera->direction;
+	camera->direction = glm::normalize(glm::mat3( glm::rotate( glm::mat4() , -delta.x * rotationSensitivity , camera->up ) * glm::rotate( glm::mat4() , -delta.y * rotationSensitivity , b ) ) *camera->direction);
 
 	if ( GetAsyncKeyState( forward ) )
 	{

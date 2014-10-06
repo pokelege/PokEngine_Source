@@ -3,19 +3,19 @@
 #include <gtc\matrix_transform.hpp>
 #include <gtc\quaternion.hpp>
 GameObject::GameObject() : scale(glm::vec3(1,1,1)), parent(0)  {}
-int GameObject::addComponent( Component& component )
+int GameObject::addComponent( Component* component )
 {
 	int toReturn = components.size();
-	component.attatch( this );
-	components.push_back( &component );
+	component->attatch( this );
+	components.push_back( component );
 	return toReturn;
 }
-bool GameObject::removeComponent( Component& component )
+bool GameObject::removeComponent( Component* component )
 {
 	bool found = false;
 	for ( unsigned int i = 0; i < components.size(); ++i )
 	{
-		if ( components[i] == &component )
+		if ( components[i] == component )
 		{
 			found = true;
 			components[i]->detatch();
@@ -36,21 +36,22 @@ bool GameObject::removeComponent( const unsigned int& component )
 	}
 	return toReturn;
 }
-int GameObject::addChild( GameObject& child )
+int GameObject::addChild( GameObject* child )
 {
 	int toReturn = children.size();
-	child.parent = this;
-	children.push_back( &child );
+	child->parent = this;
+	children.push_back( child );
 	return toReturn;
 }
-bool GameObject::removeChild( GameObject& child )
+bool GameObject::removeChild( GameObject* child )
 {
 	bool found = false;
 	for ( unsigned int i = 0; i < children.size(); ++i )
 	{
-		if ( children[i] == &child )
+		if ( children[i] == child )
 		{
 			found = true;
+			child->parent = 0;
 			children.erase( children.begin() + i );
 			break;
 		}

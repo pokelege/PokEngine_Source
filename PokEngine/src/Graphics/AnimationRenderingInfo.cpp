@@ -10,7 +10,7 @@
 #include <Graphics\GeometryInfo.h>
 #include <Graphics\CommonUniformNames.h>
 
-AnimationRenderingInfo::AnimationRenderingInfo() :parent(0) , animationMatrices(0) , animationFrameRate(30) , currentFrame(0)
+AnimationRenderingInfo::AnimationRenderingInfo() :parent(0) , animationMatrices(0) , animationFrameRate(30) , currentFrame(0) , renderable(0)
 {
 
 }
@@ -38,7 +38,7 @@ void AnimationRenderingInfo::update()
 	if ( !renderable->geometryInfo ) return;
 	unsigned int boneDataSize;
 	BoneInfo* bones = renderable->geometryInfo->modelData.getBoneData( &boneDataSize );
-	if ( bones )
+	if ( bones && boneDataSize > 0 )
 	{
 		if ( !animationMatrices )
 		{
