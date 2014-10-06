@@ -49,7 +49,8 @@ public:
 	UniformInfo* setRenderableUniform(
 		const char* name ,
 		ParameterType parameterType ,
-		const void* dataPointer );
+		const void* dataPointer,
+		unsigned int size = 1 );
 	bool addTexture( TextureInfo* texture );
 };
 

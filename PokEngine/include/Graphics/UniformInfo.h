@@ -7,6 +7,7 @@ struct POKENGINE_SHARED UniformInfo
 {
 	std::string uniformName;
 	ParameterType type;
+	unsigned int size;
 	const void* location;
 	UniformInfo() :location( nullptr ) {}
 };

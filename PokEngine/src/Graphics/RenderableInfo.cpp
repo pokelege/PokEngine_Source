@@ -48,7 +48,8 @@ void RenderableInfo::destroy()
 UniformInfo* RenderableInfo::setRenderableUniform(
 	const char* name ,
 	ParameterType parameterType ,
-	const void* dataPointer )
+	const void* dataPointer,
+	unsigned int size)
 {
 	if ( !strlen( name ) || !uniforms ) return 0;
 
@@ -70,6 +71,7 @@ UniformInfo* RenderableInfo::setRenderableUniform(
 	{
 		uniform->type = parameterType;
 		uniform->location = dataPointer;
+		uniform->size = size;
 	}
 
 	return uniform;
@@ -100,18 +102,6 @@ void RenderableInfo::draw()
 {
 	if ( !visible || !parent ) return;
 	if ( shaderInfo ) glUseProgram( shaderInfo->programID );
-	if ( parent )
-	{
-		glm::mat4 modelToWorld = parent->getWorldTransform();
-		if ( sharedUniforms )
-		{
-			sharedUniforms->setSharedUniform( MODELTOWORLD , PT_MAT4 , reinterpret_cast< const void* >( &modelToWorld ) );
-		}
-		else
-		{
-			setRenderableUniform( MODELTOWORLD , PT_MAT4 , reinterpret_cast< const void* >( &modelToWorld ) );
-		}
-	}
 	if(geometryInfo) glBindVertexArray( geometryInfo->dataArray );
 
 	if ( depthTestEnabled ) glEnable( GL_DEPTH_TEST );
@@ -158,7 +148,7 @@ void RenderableInfo::draw()
 
 		for ( unsigned int i = 0; i < numUniformSlots; ++i )
 		{
-			shaderInfo->setUniformParameter( uniforms[i].uniformName.c_str() , uniforms[i].type , uniforms[i].location );
+			shaderInfo->setUniformParameter( uniforms[i].uniformName.c_str() , uniforms[i].type , uniforms[i].location, uniforms[i].size );
 		}
 	}
 	if(geometryInfo) glDrawElements( geometryInfo->indexingMode , geometryInfo->numIndex , GL_UNSIGNED_SHORT , ( void* ) geometryInfo->indexOffset );

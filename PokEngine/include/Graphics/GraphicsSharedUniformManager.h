@@ -20,7 +20,8 @@ public:
 	UniformInfo* setSharedUniform(
 		const char* name ,
 		ParameterType parameterType ,
-		const void* dataPointer );
+		const void* dataPointer,
+		unsigned int size = 1);
 
 	void applySharedUniforms( ShaderInfo* targetShader );
 };

@@ -7,3 +7,4 @@
 #define LIGHTPOSITION "lightPosition"
 #define LIGHTCOLOR "lightColor"
 #define AMBIENTLIGHT "ambientLight"
+#define ANIMATIONMATRICES "animationMatrices"

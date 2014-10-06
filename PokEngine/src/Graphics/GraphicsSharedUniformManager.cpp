@@ -24,7 +24,8 @@ bool GraphicsSharedUniformManager::initialized()
 UniformInfo* GraphicsSharedUniformManager::setSharedUniform(
 	const char* name ,
 	ParameterType parameterType ,
-	const void* dataPointer )
+	const void* dataPointer,
+	unsigned int size)
 {
 	if ( !strlen( name ) ) return 0;
 
@@ -48,6 +49,7 @@ UniformInfo* GraphicsSharedUniformManager::setSharedUniform(
 	{
 		uniform->type = parameterType;
 		uniform->location = dataPointer;
+		uniform->size = size;
 	}
 	
 	return uniform;
@@ -60,7 +62,7 @@ void GraphicsSharedUniformManager::applySharedUniforms( ShaderInfo* targetShader
 		UniformInfo* target = &globalUniforms[i];
 		if (target->uniformName.size() )
 		{
-			targetShader->setUniformParameter( target->uniformName.c_str() , target->type , target->location );
+			targetShader->setUniformParameter( target->uniformName.c_str() , target->type , target->location, target->size );
 		}
 	}
 }
