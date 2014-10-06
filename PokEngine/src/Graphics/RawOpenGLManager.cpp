@@ -69,80 +69,11 @@ RawOpenGLManager::Renderable* RawOpenGLManager::addRenderable(
 
 void RawOpenGLManager::updateAnimation( Renderable& toUpdate , const float& dt )
 {
-	unsigned int boneDataSize;
-	BoneInfo* bones = toUpdate.whatGeometryIndex->modelData.getBoneData( &boneDataSize );
-	if ( bones )
-	{
-		if ( !toUpdate.animationMatrices )
-		{
-			toUpdate.animationMatrices = new glm::mat4[boneDataSize];
-			toUpdate.sizeofAnimationMatrices = boneDataSize;
-		}
-		toUpdate.currentFrame += toUpdate.animationFrameRate * dt;
-		glm::mat4 parent;
-		updateAnimationMatricesRecurse( 0, bones , toUpdate , parent );
-	}
-}
+
 
 void RawOpenGLManager::updateAnimationMatricesRecurse( unsigned int boneIndex , BoneInfo* bones , Renderable& toUpdate , glm::mat4& parentMatrix )
 {
-	glm::mat4 animateTransform;
-	if ( bones[boneIndex].animationSize() > 0 )
-	{
-		AnimationInfo* start = 0;
-		AnimationInfo* end = 0;
 
-		unsigned int animationEndTime = bones[boneIndex].getAnimation( bones[boneIndex].animationSize() - 1 , toUpdate.whatGeometryIndex->modelData )->frame;
-		while ( toUpdate.currentFrame > animationEndTime ) toUpdate.currentFrame -= animationEndTime;
-		for ( unsigned int i = 0; i < bones[boneIndex].animationSize(); ++i )
-		{
-			AnimationInfo* test = bones[boneIndex].getAnimation( i , toUpdate.whatGeometryIndex->modelData );
-			if ( test->frame <= ( unsigned int ) toUpdate.currentFrame )
-			{
-				start = test;
-			}
-			if ( test->frame >= toUpdate.currentFrame )
-			{
-				end = test;
-				break;
-			}
-		}
-		float interpolation = toUpdate.currentFrame;
-		glm::vec3 lerpedTranslate;
-		glm::vec3 lerpedScale;
-		glm::vec3 lerpedRotation;
-		if ( start )
-		{
-			interpolation = ( interpolation - start->frame ) / ( end->frame - start->frame );
-			lerpedTranslate = ( ( 1 - interpolation ) * start->translation ) + ( interpolation * end->translation );
-			lerpedScale = ( ( 1 - interpolation ) * start->scale ) + ( interpolation * end->scale );
-			lerpedRotation = ( ( 1 - interpolation ) * start->rotation ) + ( interpolation * end->rotation );
-		}
-		else
-		{
-			interpolation /= end->frame;
-			lerpedTranslate = ( interpolation * end->translation );
-			lerpedScale = ( ( 1 - interpolation ) * glm::vec3(1,1,1) ) + ( interpolation * end->scale );
-			lerpedRotation = ( interpolation * end->rotation );
-		}
-
-		glm::quat quaternion = glm::rotate( glm::quat() , lerpedRotation.x , glm::vec3( 1 , 0 , 0 ) ) *
-			glm::rotate( glm::quat() , lerpedRotation.y , glm::vec3( 0 , 1 , 0 ) ) *
-			glm::rotate( glm::quat() , lerpedRotation.z , glm::vec3( 0 , 0 , 1 ) );
-
-		animateTransform = parentMatrix * ( glm::translate( glm::mat4(), lerpedTranslate ) * glm::mat4_cast(quaternion) * glm::scale( glm::mat4(), lerpedScale ) );
-		toUpdate.animationMatrices[boneIndex] = animateTransform * bones[boneIndex].offsetMatrix;
-	}
-	else
-	{
-		animateTransform = parentMatrix;
-		toUpdate.animationMatrices[boneIndex] = animateTransform * bones[boneIndex].offsetMatrix;
-	}
-
-	for ( unsigned int i = 0; i < bones[boneIndex].childrenSize(); ++i )
-	{
-		updateAnimationMatricesRecurse( toUpdate.whatGeometryIndex->modelData.getBoneChildren()[bones[boneIndex].childDataStart + i], bones, toUpdate, animateTransform );
-	}
 }
 
 void RawOpenGLManager::drawAll()

@@ -26,8 +26,6 @@ public:
 public:
 	//static void drawAll();
 	//static void drawSpecific(Renderable* toDraw);
-	static void updateAnimation( Renderable& toUpdate , const float& dt );
-	static void updateAnimationMatricesRecurse( unsigned int boneIndex, BoneInfo* bones , Renderable& toUpdate, glm::mat4& parentMatrix );
 
 	//static Renderable* addRenderable(
 	//	GeometryInfo* whatGeometry ,
