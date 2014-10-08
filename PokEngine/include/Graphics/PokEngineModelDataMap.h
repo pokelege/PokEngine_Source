@@ -4,6 +4,7 @@
 struct VertexInfo;
 struct BoneInfo;
 struct AnimationInfo;
+struct AnimationFrameRangeInfo;
 class POKENGINE_SHARED PokEngineModelDataMap
 {
 	unsigned int sizeofVertexData;
@@ -11,12 +12,14 @@ class POKENGINE_SHARED PokEngineModelDataMap
 	unsigned int sizeofBoneData;
 	unsigned int sizeofBoneChildData;
 	unsigned int sizeofBoneAnimationData;
+	unsigned int sizeofAnimationRangeInfo;
 
 	char* vertexData;
 	char* indexData;
 	char* boneData;
 	char* boneChildrenData;
 	char* boneAnimationData;
+	char* animationRangeInfo;
 public:
 	PokEngineModelDataMap();
 	PokEngineModelDataMap( std::ifstream& stream );
@@ -27,4 +30,9 @@ public:
 	BoneInfo* getBoneData( unsigned int* boneDataSize = 0 );
 	unsigned int* getBoneChildren( unsigned int* boneChildrenSize = 0 );
 	AnimationInfo* getAnimation( unsigned int* animationInfoSize = 0 );
+	AnimationFrameRangeInfo* getAnimationFrameRange( unsigned int* animationRangeSize = 0 );
+	void setNewAnimationFrameRangeInfo( AnimationFrameRangeInfo* frameRange , unsigned int size );
+	void destroyAnimationFrameRangeInfo();
+	std::string savePMDData();
+	bool savePMDData( std::string& location );
 };

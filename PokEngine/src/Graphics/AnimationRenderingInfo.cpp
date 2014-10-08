@@ -9,8 +9,11 @@
 #include <Core\GameObject.h>
 #include <Graphics\GeometryInfo.h>
 #include <Graphics\CommonUniformNames.h>
+#include <Graphics\AnimationFrameRangeInfo.h>
 
-AnimationRenderingInfo::AnimationRenderingInfo() :parent(0) , animationMatrices(0) , animationFrameRate(30) , currentFrame(0) , renderable(0)
+#define MAXANIMATIONSWITCHING 5
+
+AnimationRenderingInfo::AnimationRenderingInfo() :parent(0) , animationMatrices(0) , animationFrameRate(30) , currentFrame(0) , renderable(0) , currentlyPlaying(0)
 {
 
 }
@@ -21,14 +24,18 @@ void AnimationRenderingInfo::attatch( GameObject* parent )
 	{
 		renderable = parent->getComponent<Renderable>();
 	}
+	currentlyPlaying = 0;
 }
 void AnimationRenderingInfo::detatch()
 {
 	parent = 0;
+	renderable = 0;
+	currentlyPlaying = 0;
 }
 void AnimationRenderingInfo::earlyUpdate() {}
 void AnimationRenderingInfo::update()
 {
+	if ( !currentlyPlaying && !play( 0 ) ) return;
 	if ( !parent ) return;
 	if ( !renderable )
 	{
@@ -45,7 +52,24 @@ void AnimationRenderingInfo::update()
 			animationMatrices = new glm::mat4[boneDataSize];
 			sizeofAnimationMatrices = boneDataSize;
 		}
+		else if ( sizeofAnimationMatrices < boneDataSize )
+		{
+			delete[] animationMatrices;
+			animationMatrices = new glm::mat4[boneDataSize];
+			sizeofAnimationMatrices = boneDataSize;
+		}
 		currentFrame += animationFrameRate * Clock::dt;
+		//for ( int i = 0; i < MAXANIMATIONSWITCHING && ( currentFrame > currentlyPlaying->lastFrame ); ++i )
+		while ( currentFrame > currentlyPlaying->lastFrame )
+		{
+			float extraFrames = currentFrame - currentlyPlaying->lastFrame - 1;
+			if ( !play( currentlyPlaying->nextAnimationFrameInfo ) )
+				if ( !play( 0 ) ) return;
+			if ( currentlyPlaying->firstFrame != currentlyPlaying->lastFrame && extraFrames > 0 )
+			{
+				currentFrame += extraFrames;
+			}
+		}
 		glm::mat4 mainTransform;
 		updateAnimationMatricesRecurse( 0 , bones , mainTransform );
 
@@ -66,9 +90,6 @@ void AnimationRenderingInfo::updateAnimationMatricesRecurse( unsigned int boneIn
 		AnimationInfo* start = 0;
 		AnimationInfo* end = 0;
 
-		unsigned int animationEndTime = bones[boneIndex].getAnimation( bones[boneIndex].animationSize() - 1 , *renderable->geometryInfo->modelData )->frame;
-		while ( currentFrame > animationEndTime ) currentFrame -= animationEndTime;
-		if ( currentFrame < 1 ) currentFrame = 1;
 		for ( unsigned int i = 0; i < bones[boneIndex].animationSize(); ++i )
 		{
 			AnimationInfo* test = bones[boneIndex].getAnimation( i , *renderable->geometryInfo->modelData );
@@ -118,6 +139,27 @@ void AnimationRenderingInfo::updateAnimationMatricesRecurse( unsigned int boneIn
 	{
 		updateAnimationMatricesRecurse( renderable->geometryInfo->modelData->getBoneChildren()[bones[boneIndex].childDataStart + i] , bones , animateTransform );
 	}
+}
+
+bool AnimationRenderingInfo::play( unsigned int frameRangeToPlay )
+{
+	if ( !parent ) return false;
+	if ( !renderable )
+	{
+		renderable = parent->getComponent<Renderable>();
+		if ( !renderable ) return false;
+	}
+	if ( !renderable->geometryInfo ) return false;
+	unsigned int numFrameRanges;
+	AnimationFrameRangeInfo* frameRanges = renderable->geometryInfo->modelData->getAnimationFrameRange( &numFrameRanges );
+	if ( !numFrameRanges )return false;
+
+	if ( frameRangeToPlay < numFrameRanges )
+	{
+		currentlyPlaying = &frameRanges[frameRangeToPlay];
+		currentFrame = (float)currentlyPlaying->firstFrame;
+	}
+	return true;
 }
 
 AnimationRenderingInfo::~AnimationRenderingInfo()

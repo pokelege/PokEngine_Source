@@ -1,6 +1,6 @@
 #pragma once
 #include <PokEngineExportHeader.h>
-
+#include <string>
 #define MAX_GEOMETRIES 20
 
 struct GeometryInfo;
@@ -21,8 +21,9 @@ public:
 	GeometryInfo* addPMDGeometry( const char* filename , GraphicsBufferManager& bufferManager );
 	GeometryInfo* addRawGeometry( const char* rawData , GraphicsBufferManager& bufferManager );
 
-	//implementation later
-	const char* saveGeometry( GeometryInfo* geo );
+	//full implementation later
+	std::string saveGeometry( GeometryInfo* geo );
+	bool saveGeometry( GeometryInfo* geo , std::string fileName );
 
 	template <class Tvert>
 	GeometryInfo* addGeometry(

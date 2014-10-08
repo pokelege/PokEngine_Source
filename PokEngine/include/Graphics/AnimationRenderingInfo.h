@@ -5,11 +5,13 @@
 #include <Core\Component.h>
 struct BoneInfo;
 struct RenderableInfo;
+struct AnimationFrameRangeInfo;
 struct POKENGINE_SHARED AnimationRenderingInfo : public Component
 {
 private:
 	GameObject* parent;
 	RenderableInfo* renderable;
+	AnimationFrameRangeInfo* currentlyPlaying;
 	void updateAnimationMatricesRecurse( unsigned int boneIndex , BoneInfo* bones , glm::mat4& parentMatrix );
 protected:
 	friend class GameObject;
@@ -24,6 +26,8 @@ public:
 	virtual void earlyDraw();
 	virtual void draw();
 	virtual void lateDraw();
+
+	bool play( unsigned int frameRangeToPlay );
 
 	glm::mat4* animationMatrices;
 	unsigned int sizeofAnimationMatrices;

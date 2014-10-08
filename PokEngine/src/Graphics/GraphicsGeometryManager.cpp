@@ -37,6 +37,7 @@ GeometryInfo* GraphicsGeometryManager::addPMDGeometry( const char* filename , Gr
 {
 	std::ifstream stream( filename , std::ios::ios_base::binary | std::ios::ios_base::in );
 	PokEngineModelDataMap* data = new PokEngineModelDataMap( stream );
+	stream.close();
 	unsigned int numVertices;
 	unsigned int numIndices;
 	VertexInfo* verts = data->getVertexData( &numVertices );
@@ -129,7 +130,14 @@ GeometryInfo* GraphicsGeometryManager::addRawGeometry( const char* rawData , Gra
 }
 
 //implementation later
-const char* GraphicsGeometryManager::saveGeometry( GeometryInfo* geo )
+std::string GraphicsGeometryManager::saveGeometry( GeometryInfo* geo )
 {
-	return reinterpret_cast<const char*>(&geo->modelData);
+	if ( !geo->modelData ) return std::string();
+	return geo->modelData->savePMDData();
+}
+
+bool GraphicsGeometryManager::saveGeometry( GeometryInfo* geo , std::string fileName )
+{
+	if ( !geo->modelData ) return false;
+	return geo->modelData->savePMDData( fileName );
 }

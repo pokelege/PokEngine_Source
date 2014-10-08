@@ -2,10 +2,13 @@
 #include <Graphics\VertexInfo.h>
 #include <Graphics\BoneInfo.h>
 #include <Graphics\AnimationInfo.h>
-PokEngineModelDataMap::PokEngineModelDataMap() : vertexData(0), indexData(0), boneData(0), boneChildrenData(0), boneAnimationData(0) {}
+#include <Graphics\AnimationFrameRangeInfo.h>
+#include <fstream>
+
+PokEngineModelDataMap::PokEngineModelDataMap() : vertexData(0), indexData(0), boneData(0), boneChildrenData(0), boneAnimationData(0),animationRangeInfo(0) {}
 PokEngineModelDataMap::PokEngineModelDataMap( std::ifstream& stream )
 {
-	stream.read( reinterpret_cast< char* >( &sizeofVertexData ) , sizeof( unsigned int ) * 5 );
+	stream.read( reinterpret_cast< char* >( &sizeofVertexData ) , sizeof( unsigned int ) * 6 );
 	vertexData = new char[sizeof( VertexInfo ) * sizeofVertexData];
 	stream.read( vertexData , sizeof( VertexInfo ) * sizeofVertexData );
 	indexData = new char[sizeof( unsigned short ) * sizeofIndexData];
@@ -16,12 +19,14 @@ PokEngineModelDataMap::PokEngineModelDataMap( std::ifstream& stream )
 	stream.read( boneChildrenData , sizeof( unsigned int ) * sizeofBoneChildData );
 	boneAnimationData = new char[sizeof( AnimationInfo ) * sizeofBoneAnimationData];
 	stream.read( boneAnimationData , sizeof( AnimationInfo ) * sizeofBoneAnimationData );
+	animationRangeInfo = new char[sizeof( AnimationFrameRangeInfo ) * sizeofAnimationRangeInfo];
+	stream.read( animationRangeInfo , sizeof( AnimationFrameRangeInfo ) * sizeofAnimationRangeInfo );
 }
 PokEngineModelDataMap::PokEngineModelDataMap( const char* rawData )
 {
 	unsigned int index = 0;
-	memcpy( &sizeofVertexData , &rawData[index] , sizeof( unsigned int ) * 5 );
-	index += sizeof( unsigned int ) * 5;
+	memcpy( &sizeofVertexData , &rawData[index] , sizeof( unsigned int ) * 6 );
+	index += sizeof( unsigned int ) * 6;
 
 	vertexData = new char[sizeof( VertexInfo ) * sizeofVertexData];
 	memcpy( vertexData , &rawData[index], sizeof( VertexInfo ) * sizeofVertexData );
@@ -41,7 +46,10 @@ PokEngineModelDataMap::PokEngineModelDataMap( const char* rawData )
 
 	boneAnimationData = new char[sizeof( AnimationInfo ) * sizeofBoneAnimationData];
 	memcpy( boneAnimationData, &rawData[index] , sizeof( AnimationInfo ) * sizeofBoneAnimationData );
+	index += sizeof( AnimationInfo ) * sizeofBoneAnimationData;
 
+	animationRangeInfo = new char[sizeof( AnimationFrameRangeInfo ) * sizeofAnimationRangeInfo];
+	memcpy( animationRangeInfo , &rawData[index], sizeof( AnimationFrameRangeInfo ) * sizeofAnimationRangeInfo );
 }
 VertexInfo* PokEngineModelDataMap::getVertexData( unsigned int* vertexInfoSize)
 {
@@ -69,6 +77,28 @@ AnimationInfo* PokEngineModelDataMap::getAnimation( unsigned int* animationInfoS
 	return reinterpret_cast< AnimationInfo* >( boneAnimationData );
 }
 
+AnimationFrameRangeInfo* PokEngineModelDataMap::getAnimationFrameRange( unsigned int* animationRangeSize )
+{
+	if ( animationRangeInfo ) *animationRangeSize = sizeofAnimationRangeInfo;
+	return reinterpret_cast< AnimationFrameRangeInfo* >(animationRangeInfo );
+}
+
+void PokEngineModelDataMap::setNewAnimationFrameRangeInfo( AnimationFrameRangeInfo* frameRange , unsigned int size )
+{
+	if ( animationRangeInfo ) destroyAnimationFrameRangeInfo();
+	sizeofAnimationRangeInfo = size;
+	animationRangeInfo = new char[sizeof( AnimationFrameRangeInfo ) * sizeofAnimationRangeInfo];
+	memcpy( animationRangeInfo , reinterpret_cast< char* >( frameRange ) , sizeof( AnimationFrameRangeInfo ) * sizeofAnimationRangeInfo );
+}
+
+void PokEngineModelDataMap::destroyAnimationFrameRangeInfo()
+{
+	if ( !animationRangeInfo ) return;
+	delete[] animationRangeInfo;
+	animationRangeInfo = 0;
+	sizeofAnimationRangeInfo = 0;
+}
+
 PokEngineModelDataMap::~PokEngineModelDataMap()
 {
 	if ( vertexData ) delete[] vertexData;
@@ -76,4 +106,38 @@ PokEngineModelDataMap::~PokEngineModelDataMap()
 	if ( boneData ) delete[] boneData;
 	if ( boneChildrenData ) delete[] boneChildrenData;
 	if ( boneAnimationData ) delete[] boneAnimationData;
+	if ( animationRangeInfo ) delete[] animationRangeInfo;
+}
+
+std::string PokEngineModelDataMap::savePMDData()
+{
+	std::string data;
+	data += std::string( reinterpret_cast< const char* >( &sizeofVertexData ) , sizeof( unsigned int ) * 6 );
+	data += std::string( vertexData , sizeof( VertexInfo ) * sizeofVertexData );
+	data += std::string( indexData , sizeof( unsigned short ) * sizeofIndexData );
+	data += std::string( boneData , sizeof( BoneInfo ) * sizeofBoneData );
+	data += std::string( boneChildrenData , sizeof( unsigned int ) * sizeofBoneChildData );
+	data += std::string( boneAnimationData , sizeof( AnimationInfo ) * sizeofBoneAnimationData );
+	data += std::string( animationRangeInfo , sizeof( AnimationFrameRangeInfo ) * sizeofAnimationRangeInfo );
+	return data;
+}
+bool PokEngineModelDataMap::savePMDData( std::string& location )
+{
+	std::fstream stream( location , std::ios_base::binary | std::ios_base::out | std::ios_base::trunc );
+
+	stream.write( reinterpret_cast< char* >( &sizeofVertexData ) , sizeof( unsigned int ) * 6 );
+
+	stream.write( vertexData , sizeof( VertexInfo ) * sizeofVertexData );
+
+	stream.write( indexData , sizeof( unsigned short ) * sizeofIndexData );
+
+	stream.write( boneData , sizeof( BoneInfo ) * sizeofBoneData );
+
+	stream.write( boneChildrenData , sizeof( unsigned int ) * sizeofBoneChildData );
+
+	stream.write( boneAnimationData , sizeof( AnimationInfo ) * sizeofBoneAnimationData );
+
+	stream.write( animationRangeInfo , sizeof( AnimationFrameRangeInfo ) * sizeofAnimationRangeInfo );
+	stream.close();
+	return true;
 }
