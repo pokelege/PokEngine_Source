@@ -17,6 +17,7 @@ protected:
 	virtual void detatch();
 public:
 	AnimationRenderingInfo();
+	~AnimationRenderingInfo();
 	virtual void earlyUpdate();
 	virtual void update();
 	virtual void lateUpdate();

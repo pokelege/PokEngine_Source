@@ -46,7 +46,7 @@ void Preview::initializeGL()
 	renderable = GraphicsRenderingManager::globalRenderingManager.addRenderable();
 	renderable->geometryInfo = 0;
 	renderable->shaderInfo = shader;
-	renderable->culling = CT_NONE;
+	renderable->culling = CT_BACK;
 	renderable->depthTestEnabled = true;
 	renderable->sharedUniforms = &GraphicsSharedUniformManager::globalSharedUniformManager;
 	renderable->visible = true;

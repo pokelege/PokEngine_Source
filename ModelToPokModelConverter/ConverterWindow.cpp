@@ -25,8 +25,8 @@ ConverterWindow::ConverterWindow()
 	layout->addWidget( colorTexture );
 	
 	preview = new Preview;
-	preview->setMinimumWidth( 500 );
-	preview->setMinimumHeight( 500 );
+	preview->setMinimumWidth( 1280 );
+	preview->setMinimumHeight( 720 );
 	mainLayout->addWidget( preview );
 	mainLayout->addLayout( layout );
 

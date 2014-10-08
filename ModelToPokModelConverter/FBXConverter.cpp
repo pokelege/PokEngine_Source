@@ -48,7 +48,7 @@ void FBXConverter::convert( const char* input , const char* output )
 		if ( skeleton.size() ) processAnimations( theMesh->GetNode() , skeleton , vertices , indices );
 
 		std::string modelData;
-		for ( int i = 0; i < vertices.size(); i++ )
+		for ( unsigned int i = 0; i < vertices.size(); ++i )
 		{
 			modelData += DATASTRING( vertices[i].position );
 			modelData += DATASTRING( vertices[i].uv );
@@ -84,7 +84,7 @@ void FBXConverter::convert( const char* input , const char* output )
 			}
 		}
 
-		for ( int i = 0; i < indices.size(); i++ )
+		for ( unsigned int i = 0; i < indices.size(); ++i)
 		{
 			modelData += DATASTRING( indices[i].index );
 		}
@@ -92,14 +92,14 @@ void FBXConverter::convert( const char* input , const char* output )
 		std::string boneData;
 		std::vector<unsigned int> boneChildren;
 		std::vector<AnimationData> boneAnimation;
-		for ( int i = 0; i < skeleton.size(); ++i )
+		for ( unsigned int i = 0; i < skeleton.size(); ++i )
 		{
 			boneData += DATASTRING( skeleton[i].offsetMatrix );
 			int childDataStart , childDataEnd , animationDataStart , animationDataEnd;
 			if ( skeleton[i].children.size() )
 			{
 				childDataStart = boneChildren.size();
-				for ( int j = 0; j < skeleton[i].children.size(); ++j )
+				for ( unsigned int j = 0; j < skeleton[i].children.size(); ++j )
 				{
 					boneChildren.push_back( skeleton[i].children[j] );
 				}
@@ -114,7 +114,7 @@ void FBXConverter::convert( const char* input , const char* output )
 			if ( skeleton[i].animation.size() )
 			{
 				animationDataStart = boneAnimation.size();
-				for ( int j = 0; j < skeleton[i].animation.size(); ++j )
+				for ( unsigned int j = 0; j < skeleton[i].animation.size(); ++j )
 				{
 					boneAnimation.push_back( skeleton[i].animation[j] );
 				}
@@ -235,7 +235,7 @@ void FBXConverter::processPolygons( FbxMesh* theMesh , std::vector<VertexData> &
 		glm::vec3 bitangent = ( ( deltaPos2 * deltaUV1.x ) - ( deltaPos1 * deltaUV2.x ) ) * r;
 
 		int index = -1;
-		for ( int j = 0; j < vertices.size(); j++ )
+		for (unsigned int j = 0; j < vertices.size(); ++j )
 		{
 			if ( vertices[j].position == theData0.position &&
 				 vertices[j].uv == theData0.uv &&
@@ -267,7 +267,7 @@ void FBXConverter::processPolygons( FbxMesh* theMesh , std::vector<VertexData> &
 		}
 
 		int index1 = -1;
-		for ( int j = 0; j < vertices.size(); j++ )
+		for ( unsigned int j = 0; j < vertices.size(); ++j )
 		{
 			if ( vertices[j].position == theData1.position &&
 				 vertices[j].uv == theData1.uv &&
@@ -299,7 +299,7 @@ void FBXConverter::processPolygons( FbxMesh* theMesh , std::vector<VertexData> &
 		}
 
 		int index2 = -1;
-		for ( int j = 0; j < vertices.size(); j++ )
+		for ( unsigned int j = 0; j < vertices.size(); ++j )
 		{
 			if ( vertices[j].position == theData2.position &&
 				 vertices[j].uv == theData2.uv &&
@@ -365,16 +365,16 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 	FbxAnimStack* animationStack = node->GetScene()->GetSrcObject<FbxAnimStack>();
 	FbxAnimLayer* animationLayer = animationStack->GetMember<FbxAnimLayer>();
 	std::vector<FbxTime> frames;
-	for ( unsigned int curveNodeIndex = 0; curveNodeIndex < animationLayer->GetMemberCount(); ++curveNodeIndex )
+	for ( int curveNodeIndex = 0; curveNodeIndex < animationLayer->GetMemberCount(); ++curveNodeIndex )
 	{
 		FbxAnimCurveNode* currentCurve = animationLayer->GetMember<FbxAnimCurveNode>( curveNodeIndex );
 
 		for ( unsigned int channelIndex = 0; channelIndex < currentCurve->GetChannelsCount(); ++channelIndex )
 		{
-			for ( unsigned int curve = 0; curve < currentCurve->GetCurveCount( channelIndex ); ++curve )
+			for ( int curve = 0; curve < currentCurve->GetCurveCount( channelIndex ); ++curve )
 			{
 				FbxAnimCurve* theCurveVictim = currentCurve->GetCurve( channelIndex , curve );
-				for ( unsigned int keyIndex = 0; keyIndex < theCurveVictim->KeyGetCount(); ++keyIndex )
+				for ( int keyIndex = 0; keyIndex < theCurveVictim->KeyGetCount(); ++keyIndex )
 				{
 					bool alreadyIn = false;
 					for ( unsigned int frameIndex = 0; frameIndex < frames.size(); ++frameIndex )
@@ -386,6 +386,7 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 							break;
 						}
 					}
+					std::cout << theCurveVictim->KeyGet( keyIndex ).GetTime().GetFrameCount() << " " << alreadyIn << std::endl;
 					if(!alreadyIn) frames.push_back(theCurveVictim->KeyGet( keyIndex ).GetTime());
 				}
 			}
@@ -397,16 +398,16 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 	FbxAMatrix geoTransform( node->GetGeometricTranslation( FbxNode::eSourcePivot ) , node->GetGeometricRotation( FbxNode::eSourcePivot ) , node->GetGeometricScaling( FbxNode::eSourcePivot ) );
 
 
-	for ( unsigned int i = 0; i < theMesh->GetDeformerCount(); ++i )
+	for ( int i = 0; i < theMesh->GetDeformerCount(); ++i )
 	{
 		FbxSkin* theSkin = reinterpret_cast< FbxSkin* >( theMesh->GetDeformer( i , FbxDeformer::eSkin ) );
 		if ( !theSkin ) continue;
 
-		for ( unsigned int j = 0; j < theSkin->GetClusterCount(); ++j )
+		for ( int j = 0; j < theSkin->GetClusterCount(); ++j )
 		{
 			FbxCluster* cluster = theSkin->GetCluster( j );
 			std::string jointName = cluster->GetLink()->GetName();
-			unsigned int currentJointIndex = 0;
+			int currentJointIndex = -1;
 			for ( unsigned int k = 0; k < skeleton.size(); ++k )
 			{
 				if ( !skeleton[k].name.compare( jointName ) )
@@ -415,23 +416,28 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 					break;
 				}
 			}
-
+			if ( currentJointIndex < 0 )
+			{
+				std::cout << "wrong bone" << std::endl;
+				continue;
+			}
 
 			FbxAMatrix transformMatrix, transformLinkMatrix, offsetMatrix;
 			cluster->GetTransformMatrix( transformMatrix );
 			cluster->GetTransformLinkMatrix( transformLinkMatrix );
 			//offsetMatrix = transformLinkMatrix.Inverse() * transformMatrix * geoTransform;
-			offsetMatrix = geoTransform * transformMatrix * transformLinkMatrix.Inverse();
-			FbxMatrix realMatrix( offsetMatrix );
+
+			FbxMatrix realMatrix(transformLinkMatrix.Inverse());
+			
 			for ( unsigned int row = 0; row < 4; ++row )
 			{
 				for ( unsigned int column = 0; column < 4; ++column )
 				{
-					skeleton[currentJointIndex].offsetMatrix[row][column] = realMatrix.Get( row , column );
+					skeleton[currentJointIndex].offsetMatrix[row][column] = (float)realMatrix.Get( row , column );
 				}
 			}
 
-			for ( unsigned int k = 0; k < cluster->GetControlPointIndicesCount(); ++k )
+			for ( int k = 0; k < cluster->GetControlPointIndicesCount(); ++k )
 			{
 				BlendingIndexWeightPair weightPair;
 				weightPair.blendingIndex = currentJointIndex;
@@ -445,8 +451,17 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 						{
 							std::cout << "Warning: vert has more than 4 bones connected, ignoring additional bone." << std::endl;
 						}
-						else verts[indices[z].index].blendingInfo.push_back( weightPair );
-						break;
+						//else verts[indices[z].index].blendingInfo.push_back( weightPair );
+						bool found = false;
+						for ( unsigned int omg = 0; omg < verts[indices[z].index].blendingInfo.size(); ++omg )
+						{
+							if ( verts[indices[z].index].blendingInfo[omg].blendingIndex == weightPair.blendingIndex )
+							{
+								found = true;
+								break;
+							}
+						}
+						if ( !found ) verts[indices[z].index].blendingInfo.push_back( weightPair );
 					}
 				}
 			}
@@ -457,7 +472,7 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 				FbxVector4 rotation = cluster->GetLink()->EvaluateLocalRotation( frames[frameIndex] );
 				FbxVector4 scale = cluster->GetLink()->EvaluateLocalScaling( frames[frameIndex] );
 				AnimationData animData;
-				animData.frame = frames[frameIndex].GetFrameCount();
+				animData.frame = (unsigned int)frames[frameIndex].GetFrameCount();
 				animData.translation = glm::vec3(translation[0],translation[1],translation[2]);
 				animData.rotation = glm::vec3(rotation[0],rotation[1],rotation[2]);
 				animData.scale = glm::vec3(scale[0],scale[1],scale[2]);

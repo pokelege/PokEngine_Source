@@ -68,6 +68,7 @@ void AnimationRenderingInfo::updateAnimationMatricesRecurse( unsigned int boneIn
 
 		unsigned int animationEndTime = bones[boneIndex].getAnimation( bones[boneIndex].animationSize() - 1 , *renderable->geometryInfo->modelData )->frame;
 		while ( currentFrame > animationEndTime ) currentFrame -= animationEndTime;
+		if ( currentFrame < 1 ) currentFrame = 1;
 		for ( unsigned int i = 0; i < bones[boneIndex].animationSize(); ++i )
 		{
 			AnimationInfo* test = bones[boneIndex].getAnimation( i , *renderable->geometryInfo->modelData );
@@ -75,7 +76,7 @@ void AnimationRenderingInfo::updateAnimationMatricesRecurse( unsigned int boneIn
 			{
 				start = test;
 			}
-			if ( test->frame >= currentFrame )
+			if (start != test && test->frame >= ( unsigned int ) currentFrame )
 			{
 				end = test;
 				break;
@@ -117,4 +118,9 @@ void AnimationRenderingInfo::updateAnimationMatricesRecurse( unsigned int boneIn
 	{
 		updateAnimationMatricesRecurse( renderable->geometryInfo->modelData->getBoneChildren()[bones[boneIndex].childDataStart + i] , bones , animateTransform );
 	}
+}
+
+AnimationRenderingInfo::~AnimationRenderingInfo()
+{
+	if ( animationMatrices ) delete[] animationMatrices;
 }
