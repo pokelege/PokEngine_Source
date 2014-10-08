@@ -54,7 +54,7 @@ public:
 		{
 			if ( tail == nullptr )
 			{
-				tail = new SNode();
+				tail = new SNode;
 				tail->value = t;
 				if ( head == nullptr ) head = tail;
 				size++;
@@ -62,7 +62,7 @@ public:
 			}
 			else
 			{
-				tail->next = new SNode();
+				tail->next = new SNode;
 				tail->next->prev = tail;
 				tail = tail->next;
 				tail->value = t;

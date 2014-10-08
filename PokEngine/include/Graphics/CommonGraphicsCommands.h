@@ -8,6 +8,7 @@ struct POKENGINE_SHARED CommonGraphicsCommands
 	static int base;
 	static void initialize();
 	static void initializeGlobalGraphics();
+	static void destroyGlobalGraphics();
 	static void initializePrinting( HDC hdc , int sizex = 24 , int sizey = 0 , int fontWeight = FW_BOLD );
 	static void clear( unsigned int toClear );
 	static void clearCommon();

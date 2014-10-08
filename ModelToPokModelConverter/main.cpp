@@ -2,13 +2,17 @@
 #include <Windows.h>
 #include "FBXConverter.h"
 #include <Qt\qapplication.h>
-#include "Preview.h"
 #include <Graphics\CommonGraphicsCommands.h>
-
+#include "ConverterWindow.h"
+#include "DebugHeap.h"
 int main( int argc , char** argv )
 {
+#ifdef _DEBUG
+	//_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF );
+	_CrtSetDbgFlag( _CRTDBG_ALLOC_MEM_DF | _CRTDBG_LEAK_CHECK_DF | _CRTDBG_CHECK_ALWAYS_DF );
+#endif
 	QApplication app( argc , argv );
-	Preview* lolz = 0;
+	ConverterWindow* converterWindow = 0;
 	if ( argc > 1 )
 	{
 		std::string theOutput( argv[1] );
@@ -18,17 +22,14 @@ int main( int argc , char** argv )
 		}
 		if ( theOutput.length() > 0 && theOutput.back() == '.' ) theOutput.pop_back();
 		FBXConverter a;
-		a.convert( argv[1] , (theOutput + std::string(".pmd")).c_str() );
-		lolz = new Preview( ( theOutput + std::string( ".pmd" ) ) );
-		lolz->show();
+		a.convert( argv[1] , ( theOutput + std::string( ".pmd" ) ).c_str() );
 	}
 	else
 	{
-		lolz = new Preview( ( std::string( "flag.pmd" ) ) );
-		//lolz = new Preview( ( std::string( "Ogre.pmd" ) ) );
-		lolz->show();
+		converterWindow = new ConverterWindow;
+		converterWindow->show();
 	}
 	int toreturn = app.exec();
-	if ( lolz ) delete lolz;
+	if ( converterWindow ) delete converterWindow;
 	return toreturn;
 }

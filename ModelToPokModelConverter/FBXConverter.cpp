@@ -4,10 +4,15 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include "DebugHeap.h"
 #define DATASTRING(data) std::string( reinterpret_cast< const char* >( &data ) , sizeof( data ) );
 
+
+FBXConverter::FBXConverter() : converting(false) {}
 void FBXConverter::convert( const char* input , const char* output )
 {
+	if ( converting ) return;
+	converting = true;
 	FbxManager* fbxManger = FbxManager::Create();
 
 	FbxIOSettings* ios = FbxIOSettings::Create( fbxManger , IOSROOT );
@@ -158,6 +163,7 @@ void FBXConverter::convert( const char* input , const char* output )
 
 		stream.close();
 	}
+	converting = false;
 }
 
 FbxMesh* FBXConverter::findMesh( FbxNode* node )
@@ -342,6 +348,8 @@ void FBXConverter::skeletonRecurse( FbxNode* node , std::vector<JointData> &skel
 		JointData joint;
 		joint.name = node->GetName();
 		skeleton.push_back( joint );
+		std::cout << index << std::endl;
+		if ( node->GetParent() && node->GetParent()->GetNodeAttribute() && node->GetParent()->GetNodeAttribute()->GetAttributeType() ) std::cout << parentIndex << " " << ( node->GetParent()->GetNodeAttribute()->GetAttributeType() == FbxNodeAttribute::eSkeleton ) << std::endl;
 		if(parentIndex >= 0) skeleton[parentIndex].children.push_back( index );
 	}
 	for ( int i = 0; i < node->GetChildCount(); i++ )
@@ -412,13 +420,14 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 			FbxAMatrix transformMatrix, transformLinkMatrix, offsetMatrix;
 			cluster->GetTransformMatrix( transformMatrix );
 			cluster->GetTransformLinkMatrix( transformLinkMatrix );
-			offsetMatrix = transformLinkMatrix.Inverse() * transformMatrix * geoTransform;
-			
+			//offsetMatrix = transformLinkMatrix.Inverse() * transformMatrix * geoTransform;
+			offsetMatrix = geoTransform * transformMatrix * transformLinkMatrix.Inverse();
+			FbxMatrix realMatrix( offsetMatrix );
 			for ( unsigned int row = 0; row < 4; ++row )
 			{
 				for ( unsigned int column = 0; column < 4; ++column )
 				{
-					skeleton[currentJointIndex].offsetMatrix[row][column] = offsetMatrix.Get( row , column );
+					skeleton[currentJointIndex].offsetMatrix[row][column] = realMatrix.Get( row , column );
 				}
 			}
 

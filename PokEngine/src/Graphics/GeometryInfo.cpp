@@ -1,5 +1,12 @@
 #include <Graphics\GeometryInfo.h>
 #include <GL\glew.h>
+
+GeometryInfo::GeometryInfo() : modelData(0) {}
+GeometryInfo::~GeometryInfo()
+{
+	if ( modelData ) delete modelData;
+}
+
 void GeometryInfo::addShaderStreamedParameter(
 	unsigned int layoutLocation ,
 	ParameterType parameterType ,

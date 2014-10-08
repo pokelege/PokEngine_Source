@@ -37,7 +37,7 @@ void AnimationRenderingInfo::update()
 	}
 	if ( !renderable->geometryInfo ) return;
 	unsigned int boneDataSize;
-	BoneInfo* bones = renderable->geometryInfo->modelData.getBoneData( &boneDataSize );
+	BoneInfo* bones = renderable->geometryInfo->modelData->getBoneData( &boneDataSize );
 	if ( bones && boneDataSize > 0 )
 	{
 		if ( !animationMatrices )
@@ -49,7 +49,7 @@ void AnimationRenderingInfo::update()
 		glm::mat4 mainTransform;
 		updateAnimationMatricesRecurse( 0 , bones , mainTransform );
 
-		renderable->setRenderableUniform( ANIMATIONMATRICES , PT_MAT4 , reinterpret_cast< const void* >( ANIMATIONMATRICES ), sizeofAnimationMatrices );
+		renderable->setRenderableUniform( ANIMATIONMATRICES , PT_MAT4 , reinterpret_cast< const void* >( animationMatrices ), sizeofAnimationMatrices );
 	}
 }
 
@@ -66,11 +66,11 @@ void AnimationRenderingInfo::updateAnimationMatricesRecurse( unsigned int boneIn
 		AnimationInfo* start = 0;
 		AnimationInfo* end = 0;
 
-		unsigned int animationEndTime = bones[boneIndex].getAnimation( bones[boneIndex].animationSize() - 1 , renderable->geometryInfo->modelData )->frame;
+		unsigned int animationEndTime = bones[boneIndex].getAnimation( bones[boneIndex].animationSize() - 1 , *renderable->geometryInfo->modelData )->frame;
 		while ( currentFrame > animationEndTime ) currentFrame -= animationEndTime;
 		for ( unsigned int i = 0; i < bones[boneIndex].animationSize(); ++i )
 		{
-			AnimationInfo* test = bones[boneIndex].getAnimation( i , renderable->geometryInfo->modelData );
+			AnimationInfo* test = bones[boneIndex].getAnimation( i , *renderable->geometryInfo->modelData );
 			if ( test->frame <= ( unsigned int ) currentFrame )
 			{
 				start = test;
@@ -115,6 +115,6 @@ void AnimationRenderingInfo::updateAnimationMatricesRecurse( unsigned int boneIn
 
 	for ( unsigned int i = 0; i < bones[boneIndex].childrenSize(); ++i )
 	{
-		updateAnimationMatricesRecurse( renderable->geometryInfo->modelData.getBoneChildren()[bones[boneIndex].childDataStart + i] , bones , animateTransform );
+		updateAnimationMatricesRecurse( renderable->geometryInfo->modelData->getBoneChildren()[bones[boneIndex].childDataStart + i] , bones , animateTransform );
 	}
 }

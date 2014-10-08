@@ -36,6 +36,7 @@ public:
 	bool alphaBlendingEnabled;
 	bool visible;
 	RenderableInfo();
+	~RenderableInfo();
 	void initialize( unsigned int numUniformSlots, unsigned int numTextureSlots );
 	void destroy();
 

@@ -2,7 +2,7 @@
 #include <Graphics\VertexInfo.h>
 #include <Graphics\BoneInfo.h>
 #include <Graphics\AnimationInfo.h>
-PokEngineModelDataMap::PokEngineModelDataMap() {}
+PokEngineModelDataMap::PokEngineModelDataMap() : vertexData(0), indexData(0), boneData(0), boneChildrenData(0), boneAnimationData(0) {}
 PokEngineModelDataMap::PokEngineModelDataMap( std::ifstream& stream )
 {
 	stream.read( reinterpret_cast< char* >( &sizeofVertexData ) , sizeof( unsigned int ) * 5 );
@@ -67,4 +67,13 @@ AnimationInfo* PokEngineModelDataMap::getAnimation( unsigned int* animationInfoS
 {
 	if ( animationInfoSize ) *animationInfoSize = sizeofBoneAnimationData;
 	return reinterpret_cast< AnimationInfo* >( boneAnimationData );
+}
+
+PokEngineModelDataMap::~PokEngineModelDataMap()
+{
+	if ( vertexData ) delete[] vertexData;
+	if ( indexData ) delete[] indexData;
+	if ( boneData ) delete[] boneData;
+	if ( boneChildrenData ) delete[] boneChildrenData;
+	if ( boneAnimationData ) delete[] boneAnimationData;
 }

@@ -1,9 +1,9 @@
 #include <Input\FirstPersonCameraInput.h>
-#include <Windows.h>
 #include <Input\MouseInput.h>
 #include <Graphics\Camera.h>
 #include <Core\GameObject.h>
 #include <gtc\matrix_transform.hpp>
+#include <Input\KeyInput.h>
 FirstPersonCameraInput::FirstPersonCameraInput() : parent( 0 ) , forward( 'W' ) , back( 'S'), left('A'), right('D'), up('R'), down('F') {}
 FirstPersonCameraInput::FirstPersonCameraInput( GameObject* parent ) : parent( parent ) , forward( 'W' ) , back( 'S' ) , left( 'A' ) , right( 'D' ) , up( 'R' ) , down( 'F' ) {}
 void FirstPersonCameraInput::attatch( GameObject* parent )
@@ -25,32 +25,32 @@ void FirstPersonCameraInput::earlyUpdate()
 
 	camera->direction = glm::normalize(glm::mat3( glm::rotate( glm::mat4() , -delta.x * rotationSensitivity , camera->up ) * glm::rotate( glm::mat4() , -delta.y * rotationSensitivity , b ) ) *camera->direction);
 
-	if ( GetAsyncKeyState( forward ) )
+	if ( KeyInput::isDown(forward))
 	{
 		parent->translate += moveSensitivity * camera->direction;
 	}
 
-	if ( GetAsyncKeyState( back ) )
+	if ( KeyInput::isDown( back ) )
 	{
 		parent->translate -= moveSensitivity * camera->direction;
 	}
 
-	if ( GetAsyncKeyState( left ) )
+	if ( KeyInput::isDown( left ) )
 	{
 		parent->translate += moveSensitivity * glm::normalize( glm::cross( camera->up , camera->direction ) );
 	}
 
-	if ( GetAsyncKeyState( right) )
+	if ( KeyInput::isDown( right ) )
 	{
 		parent->translate += moveSensitivity * glm::normalize( glm::cross( camera->direction , camera->up ) );
 	}
 
-	if ( GetAsyncKeyState( up ) )
+	if ( KeyInput::isDown( up ) )
 	{
 		parent->translate += moveSensitivity * camera->up;
 	}
 
-	if ( GetAsyncKeyState( down ) )
+	if ( KeyInput::isDown( down ) )
 	{
 		parent->translate += moveSensitivity * -camera->up;
 	}

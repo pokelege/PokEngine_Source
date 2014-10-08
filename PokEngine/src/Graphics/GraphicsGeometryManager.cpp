@@ -36,11 +36,11 @@ bool GraphicsGeometryManager::initialized()
 GeometryInfo* GraphicsGeometryManager::addPMDGeometry( const char* filename , GraphicsBufferManager& bufferManager )
 {
 	std::ifstream stream( filename , std::ios::ios_base::binary | std::ios::ios_base::in );
-	PokEngineModelDataMap data( stream );
+	PokEngineModelDataMap* data = new PokEngineModelDataMap( stream );
 	unsigned int numVertices;
 	unsigned int numIndices;
-	VertexInfo* verts = data.getVertexData( &numVertices );
-	unsigned short* indices = data.getIndexData( &numIndices );
+	VertexInfo* verts = data->getVertexData( &numVertices );
+	unsigned short* indices = data->getIndexData( &numIndices );
 	unsigned int dataSize = ( sizeof( VertexInfo ) * numVertices ) + ( sizeof( unsigned short ) * numIndices );
 
 	BufferInfo* buffer = bufferManager.getBuffer( dataSize );
@@ -83,11 +83,11 @@ GeometryInfo* GraphicsGeometryManager::addPMDGeometry( const char* filename , Gr
 
 GeometryInfo* GraphicsGeometryManager::addRawGeometry( const char* rawData , GraphicsBufferManager& bufferManager )
 {
-	PokEngineModelDataMap data( rawData );
+	PokEngineModelDataMap* data = new PokEngineModelDataMap( rawData );
 	unsigned int numVertices;
 	unsigned int numIndices;
-	VertexInfo* verts = data.getVertexData( &numVertices );
-	unsigned short* indices = data.getIndexData( &numIndices );
+	VertexInfo* verts = data->getVertexData( &numVertices );
+	unsigned short* indices = data->getIndexData( &numIndices );
 	unsigned int dataSize = ( sizeof( VertexInfo ) * numVertices ) + ( sizeof( unsigned short ) * numIndices );
 
 	BufferInfo* buffer = bufferManager.getBuffer( dataSize );

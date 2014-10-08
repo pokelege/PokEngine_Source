@@ -15,7 +15,7 @@ void GraphicsTextureManager::initialize( unsigned int numTextureSlots )
 }
 void GraphicsTextureManager::destroy()
 {
-	if ( textureInfos ) return;
+	if ( !textureInfos ) return;
 	for ( unsigned int i = 0; i < numTextureSlots; i++ )
 	{
 		if ( glIsTexture( textureInfos[i].textureID ) ) glDeleteTextures(1, &textureInfos[i].textureID);

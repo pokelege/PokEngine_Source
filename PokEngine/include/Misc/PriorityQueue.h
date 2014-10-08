@@ -49,7 +49,7 @@ public:
 		{
 			if ( tail == nullptr )
 			{
-				tail = new PQNode();
+				tail = new PQNode;
 
 				tail->value = t;
 				tail->prev = nullptr;
@@ -69,7 +69,7 @@ public:
 
 				if ( small == nullptr )
 				{
-					PQNode* newNode = new PQNode();
+					PQNode* newNode = new PQNode;
 
 					newNode->value = t;
 					newNode->next = head;
@@ -79,7 +79,7 @@ public:
 				}
 				else if (small == tail )
 				{
-					PQNode* newNode = new PQNode();
+					PQNode* newNode = new PQNode;
 
 					newNode->value = t;
 					newNode->prev = tail;
@@ -89,7 +89,7 @@ public:
 				}
 				else
 				{
-					PQNode* newNode = new PQNode();
+					PQNode* newNode = new PQNode;
 					PQNode* nodeAfterSmall = small->next;
 
 					newNode->value = t;

@@ -9,6 +9,12 @@
 #include <Graphics\CommonUniformNames.h>
 RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ), sharedUniforms (0), geometryInfo(0), shaderInfo(0), parent(0) {}
 
+RenderableInfo::~RenderableInfo()
+{
+	if ( uniforms ) delete[] uniforms;
+	if ( textures ) delete[] textures;
+}
+
 void RenderableInfo::attatch( GameObject* parent )
 {
 	this->parent = parent;

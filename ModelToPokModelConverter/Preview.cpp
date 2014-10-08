@@ -10,7 +10,6 @@
 #include <Graphics\GraphicsBufferManager.h>
 #include <Graphics\GeometryInfo.h>
 #include <Graphics\GraphicsRenderingManager.h>
-#include <Graphics\RenderableInfo.h>
 #include <Graphics\GraphicsSharedUniformManager.h>
 #include <Core\GameObjectManger.h>
 #include <Core\GameObject.h>
@@ -20,9 +19,20 @@
 #include <Input\FirstPersonCameraInput.h>
 #include <Input\MouseInput.h>
 #include <Core\WindowInfo.h>
-Preview::Preview( std::string fileName ) :fileName( fileName )
+#include <Graphics\GraphicsTextureManager.h>
+#include "DebugHeap.h"
+void Preview::setModel( std::string fileName )
 {
-
+	GeometryInfo* theModel = GraphicsGeometryManager::globalGeometryManager.addPMDGeometry( fileName.c_str(), GraphicsBufferManager::globalBufferManager);
+	theModel->addShaderStreamedParameter( 0 , PT_VEC3 , VertexInfo::STRIDE , VertexInfo::POSITION_OFFSET );
+	theModel->addShaderStreamedParameter( 1 , PT_VEC4 , 0 , 0 );
+	theModel->addShaderStreamedParameter( 3 , PT_VEC2 , VertexInfo::STRIDE , VertexInfo::UV_OFFSET );
+	theModel->addShaderStreamedParameter( 2 , PT_VEC3 , VertexInfo::STRIDE , VertexInfo::NORMAL_OFFSET );
+	theModel->addShaderStreamedParameter( 4 , PT_VEC3 , VertexInfo::STRIDE , VertexInfo::TANGENT_OFFSET );
+	theModel->addShaderStreamedParameter( 5 , PT_VEC3 , VertexInfo::STRIDE , VertexInfo::BITANGENT_OFFSET );
+	theModel->addShaderStreamedParameter( 6 , PT_VEC4 , VertexInfo::STRIDE , VertexInfo::BLENDINGINDEX_OFFSET );
+	theModel->addShaderStreamedParameter( 7 , PT_VEC4 , VertexInfo::STRIDE , VertexInfo::BLENDINGWEIGHT_OFFSET );
+	renderable->geometryInfo = theModel;
 }
 
 void Preview::initializeGL()
@@ -33,29 +43,22 @@ void Preview::initializeGL()
 	ShaderInfo* shader = GraphicsShaderManager::globalShaderManager.createShaderInfo( FileReader( "Shaders/VertexShader.glsl" ).c_str() , FileReader( "Shaders/FragmentShader.glsl" ).c_str() , &err );
 	std::cout << err.c_str() << std::endl;
 
-	GeometryInfo* theModel = GraphicsGeometryManager::globalGeometryManager.addPMDGeometry( fileName.c_str(), GraphicsBufferManager::globalBufferManager);
-	theModel->addShaderStreamedParameter( 0 , PT_VEC3 , VertexInfo::STRIDE , VertexInfo::POSITION_OFFSET );
-	theModel->addShaderStreamedParameter( 1 , PT_VEC4 , 0 , 0 );
-	theModel->addShaderStreamedParameter( 3 , PT_VEC2 , VertexInfo::STRIDE , VertexInfo::UV_OFFSET );
-	theModel->addShaderStreamedParameter( 2 , PT_VEC3 , VertexInfo::STRIDE , VertexInfo::NORMAL_OFFSET );
-	theModel->addShaderStreamedParameter( 4 , PT_VEC3 , VertexInfo::STRIDE , VertexInfo::TANGENT_OFFSET );
-	theModel->addShaderStreamedParameter( 5 , PT_VEC3 , VertexInfo::STRIDE , VertexInfo::BITANGENT_OFFSET );
-	theModel->addShaderStreamedParameter( 6 , PT_VEC4 , VertexInfo::STRIDE , VertexInfo::BLENDINGINDEX_OFFSET );
-	theModel->addShaderStreamedParameter( 7 , PT_VEC4 , VertexInfo::STRIDE , VertexInfo::BLENDINGWEIGHT_OFFSET );
-
-	Renderable* renderable = GraphicsRenderingManager::globalRenderingManager.addRenderable();
-	renderable->geometryInfo = theModel;
+	renderable = GraphicsRenderingManager::globalRenderingManager.addRenderable();
+	renderable->geometryInfo = 0;
 	renderable->shaderInfo = shader;
 	renderable->culling = CT_NONE;
 	renderable->depthTestEnabled = true;
 	renderable->sharedUniforms = &GraphicsSharedUniformManager::globalSharedUniformManager;
 	renderable->visible = true;
-	renderable->initialize( 10 , 0 );
+	renderable->initialize( 10 , 1 );
+
+	colorTexture = GraphicsTextureManager::globalTextureManager.addTexture( 0 , 0 , 0 , 0 );
+	renderable->addTexture( colorTexture );
 
 	GameObject* previewModel = GameObjectManager::globalGameObjectManager.addGameObject();
 	previewModel->addComponent( renderable );
 	
-	AnimationRenderingInfo* animation = new AnimationRenderingInfo;
+	animation = new AnimationRenderingInfo;
 	previewModel->addComponent( animation );
 
 	Camera* camera = GraphicsCameraManager::globalCameraManager.addCamera();
@@ -63,7 +66,7 @@ void Preview::initializeGL()
 	camera->initializeRenderManagers();
 	camera->nearestObject = 0.01f;
 	camera->addRenderList( &GraphicsRenderingManager::globalRenderingManager );
-	FirstPersonCameraInput* fpsInput = new FirstPersonCameraInput;
+	fpsInput = new FirstPersonCameraInput;
 	fpsInput->moveSensitivity = 1;
 	fpsInput->rotationSensitivity = 0.1f;
 	GameObject* cameraMan = GameObjectManager::globalGameObjectManager.addGameObject();
@@ -126,4 +129,18 @@ void Preview::update()
 void Preview::paintGL()
 {
 	GraphicsCameraManager::globalCameraManager.drawAllCameras();
+}
+
+void Preview::setTexture( const char* fileName )
+{
+	GraphicsTextureManager::globalTextureManager.editTexture( colorTexture , fileName );
+}
+
+Preview::~Preview()
+{
+	CommonGraphicsCommands::destroyGlobalGraphics();
+	GameObjectManager::globalGameObjectManager.destroy();
+	delete timer;
+	delete fpsInput;
+	delete animation;
 }

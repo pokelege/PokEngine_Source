@@ -12,11 +12,13 @@ struct POKENGINE_SHARED GeometryInfo
 	unsigned int indexOffset;
 	unsigned int numIndex;
 	unsigned int indexingMode;
-	PokEngineModelDataMap modelData;
+	PokEngineModelDataMap* modelData;
 
 	void addShaderStreamedParameter(
 		unsigned int layoutLocation ,
 		ParameterType parameterType ,
 		unsigned int bufferStride ,
 		unsigned int bufferOffset );
+	GeometryInfo();
+	~GeometryInfo();
 };

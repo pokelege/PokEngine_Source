@@ -25,6 +25,23 @@ void CommonGraphicsCommands::initializeGlobalGraphics()
 	GraphicsCameraManager::globalCameraManager.initialize();
 }
 
+void CommonGraphicsCommands::destroyGlobalGraphics()
+{
+	GraphicsCameraManager::globalCameraManager.destroy();
+
+	GraphicsRenderingManager::globalRenderingManager.destroy();
+
+	GraphicsTextureManager::globalTextureManager.destroy();
+
+	GraphicsSharedUniformManager::globalSharedUniformManager.destroy();
+
+	GraphicsGeometryManager::globalGeometryManager.destroy();
+
+	GraphicsShaderManager::globalShaderManager.destroy();
+
+	GraphicsBufferManager::globalBufferManager.destroy();
+}
+
 void CommonGraphicsCommands::initializePrinting( HDC hdc , int sizex , int sizey , int fontWeight )
 {
 	if ( glIsList( base ) ) glDeleteLists( base , 96 );
