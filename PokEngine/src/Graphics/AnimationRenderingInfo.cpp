@@ -35,7 +35,6 @@ void AnimationRenderingInfo::detatch()
 void AnimationRenderingInfo::earlyUpdate() {}
 void AnimationRenderingInfo::update()
 {
-	if ( !currentlyPlaying && !play( 0 ) ) return;
 	if ( !parent ) return;
 	if ( !renderable )
 	{
@@ -47,6 +46,10 @@ void AnimationRenderingInfo::update()
 	BoneInfo* bones = renderable->geometryInfo->modelData->getBoneData( &boneDataSize );
 	if ( bones && boneDataSize > 0 )
 	{
+		unsigned int numFrameRanges;
+		AnimationFrameRangeInfo* frameRanges = renderable->geometryInfo->modelData->getAnimationFrameRange( &numFrameRanges );
+		if ( !numFrameRanges ) return;
+
 		if ( !animationMatrices )
 		{
 			animationMatrices = new glm::mat4[boneDataSize];
@@ -59,13 +62,13 @@ void AnimationRenderingInfo::update()
 			sizeofAnimationMatrices = boneDataSize;
 		}
 		currentFrame += animationFrameRate * Clock::dt;
-		//for ( int i = 0; i < MAXANIMATIONSWITCHING && ( currentFrame > currentlyPlaying->lastFrame ); ++i )
-		while ( currentFrame > currentlyPlaying->lastFrame )
+		
+		while ( currentFrame > frameRanges[currentlyPlaying].lastFrame )
 		{
-			float extraFrames = currentFrame - currentlyPlaying->lastFrame - 1;
-			if ( !play( currentlyPlaying->nextAnimationFrameInfo ) )
+			float extraFrames = currentFrame - frameRanges[currentlyPlaying].lastFrame - 1;
+			if ( !play( frameRanges[currentlyPlaying].nextAnimationFrameInfo ) )
 				if ( !play( 0 ) ) return;
-			if ( currentlyPlaying->firstFrame != currentlyPlaying->lastFrame && extraFrames > 0 )
+			if ( frameRanges[currentlyPlaying].firstFrame != frameRanges[currentlyPlaying].lastFrame && extraFrames > 0 )
 			{
 				currentFrame += extraFrames;
 			}
@@ -107,7 +110,14 @@ void AnimationRenderingInfo::updateAnimationMatricesRecurse( unsigned int boneIn
 		glm::vec3 lerpedTranslate;
 		glm::vec3 lerpedScale;
 		glm::vec3 lerpedRotation;
-		if ( start )
+		if ( !end )
+		{
+			interpolation = 1;
+			lerpedTranslate = ( interpolation * start->translation );
+			lerpedScale = ( interpolation * start->scale );
+			lerpedRotation = ( interpolation * start->rotation );
+		}
+		else if ( start )
 		{
 			interpolation = ( interpolation - start->frame ) / ( end->frame - start->frame );
 			lerpedTranslate = ( ( 1 - interpolation ) * start->translation ) + ( interpolation * end->translation );
@@ -156,8 +166,8 @@ bool AnimationRenderingInfo::play( unsigned int frameRangeToPlay )
 
 	if ( frameRangeToPlay < numFrameRanges )
 	{
-		currentlyPlaying = &frameRanges[frameRangeToPlay];
-		currentFrame = (float)currentlyPlaying->firstFrame;
+		currentlyPlaying = frameRangeToPlay;
+		currentFrame = (float)frameRanges[frameRangeToPlay].firstFrame;
 	}
 	return true;
 }
