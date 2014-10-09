@@ -4,7 +4,7 @@
 #include <vector>
 struct AnimationData
 {
-	unsigned int frame;
+	int frame;
 	glm::vec3 scale;
 	glm::vec3 translation;
 	glm::vec3 rotation;

@@ -4,6 +4,7 @@
 #include <fstream>
 #include <string>
 #include <algorithm>
+#include <Graphics\AnimationFrameRangeInfo.h>
 #include "DebugHeap.h"
 #define DATASTRING(data) std::string( reinterpret_cast< const char* >( &data ) , sizeof( data ) );
 
@@ -130,6 +131,19 @@ void FBXConverter::convert( const char* input , const char* output )
 			boneData += DATASTRING( animationDataStart );
 			boneData += DATASTRING( animationDataEnd );
 		}
+		unsigned int sizeofAnimationRangeInfo;
+		AnimationFrameRangeInfo frameRange;
+		if ( boneAnimation.size() > 0 )
+		{
+			sizeofAnimationRangeInfo = 1;
+			frameRange.nextAnimationFrameInfo = 0;
+			frameRange.firstFrame = 1;
+			frameRange.lastFrame = boneAnimation[boneAnimation.size() - 1].frame;
+		}
+		else
+		{
+			sizeofAnimationRangeInfo = 0;
+		}
 
 		std::fstream stream( output , std::ios_base::binary | std::ios_base::out | std::ios_base::trunc );
 
@@ -147,6 +161,8 @@ void FBXConverter::convert( const char* input , const char* output )
 		unsigned int sizeofBoneAnimationData = boneAnimation.size();
 		stream.write( reinterpret_cast< char* >( &sizeofBoneAnimationData ) , sizeof( sizeofBoneAnimationData ) );
 
+		stream.write( reinterpret_cast< char* >( &sizeofAnimationRangeInfo ) , sizeof( sizeofAnimationRangeInfo ) );
+
 		stream.write( modelData.c_str() , modelData.size() );
 
 		stream.write( boneData.c_str() , boneData.size() );
@@ -161,6 +177,8 @@ void FBXConverter::convert( const char* input , const char* output )
 			stream.write( reinterpret_cast< char* >( &boneAnimation[i] ) , sizeof( boneAnimation[i] ) );
 		}
 
+		
+		if(sizeofAnimationRangeInfo) stream.write( reinterpret_cast< char* >( &frameRange ) , sizeof( frameRange ) );
 		stream.close();
 	}
 	converting = false;
@@ -472,7 +490,7 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 				FbxVector4 rotation = cluster->GetLink()->EvaluateLocalRotation( frames[frameIndex] );
 				FbxVector4 scale = cluster->GetLink()->EvaluateLocalScaling( frames[frameIndex] );
 				AnimationData animData;
-				animData.frame = (unsigned int)frames[frameIndex].GetFrameCount();
+				animData.frame = (int)frames[frameIndex].GetFrameCount();
 				animData.translation = glm::vec3(translation[0],translation[1],translation[2]);
 				animData.rotation = glm::vec3(rotation[0],rotation[1],rotation[2]);
 				animData.scale = glm::vec3(scale[0],scale[1],scale[2]);

@@ -14,7 +14,7 @@ class Preview :public QGLWidget
 	Q_OBJECT;
 
 	QTimer* timer;
-	Renderable* renderable;
+	
 	TextureInfo* colorTexture;
 	FirstPersonCameraInput* fpsInput;
 	AnimationRenderingInfo* animation;
@@ -24,6 +24,7 @@ protected:
 	void paintGL();
 	void mouseMoveEvent( QMouseEvent* e );
 public:
+	Renderable* renderable;
 	void setTexture( const char* fileName );
 	void setModel( std::string fileName );
 	~Preview();
