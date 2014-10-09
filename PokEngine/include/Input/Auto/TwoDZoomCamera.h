@@ -18,6 +18,7 @@ public:
 	bool initialized();
 	bool addGameObjectToTrack( GameObject* object );
 	TwoDZoomCamera();
+	~TwoDZoomCamera();
 	virtual void earlyUpdate();
 	virtual void update();
 	virtual void lateUpdate();

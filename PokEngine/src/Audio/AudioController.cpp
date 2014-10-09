@@ -1,6 +1,8 @@
 #include <Audio\AudioController.h>
 #include <irrKlang.h>
 
+AudioController AudioController::globalAudioController;
+
 AudioController::AudioController() : soundEngine(0)
 {
 

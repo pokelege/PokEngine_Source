@@ -3,6 +3,11 @@
 #include <Core\GameObject.h>
 TwoDZoomCamera::TwoDZoomCamera() : parent(0) , minDistance(1) , maxDistance(10) , zoomScale(1), tracking(0) {}
 
+TwoDZoomCamera::~TwoDZoomCamera()
+{
+	destroy();
+}
+
 void TwoDZoomCamera::attatch( GameObject* parent )
 {
 	this->parent = parent;
