@@ -46,7 +46,7 @@ void ParticleWorld::update( const float dt )
 {
 	forces.update( dt );
 	if(collisionChecker != NULL) processCollisions( dt );
-	processParticles( dt );
+	processParticles( );
 }
 
 void ParticleWorld::processCollisions( const float dt )
@@ -73,11 +73,11 @@ void ParticleWorld::processCollisions( const float dt )
 	}
 }
 
-void ParticleWorld::processParticles( const float dt )
+void ParticleWorld::processParticles( )
 {
 	for ( unsigned int i = 0; i < particles.size(); i++ )
 	{
-		particles.get( i )->update(dt);
+		particles.get( i )->update();
 	}
 }
 

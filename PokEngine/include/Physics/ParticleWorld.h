@@ -10,7 +10,7 @@ class POKENGINE_SHARED ParticleWorld
 	ParticleContactResolver collisionResolver;
 	ParticleCollisionChecker* collisionChecker;
 	void processCollisions(const float dt);
-	void processParticles( const float dt );
+	void processParticles( );
 public:
 	ParticleWorld( ParticleCollisionChecker* collisionChecker = 0, unsigned int numberOfCollsionIterations = 10 );
 	void numberOfCollsionIterations( unsigned int numberOfCollsionIterations );

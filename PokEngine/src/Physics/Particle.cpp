@@ -1,75 +1,54 @@
 #include <Physics\Particle.h>
+#include <Misc\Clock.h>
+#include <core\GameObject.h>
+Particle::Particle() : parent(0), mass(1), damping(1), freezeX(false), freezeY(false), freezeZ(false) {}
 
-Particle::Particle( glm::vec3& position , glm::vec3& velocity , glm::vec3& acceleration , const float mass , const float damping ) : position( position ) , velocity( velocity ) , acceleration( acceleration ) , mass( mass ) , damping(damping) {}
+void Particle::attatch( GameObject* parent )
+{
+	this->parent = parent;
+}
+void Particle::detatch()
+{
+	parent = 0;
+}
 
-glm::vec3& Particle::getPosition()
-{
-	return position;
-}
-void Particle::setPosition( glm::vec3& position )
-{
-	this->position = position;
-}
-glm::vec3& Particle::getVelocity()
-{
-	return velocity;
-}
-void Particle::setVelocity( glm::vec3& velocity )
-{
-	this->velocity = velocity;
-}
-glm::vec3& Particle::getAcceleration()
-{
-	return acceleration;
-}
-void Particle::setAcceleration( glm::vec3& acceleration )
-{
-	this->acceleration = acceleration;
-}
-float& Particle::getMass()
-{
-	return mass;
-}
-void Particle::setMass( float mass )
-{
-	this->mass = mass;
-}
-float& Particle::getDamping()
-{
-	return damping;
-}
-void Particle::setDamping( float damping )
-{
-	this->damping = damping;
-}
-glm::vec3& Particle::getTotalForce()
-{
-	return totalForce;
-}
-void Particle::setTotalForce( glm::vec3& totalForce )
-{
-	this->totalForce = totalForce;
-}
 void Particle::addToTotalForce( glm::vec3& force )
 {
 	totalForce += force;
 }
-
-void Particle::update( const float& dt )
+void Particle::earlyUpdate() {}
+void Particle::update( )
 {
-	if ( mass <= 0 ) return;
+	if ( !parent || mass <= 0 ) return;
 
 	glm::vec3 resultAccel = acceleration;
 	resultAccel += totalForce / mass;
-	velocity += dt * resultAccel;
-	velocity *= powf( damping , dt );
-	position += dt * velocity;
+	velocity += Clock::dt * resultAccel;
+	velocity *= powf( damping , Clock::dt );
+	if ( !freezeX ) parent->translate.x += Clock::dt * velocity.x;
+	if ( !freezeY ) parent->translate.y += Clock::dt * velocity.y;
+	if ( !freezeZ ) parent->translate.z += Clock::dt * velocity.z;
 	totalForce = glm::vec3();
 }
+
+void Particle::lateUpdate() {}
+void Particle::earlyDraw() {}
+void Particle::draw() {}
+void Particle::lateDraw() {}
 
 glm::vec3 Particle::getAccelerationWithForces()
 {
 	glm::vec3 resultAccel = acceleration;
 	resultAccel += totalForce / mass;
 	return resultAccel;
+}
+
+glm::vec3 Particle::getPosition()
+{
+	if ( parent ) return parent->translate;
+	return glm::vec3();
+}
+void Particle::setPosition( glm::vec3& position )
+{
+	if ( parent ) parent->translate = position;
 }
