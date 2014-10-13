@@ -64,7 +64,7 @@ void TwoDZoomCamera::lateUpdate()
 	unsigned int numPass = 0 ;
 	for ( unsigned int i = 0; i < numTracking; ++i )
 	{
-		if ( tracking[i] )
+		if ( tracking[i] && tracking[i]->active )
 		{
 			averagePosition += tracking[i]->translate;
 			++numPass;
@@ -74,7 +74,7 @@ void TwoDZoomCamera::lateUpdate()
 	float highestDistance = minDistance;
 	for ( unsigned int i = 0; i < numTracking; ++i )
 	{
-		if ( tracking[i] )
+		if ( tracking[i] && tracking[i]->active )
 		{
 			float theLength = glm::length( tracking[i]->translate - averagePosition );
 			if ( highestDistance < theLength )
