@@ -4,6 +4,7 @@
 #include <Graphics\GraphicsSharedUniformManager.h>
 #include <Graphics\CommonUniformNames.h>
 #include <glm.hpp>
+#include <Core\GameObject.h>
 GraphicsRenderingManager GraphicsRenderingManager::globalRenderingManager;
 
 GraphicsRenderingManager::GraphicsRenderingManager(): renderables(0) {}
@@ -44,16 +45,19 @@ void GraphicsRenderingManager::drawAll( const Camera& camera )
 	glm::mat4 view = camera.worldToView();
 	for ( unsigned int i = 0; i < numRenderableSlots; ++i )
 	{
-		if ( renderables[i].sharedUniforms )
+		if ( renderables[i].parent && renderables[i].parent->active )
 		{
-			renderables[i].sharedUniforms->setSharedUniform(VIEWTOPROJECTION, PT_MAT4, reinterpret_cast<const void*>(&projection));
-			renderables[i].sharedUniforms->setSharedUniform( WORLDTOVIEW , PT_MAT4 , reinterpret_cast<const void*>( &view ) );
+			if ( renderables[i].sharedUniforms )
+			{
+				renderables[i].sharedUniforms->setSharedUniform( VIEWTOPROJECTION , PT_MAT4 , reinterpret_cast<const void*>( &projection ) );
+				renderables[i].sharedUniforms->setSharedUniform( WORLDTOVIEW , PT_MAT4 , reinterpret_cast<const void*>( &view ) );
+			}
+			else
+			{
+				renderables[i].setRenderableUniform( VIEWTOPROJECTION , PT_MAT4 , reinterpret_cast< const void* >( &projection ) );
+				renderables[i].setRenderableUniform( WORLDTOVIEW , PT_MAT4 , reinterpret_cast< const void* >( &view ) );
+			}
+			renderables[i].draw();
 		}
-		else
-		{
-			renderables[i].setRenderableUniform( VIEWTOPROJECTION , PT_MAT4 , reinterpret_cast< const void* >( &projection ) );
-			renderables[i].setRenderableUniform( WORLDTOVIEW , PT_MAT4 , reinterpret_cast< const void* >( &view ) );
-		}
-		renderables[i].draw();
 	}
 }

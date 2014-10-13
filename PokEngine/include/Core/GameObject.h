@@ -10,6 +10,7 @@ public:
 	glm::vec3 translate;
 	glm::vec3 rotate;
 	glm::vec3 scale;
+	bool active;
 private:
 	friend class GameObjectManager;
 	std::vector<Component*> components;
@@ -26,6 +27,8 @@ public:
 	void earlyUpdate();
 	void update();
 	void lateUpdate();
+	void earlyDraw();
+	void lateDraw();
 	glm::mat4 getWorldTransform();
 	glm::mat4 getLocalTransform();
 	template<class T> T* getComponent()

@@ -1,5 +1,6 @@
 #include <Graphics\GraphicsCameraManager.h>
 #include <Graphics\Camera.h>
+#include <Core\GameObject.h>
 GraphicsCameraManager GraphicsCameraManager::globalCameraManager;
 
 GraphicsCameraManager::GraphicsCameraManager(): cameras(0) {}
@@ -34,6 +35,9 @@ void GraphicsCameraManager::drawAllCameras()
 {
 	for ( unsigned int i = 0; i < numCameraSlots; ++i )
 	{
-		if ( cameras[i].parent ) cameras[i].draw();
+		if ( cameras[i].parent && cameras[i].parent->active )
+		{
+			cameras[i].draw();
+		}
 	}
 }

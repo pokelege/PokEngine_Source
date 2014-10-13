@@ -2,7 +2,7 @@
 #include <Core\Component.h>
 #include <gtc\matrix_transform.hpp>
 #include <gtc\quaternion.hpp>
-GameObject::GameObject() : scale(glm::vec3(1,1,1)), parent(0)  {}
+GameObject::GameObject() : scale(glm::vec3(1,1,1)), parent(0), active(true)  {}
 int GameObject::addComponent( Component* component )
 {
 	int toReturn = components.size();
@@ -71,6 +71,7 @@ bool GameObject::removeChild( const unsigned int& child )
 
 void GameObject::earlyUpdate()
 {
+	if ( !active ) return;
 	for ( unsigned int i = 0; i < components.size(); ++i )
 	{
 		components[i]->earlyUpdate();
@@ -82,6 +83,7 @@ void GameObject::earlyUpdate()
 }
 void GameObject::update()
 {
+	if ( !active ) return;
 	for ( unsigned int i = 0; i < components.size(); ++i )
 	{
 		components[i]->update();
@@ -93,6 +95,7 @@ void GameObject::update()
 }
 void GameObject::lateUpdate()
 {
+	if ( !active ) return;
 	for ( unsigned int i = 0; i < components.size(); ++i )
 	{
 		components[i]->lateUpdate();
@@ -100,6 +103,31 @@ void GameObject::lateUpdate()
 	for ( unsigned int i = 0; i < children.size(); ++i )
 	{
 		children[i]->lateUpdate();
+	}
+}
+
+void GameObject::earlyDraw()
+{
+	if ( !active ) return;
+	for ( unsigned int i = 0; i < components.size(); ++i )
+	{
+		components[i]->earlyDraw();
+	}
+	for ( unsigned int i = 0; i < children.size(); ++i )
+	{
+		children[i]->earlyDraw();
+	}
+}
+void GameObject::lateDraw()
+{
+	if ( !active ) return;
+	for ( unsigned int i = 0; i < components.size(); ++i )
+	{
+		components[i]->lateDraw();
+	}
+	for ( unsigned int i = 0; i < children.size(); ++i )
+	{
+		children[i]->lateDraw();
 	}
 }
 

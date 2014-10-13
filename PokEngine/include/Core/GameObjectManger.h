@@ -20,4 +20,6 @@ public:
 	void earlyUpdateParents();
 	void updateParents();
 	void lateUpdateParents();
+	void earlyDrawParents();
+	void lateDrawParents();
 };

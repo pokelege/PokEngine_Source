@@ -49,3 +49,18 @@ void GameObjectManager::lateUpdateParents()
 		if ( !gameObjects[i].parent ) gameObjects[i].lateUpdate();
 	}
 }
+
+void GameObjectManager::earlyDrawParents()
+{
+	for ( unsigned int i = 0; i < usedGameObjects; ++i )
+	{
+		if ( !gameObjects[i].parent ) gameObjects[i].earlyDraw();
+	}
+}
+void GameObjectManager::lateDrawParents()
+{
+	for ( unsigned int i = 0; i < usedGameObjects; ++i )
+	{
+		if ( !gameObjects[i].parent ) gameObjects[i].lateDraw();
+	}
+}

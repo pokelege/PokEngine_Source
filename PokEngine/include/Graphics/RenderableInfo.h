@@ -26,8 +26,8 @@ protected:
 	friend class GameObject;
 	virtual void attatch( GameObject* parent );
 	virtual void detatch();
-	GameObject* parent;
 public:
+	GameObject* parent;
 	ShaderInfo* shaderInfo;
 	GeometryInfo* geometryInfo;
 	GraphicsSharedUniformManager* sharedUniforms;
