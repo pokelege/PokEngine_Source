@@ -17,7 +17,9 @@ class ConverterWindow : public QWidget
 	void currentIndexChanged( int index );
 	void addFrameRange();
 	void deleteFrameRange();
-	void changeParams();
+	void changeParamsNext();
+	void changeParamsStart();
+	void changeParamsEnd();
 	void save();
 public:
 	Preview* preview;

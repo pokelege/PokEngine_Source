@@ -15,6 +15,8 @@
 #include <Graphics\AnimationFrameRangeInfo.h>
 #include <iostream>
 #include <Graphics\GraphicsGeometryManager.h>
+#include <Core\GameObject.h>
+#include <Graphics\AnimationRenderingInfo.h>
 ConverterWindow::ConverterWindow()
 {
 	QHBoxLayout* mainLayout = new QHBoxLayout;
@@ -35,7 +37,7 @@ ConverterWindow::ConverterWindow()
 	comboBoxLayout->addWidget( frameList );
 	QPushButton* addFrames = new QPushButton( "Add" );
 	comboBoxLayout->addWidget( addFrames );
-	QPushButton* removeFrames = new QPushButton( "Remove" );
+	//QPushButton* removeFrames = new QPushButton( "Remove" );
 	//comboBoxLayout->addWidget( removeFrames );
 
 	layout->addLayout( comboBoxLayout );
@@ -52,6 +54,9 @@ ConverterWindow::ConverterWindow()
 	endFrame->setValue(INT_MAX);
 	layout->addWidget( endFrame );
 
+	QPushButton* save = new QPushButton( "Save" );
+	layout->addWidget( save );
+
 	preview = new Preview;
 	preview->setMinimumWidth( 1280 );
 	preview->setMinimumHeight( 720 );
@@ -64,11 +69,12 @@ ConverterWindow::ConverterWindow()
 	connect( colorTexture , SIGNAL( pressed() ) , this , SLOT( colorTextureButton() ) );
 	connect( frameList , SIGNAL( currentIndexChanged( int )) , this , SLOT( currentIndexChanged( int ) ) );
 	connect( addFrames , SIGNAL( pressed() ) , this , SLOT( addFrameRange() ) );
-	connect( removeFrames , SIGNAL( pressed() ) , this , SLOT( deleteFrameRange() ) );
+	//connect( removeFrames , SIGNAL( pressed() ) , this , SLOT( deleteFrameRange() ) );
 
-	connect( nextFrame , SIGNAL( valueChanged( int ) ) , this , SLOT( changeParams() ) );
-	connect( startFrame , SIGNAL( valueChanged( int ) ) , this , SLOT( changeParams() ) );
-	connect( endFrame , SIGNAL( valueChanged( int ) ) , this , SLOT( changeParams() ) );
+	connect( nextFrame , SIGNAL( valueChanged( int ) ) , this , SLOT( changeParamsNext() ) );
+	connect( startFrame , SIGNAL( valueChanged( int ) ) , this , SLOT( changeParamsStart() ) );
+	connect( endFrame , SIGNAL( valueChanged( int ) ) , this , SLOT( changeParamsEnd() ) );
+	connect( save , SIGNAL( pressed() ) , this , SLOT( save() ) );
 }
 
 void ConverterWindow::browse()
@@ -113,9 +119,11 @@ void ConverterWindow::currentIndexChanged( int index )
 
 	if ( frameRange )
 	{
+		blockSignals( true );
 		nextFrame->setValue( frameRange[index].nextAnimationFrameInfo );
 		startFrame->setValue( frameRange[index].firstFrame );
 		endFrame->setValue( frameRange[index].lastFrame );
+		blockSignals( false );
 	}
 }
 
@@ -176,7 +184,7 @@ void ConverterWindow::deleteFrameRange()
 	nextFrame->setMaximum( numFrames - 1 );
 }
 
-void ConverterWindow::changeParams()
+void ConverterWindow::changeParamsNext()
 {
 	int index = frameList->currentIndex();
 	if ( index < 0 ) return;
@@ -184,10 +192,33 @@ void ConverterWindow::changeParams()
 	AnimationFrameRangeInfo* frameRange = preview->renderable->geometryInfo->modelData->getAnimationFrameRange( &numFrames );
 
 	frameRange[index].nextAnimationFrameInfo = nextFrame->value();
+	startFrame->setMaximum( frameRange[index].lastFrame );
+	endFrame->setMinimum( frameRange[index].firstFrame );
+	preview->renderable->parent->getComponent<Animator>()->play( frameList->currentIndex() );
+}
+void ConverterWindow::changeParamsStart()
+{
+	int index = frameList->currentIndex();
+	if ( index < 0 ) return;
+	unsigned int numFrames;
+	AnimationFrameRangeInfo* frameRange = preview->renderable->geometryInfo->modelData->getAnimationFrameRange( &numFrames );
+
 	frameRange[index].firstFrame = startFrame->value();
+	startFrame->setMaximum( frameRange[index].lastFrame );
+	endFrame->setMinimum( frameRange[index].firstFrame );
+	preview->renderable->parent->getComponent<Animator>()->play( frameList->currentIndex() );
+}
+void ConverterWindow::changeParamsEnd()
+{
+	int index = frameList->currentIndex();
+	if ( index < 0 ) return;
+	unsigned int numFrames;
+	AnimationFrameRangeInfo* frameRange = preview->renderable->geometryInfo->modelData->getAnimationFrameRange( &numFrames );
+
 	frameRange[index].lastFrame = endFrame->value();
 	startFrame->setMaximum( frameRange[index].lastFrame );
 	endFrame->setMinimum( frameRange[index].firstFrame );
+	preview->renderable->parent->getComponent<Animator>()->play( frameList->currentIndex() );
 }
 
 void ConverterWindow::save()
@@ -199,8 +230,8 @@ void ConverterWindow::save()
 		theOutput.pop_back();
 	}
 	if ( theOutput.length() > 0 && theOutput.back() == '.' ) theOutput.pop_back();
+	GraphicsGeometryManager::globalGeometryManager.saveGeometry( preview->renderable->geometryInfo , ( theOutput + std::string( ".pmd" ) ) );
 	preview->setModel( ( theOutput + std::string( ".pmd" ) ) );
-	GraphicsGeometryManager::globalGeometryManager.saveGeometry( preview->renderable->geometryInfo , ( theOutput + std::string( ".pmd" ) ));
 }
 
 void ConverterWindow::colorTextureButton()
