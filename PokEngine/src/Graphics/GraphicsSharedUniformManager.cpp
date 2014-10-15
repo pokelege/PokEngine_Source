@@ -15,6 +15,7 @@ void GraphicsSharedUniformManager::destroy()
 	if ( !globalUniforms ) return;
 	numSharedUniformSlots = 0;
 	delete[] globalUniforms;
+	globalUniforms = 0;
 }
 bool GraphicsSharedUniformManager::initialized()
 {
