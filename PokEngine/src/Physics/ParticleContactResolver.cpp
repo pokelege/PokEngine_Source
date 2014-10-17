@@ -1,11 +1,16 @@
 #include <Physics\ParticleContactResolver.h>
 #include <Physics\ParticleContact.h>
 #include <Physics\ParticleCollisionChecker.h>
-ParticleContactResolver::ParticleContactResolver( unsigned int iterations , ParticleCollisionChecker* penetrationUpdater ) : iterations( iterations ), collisionChecker(penetrationUpdater) {}
+ParticleContactResolver::ParticleContactResolver() :iterations(0) , collisionChecker(0) {}
+void ParticleContactResolver::initialize( unsigned int iterations , ParticleCollisionChecker* penetrationUpdater )
+{
+	this->iterations =  iterations ;
+	collisionChecker = penetrationUpdater;
+}
 
 void ParticleContactResolver::setIterations( unsigned int iterations ) { this->iterations = iterations; }
 
-void ParticleContactResolver::resolveContacts( ArrayList<ParticleContact>* contactArray , const float dt )
+void ParticleContactResolver::resolveContacts( ArrayList<ParticleContact>* contactArray)
 {
 	unsigned int i;
 
@@ -28,7 +33,7 @@ void ParticleContactResolver::resolveContacts( ArrayList<ParticleContact>* conta
 
 		if ( maxIndex == contactArray->size() )break;
 
-		contactArray->get( maxIndex )->resolve( dt );
+		contactArray->get( maxIndex )->resolve();
 		if ( collisionChecker ) collisionChecker->updateContact( contactArray->get( maxIndex ) );
 		iterationsUsed++;
 	}

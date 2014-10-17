@@ -1,9 +1,10 @@
 #include <Physics\ParticleContact.h>
 #include <Physics\Particle.h>
-void ParticleContact::resolve( const float& dt )
+#include <Misc\Clock.h>
+void ParticleContact::resolve()
 {
-	resolveVelocity( dt );
-	resolveInterpenetration( dt );
+	resolveVelocity();
+	resolveInterpenetration();
 }
 
 const float ParticleContact::calculateSeparatingVelocity()
@@ -21,7 +22,7 @@ const float ParticleContact::calculateSeparatingVelocity()
 	return glm::dot(relativeVelocity, contactNormal);
 }
 
-void ParticleContact::resolveVelocity( const float& dt )
+void ParticleContact::resolveVelocity()
 {
 	float separatingVelocity = calculateSeparatingVelocity();
 
@@ -31,7 +32,7 @@ void ParticleContact::resolveVelocity( const float& dt )
 
 	glm::vec3 accelCausedVelocity = particle[0]->getAccelerationWithForces();
 	if ( particle[1] ) accelCausedVelocity -= particle[1]->getAccelerationWithForces();
-	float accelCausedSepVelocity = glm::dot(accelCausedVelocity, contactNormal) * dt;
+	float accelCausedSepVelocity = glm::dot(accelCausedVelocity, contactNormal) * Clock::dt;
 
 	if ( accelCausedSepVelocity < 0 )
 	{
@@ -65,7 +66,7 @@ void ParticleContact::resolveVelocity( const float& dt )
 
 #pragma warning(disable : 4100)
 
-void ParticleContact::resolveInterpenetration( const float& dt )
+void ParticleContact::resolveInterpenetration()
 {
 	if ( penetration <= 0 ) return;
 

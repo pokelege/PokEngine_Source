@@ -1,16 +1,8 @@
 #include <Physics\Particle.h>
 #include <Misc\Clock.h>
 #include <core\GameObject.h>
-Particle::Particle() : parent(0), mass(1), damping(1), freezeX(false), freezeY(false), freezeZ(false) {}
-
-void Particle::attatch( GameObject* parent )
-{
-	this->parent = parent;
-}
-void Particle::detatch()
-{
-	parent = 0;
-}
+#include <Physics\CollisionEvent.h>
+Particle::Particle() : mass(1), damping(1), freezeX(false), freezeY(false), freezeZ(false) {} 
 
 void Particle::addToTotalForce( glm::vec3& force )
 {
@@ -18,6 +10,10 @@ void Particle::addToTotalForce( glm::vec3& force )
 }
 void Particle::earlyUpdate() {}
 void Particle::update( )
+{
+}
+
+void Particle::lateUpdate()
 {
 	if ( !parent || mass <= 0 ) return;
 
@@ -30,8 +26,6 @@ void Particle::update( )
 	if ( !freezeZ ) parent->translate.z += Clock::dt * velocity.z;
 	totalForce = glm::vec3();
 }
-
-void Particle::lateUpdate() {}
 void Particle::earlyDraw() {}
 void Particle::draw() {}
 void Particle::lateDraw() {}
@@ -51,4 +45,15 @@ glm::vec3 Particle::getPosition()
 void Particle::setPosition( glm::vec3& position )
 {
 	if ( parent ) parent->translate = position;
+}
+
+void Particle::callCollideEvents(Particle* other)
+{
+	CollisionEvent* theEvent = 0;
+
+	if ( parent )
+	{
+		theEvent = parent->getComponent<CollisionEvent>();
+		if(theEvent) theEvent->collisionEvent(other);
+	}
 }

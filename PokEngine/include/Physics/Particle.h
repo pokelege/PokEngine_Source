@@ -3,15 +3,10 @@
 #pragma warning (disable : 4251)
 #pragma warning (disable: 4239)
 #include <glm.hpp>
-#include "PokEngineExportHeader.h"
+#include <PokEngineExportHeader.h>
 #include <Core\Component.h>
 class POKENGINE_SHARED Particle : public Component
 {
-	GameObject* parent;
-protected:
-	friend class GameObject;
-	virtual void attatch( GameObject* parent );
-	virtual void detatch();
 public:
 	glm::vec3 velocity , acceleration , totalForce;
 	float mass , damping;
@@ -22,6 +17,8 @@ public:
 
 	glm::vec3 getPosition();
 	void setPosition(glm::vec3& position);
+
+	void callCollideEvents(Particle* other = 0);
 
 	virtual void earlyUpdate();
 	virtual void update();

@@ -10,7 +10,9 @@ protected:
 	unsigned int iterationsUsed;
 	ParticleCollisionChecker* collisionChecker;
 public:
-	ParticleContactResolver( unsigned int iterations, ParticleCollisionChecker* penetrationUpdater );
+	ParticleContactResolver();
+	void initialize( unsigned int iterations, ParticleCollisionChecker* penetrationUpdater );
+
 	void setIterations( unsigned int iterations );
-	void resolveContacts( ArrayList<ParticleContact>* contactArray , const float dt );
+	void resolveContacts( ArrayList<ParticleContact>* contactArray);
 };

@@ -3,6 +3,7 @@
 #include <Core\GameObject.h>
 #include <Misc\Clock.h>
 #include <gtc\matrix_transform.hpp>
+#include <Physics\Particle.h>
 TwoDPlaneInput::TwoDPlaneInput() : parent(0) , up('W') , down('S') , left('A') , right('D') , moveSensitivity(1) , x(glm::vec3(1 , 0 , 0)) , y(glm::vec3(0,1,0))
 {
 
@@ -31,18 +32,18 @@ void TwoDPlaneInput::update()
 	{
 		++numRotations;
 		totalRotation += 90;
-		totalTranslate += moveSensitivity * Clock::dt * y;
+		totalTranslate += moveSensitivity * y;
 	}
 	if ( KeyInput::isDown( down ) ) 
 	{
 		++numRotations;
 		totalRotation -= 90;
-		totalTranslate -= moveSensitivity * Clock::dt * y;
+		totalTranslate -= moveSensitivity * y;
 	}
 	if ( KeyInput::isDown( right ) )
 	{
 		++numRotations;
-		totalTranslate += moveSensitivity * Clock::dt * x;
+		totalTranslate += moveSensitivity * x;
 	}
 	if ( KeyInput::isDown( left ) )
 	{
@@ -57,18 +58,22 @@ void TwoDPlaneInput::update()
 			totalRotation = 180;
 		}
 		++numRotations;
-		totalTranslate -= moveSensitivity * Clock::dt * x;
+		totalTranslate -= moveSensitivity * x;
 	}
 	if ( numRotations )
 	{
 		totalRotation /= numRotations;
 		parent->rotate = totalRotation * glm::cross( x , y );
 	}
-	parent->translate += totalTranslate;
+
+	Particle* theParticle = 0;
+	if ( (theParticle = parent->getComponent<Particle>()) != 0 ) theParticle->addToTotalForce(totalTranslate);
+	else parent->translate += totalTranslate * Clock::dt;
 }
 void TwoDPlaneInput::lateUpdate()
 {
-
+	Particle* theParticle = 0;
+	if ( ( theParticle = parent->getComponent<Particle>() ) != 0 ) theParticle->velocity = glm::vec3();
 }
 void TwoDPlaneInput::earlyDraw()
 {
