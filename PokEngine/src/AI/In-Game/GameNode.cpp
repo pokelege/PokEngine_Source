@@ -1,4 +1,4 @@
-#include "AI/In-Game/GameNode.h"
+#include <AI/In-Game/GameNode.h>
 
 void GameNode::updateNodePointers( GameNode* oldStartPointer , GameNode* newStartPointer )
 {

@@ -1,5 +1,5 @@
-#include "AI/Editor/NodeHolder.h"
-#include "AI\Editor\Node.h"
+#include <AI/Editor/NodeHolder.h>
+#include <AI\Editor\Node.h>
 NodeHolder::NodeHolder( unsigned int physicalMaxNodes ) : physicalMaxNodes( physicalMaxNodes ) , currentMaxNodes( 0 )
 {
 	nodes = nullptr;

@@ -1,4 +1,4 @@
-#include "AI/Editor/Node.h"
+#include <AI/Editor/Node.h>
 
 Node::NodeConnectionHolder::NodeConnectionHolder()
 {

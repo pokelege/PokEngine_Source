@@ -1,5 +1,5 @@
 #pragma once
-#include "../PokEngineExportHeader.h"
+#include <PokEngineExportHeader.h>
 #include <windows.h>
 
 class POKENGINE_SHARED Clock

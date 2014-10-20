@@ -1,4 +1,4 @@
-#include "AI\In-Game\Decision Tree\DecisionNode.h"
+#include <AI\In-Game\Decision Tree\DecisionNode.h>
 
 DecisionNode::DecisionNode( DecisionNode* trueNode , DecisionNode* falseNode , fastdelegate::FastDelegate1<AI* , bool> compareLogic ) : trueNode( trueNode ) , falseNode( falseNode ) , compareLogic( compareLogic ) , toReturn(nullptr){}
 DecisionNode::DecisionNode( State* toReturn ) : trueNode( nullptr ) , falseNode( nullptr ) , compareLogic( nullptr ) , toReturn( toReturn ) {}

@@ -1,5 +1,5 @@
-#include "AI/In-Game/GameNodeHolder.h"
-#include "AI\In-Game\GameNode.h"
+#include <AI/In-Game/GameNodeHolder.h>
+#include <AI\In-Game\GameNode.h>
 unsigned int GameNodeHolder::getcurrentMaxNodes()
 {
 	return currentMaxNodes;

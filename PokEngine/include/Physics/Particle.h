@@ -10,6 +10,7 @@ class POKENGINE_SHARED Particle : public Component
 public:
 	glm::vec3 velocity , acceleration , totalForce;
 	float mass , damping;
+	float collisionRadius;
 	bool freezeX , freezeY , freezeZ;
 	Particle();
 	void addToTotalForce( glm::vec3& force );

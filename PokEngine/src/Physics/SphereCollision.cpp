@@ -6,7 +6,7 @@ SphereCollision SphereCollision::instance;
 bool SphereCollision::isCollided( Particle* particle1 , Particle* particle2 )
 {
 	if ( particle2 && particle2 != particle1 )
-		return ( ( particle1->mass / 2 ) + ( particle2->mass / 2 ) ) - glm::length( particle1->getPosition() - particle2->getPosition() ) >= 0;
+		return ( ( particle1->collisionRadius / 2 ) + ( particle2->collisionRadius / 2 ) ) - glm::length( particle1->getPosition() - particle2->getPosition() ) >= 0;
 	return false;
 }
 
@@ -32,7 +32,7 @@ void SphereCollision::updateContact( ParticleContact* contact )
 {
 	if ( contact->particle[1] )
 	{
-		contact->penetration = ( ( contact->particle[0]->mass / 2 ) + ( contact->particle[1]->mass / 2 ) ) - glm::length( contact->particle[0]->getPosition() - contact->particle[1]->getPosition() );
+		contact->penetration = ( ( contact->particle[0]->collisionRadius / 2 ) + ( contact->particle[1]->collisionRadius / 2 ) ) - glm::length( contact->particle[0]->getPosition() - contact->particle[1]->getPosition() );
 		contact->particle[1]->callCollideEvents( contact->particle[0] );
 	}
 	contact->particle[0]->callCollideEvents( contact->particle[1] );

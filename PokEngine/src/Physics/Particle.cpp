@@ -2,7 +2,7 @@
 #include <Misc\Clock.h>
 #include <core\GameObject.h>
 #include <Physics\CollisionEvent.h>
-Particle::Particle() : mass(1), damping(1), freezeX(false), freezeY(false), freezeZ(false) {} 
+Particle::Particle() : mass( 1 ) , damping( 1 ) , collisionRadius (1), freezeX( false ) , freezeY( false ) , freezeZ( false ) {}
 
 void Particle::addToTotalForce( glm::vec3& force )
 {

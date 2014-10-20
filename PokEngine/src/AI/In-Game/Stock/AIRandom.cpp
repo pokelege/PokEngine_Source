@@ -1,8 +1,8 @@
-#include "AI\In-Game\Stock\AIRandom.h"
-#include "AI\In-Game\GameNodeHolder.h"
-#include "AI\In-Game\GameNode.h"
-#include "Misc\RandomItemsGenerator.h"
-#include "gtx\transform.hpp"
+#include <AI\In-Game\Stock\AIRandom.h>
+#include <AI\In-Game\GameNodeHolder.h>
+#include <AI\In-Game\GameNode.h>
+#include <Misc\RandomItemsGenerator.h>
+#include <gtx\transform.hpp>
 AIRandom::AIRandom( GameNodeHolder* nodeCollection , float moveSpeed , GameNode* from )
 {
 	this->moveSpeed = moveSpeed;

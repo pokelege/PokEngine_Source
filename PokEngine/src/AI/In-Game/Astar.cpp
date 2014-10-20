@@ -1,7 +1,7 @@
-#include "AI\In-Game\Astar.h"
-#include "AI\In-Game\GameNode.h"
-#include "Misc\ArrayList.h"
-#include "Misc\PriorityQueue.h"
+#include <AI\In-Game\Astar.h>
+#include <AI\In-Game\GameNode.h>
+#include <Misc\ArrayList.h>
+#include <Misc\PriorityQueue.h>
 int Astar::AstarHolder::compareTo( AstarHolder* toCompare )
 {
 	float thisF = distTraveled + estToEnd;

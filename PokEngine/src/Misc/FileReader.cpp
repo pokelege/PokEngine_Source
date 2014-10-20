@@ -1,4 +1,4 @@
-#include "Misc\FileReader.h"
+#include <Misc\FileReader.h>
 #include <fstream>
 std::string FileReader(const char* filename)
 {

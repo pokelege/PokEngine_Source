@@ -1,4 +1,4 @@
-#include "Misc\Clock.h"
+#include <Misc\Clock.h>
 Clock Clock::globalClock;
 Clock::Clock()
 {
