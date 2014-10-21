@@ -11,11 +11,11 @@ const float ParticleContact::calculateSeparatingVelocity()
 {
 	if ( particle[1] )
 	{
-		penetration = ( ( particle[0]->mass / 2 ) + ( particle[1]->mass / 2 ) ) - glm::length( particle[0]->getPosition() - particle[1]->getPosition() );
+		penetration = ( ( particle[0]->collisionRadius / 2 ) + ( particle[1]->collisionRadius / 2 ) ) - glm::length( particle[0]->getPosition() - particle[1]->getPosition() );
 	}
 	else
 	{
-		penetration = ( particle[0]->mass / 2 ) - particle[0]->getPosition().y;
+		penetration = ( particle[0]->collisionRadius / 2 ) - particle[0]->getPosition().y;
 	}
 	glm::vec3 relativeVelocity = particle[0]->velocity;
 	if ( particle[1] ) relativeVelocity -= particle[1]->velocity;
