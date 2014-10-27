@@ -6,7 +6,14 @@ SphereCollision SphereCollision::instance;
 bool SphereCollision::isCollided( Particle* particle1 , Particle* particle2 )
 {
 	if ( particle2 && particle2 != particle1 )
-		return ( ( particle1->collisionRadius / 2 ) + ( particle2->collisionRadius / 2 ) ) - glm::length( particle1->getPosition() - particle2->getPosition() ) >= 0;
+	{
+		if ( ( ( particle1->collisionRadius / 2 ) + ( particle2->collisionRadius / 2 ) ) - glm::length( particle1->getPosition() - particle2->getPosition() ) >= 0 )
+		{
+			if ( ( particle2 && particle2 != particle1 ) && !particle1->callPreCollideEvents( particle2 ) ) return false;
+			if ( ( particle2 && particle2 != particle1 ) && !particle2->callPreCollideEvents( particle1 ) ) return false;
+			return true;
+		}
+	}
 	return false;
 }
 

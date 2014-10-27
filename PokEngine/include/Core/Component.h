@@ -5,7 +5,6 @@ class POKENGINE_SHARED Component
 {
 protected:
 	friend class GameObject;
-	GameObject* parent;
 	virtual void attatch( GameObject* parent )
 	{
 		this->parent = parent;
@@ -15,6 +14,7 @@ protected:
 		parent = 0;
 	};
 public:
+	GameObject* parent;
 	virtual void earlyUpdate() {};
 	virtual void update() {};
 	virtual void lateUpdate() {};

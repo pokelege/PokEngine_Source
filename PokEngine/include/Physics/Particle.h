@@ -20,7 +20,7 @@ public:
 	void setPosition(glm::vec3& position);
 
 	void callCollideEvents(Particle* other = 0);
-
+	bool callPreCollideEvents( Particle* other = 0 );
 	virtual void earlyUpdate();
 	virtual void update();
 	virtual void lateUpdate();

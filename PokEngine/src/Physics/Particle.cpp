@@ -2,6 +2,7 @@
 #include <Misc\Clock.h>
 #include <core\GameObject.h>
 #include <Physics\CollisionEvent.h>
+#include <Physics\PreCollideEvent.h>
 Particle::Particle() : mass( 1 ) , damping( 1 ) , collisionRadius (1), freezeX( false ) , freezeY( false ) , freezeZ( false ) {}
 
 void Particle::addToTotalForce( glm::vec3& force )
@@ -56,4 +57,19 @@ void Particle::callCollideEvents(Particle* other)
 		theEvent = parent->getComponent<CollisionEvent>();
 		if(theEvent) theEvent->collisionEvent(other);
 	}
+}
+
+bool Particle::callPreCollideEvents( Particle* other )
+{
+	PreCollideEvent* theEvent = 0;
+
+	if ( parent )
+	{
+		theEvent = parent->getComponent<PreCollideEvent>();
+		if ( theEvent )
+		{
+			return theEvent->preCollideEvent( other );
+		}
+	}
+	return true;
 }

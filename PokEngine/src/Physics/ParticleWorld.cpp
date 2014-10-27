@@ -1,7 +1,7 @@
 #include <Physics\ParticleWorld.h>
 #include <Physics\Particle.h>
 #include <Physics\ParticleCollisionChecker.h>
-
+#include <Core\GameObject.h>
 #include <Physics\ParticleContact.h>
 
 ParticleWorld ParticleWorld::global;
@@ -46,12 +46,15 @@ void ParticleWorld::processCollisions( )
 	ArrayList<ParticleContact> contacts;
 	for ( unsigned int i = 0; i < particles.size(); i++ )
 	{
+		if ( !( particles.get( i )->parent && particles.get( i )->parent->active ) ) continue;
 		for ( unsigned int j = i; j < particles.size(); j++ )
 		{
+			if ( !(( particles.get( j )->parent && particles.get( j )->parent->active ) &&
+				 ( particles.get( i )->parent && particles.get( i )->parent->active )) ) continue;
 			if ( collisionChecker->isCollided( particles.get( i ) , particles.get( j ) ) )
 			{
-				ParticleContact* contacted = collisionChecker->generateContact( particles.get( i ) , particles.get( j ) );
-				contacts.add( contacted );
+ 				ParticleContact* contacted = collisionChecker->generateContact( particles.get( i ) , particles.get( j ) );
+				if(contacted) contacts.add( contacted );
 			}
 		}
 	}
