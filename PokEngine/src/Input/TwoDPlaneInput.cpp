@@ -67,7 +67,7 @@ void TwoDPlaneInput::update()
 	}
 
 	Particle* theParticle = 0;
-	if ( (theParticle = parent->getComponent<Particle>()) != 0 ) theParticle->addToTotalForce(totalTranslate);
+	if ( (theParticle = parent->getComponent<Particle>()) != 0 ) theParticle->addToTotalForce( totalTranslate);
 	else parent->translate += totalTranslate * Clock::dt;
 }
 void TwoDPlaneInput::lateUpdate()
