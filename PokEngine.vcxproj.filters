@@ -1,0 +1,392 @@
+﻿<?xml version="1.0" encoding="utf-8"?>
+<Project ToolsVersion="4.0" xmlns="http://schemas.microsoft.com/developer/msbuild/2003">
+  <ItemGroup>
+    <Filter Include="Source Files">
+      <UniqueIdentifier>{4FC737F1-C7A5-4376-A066-2A32D752A2FF}</UniqueIdentifier>
+      <Extensions>cpp;c;cc;cxx;def;odl;idl;hpj;bat;asm;asmx</Extensions>
+    </Filter>
+    <Filter Include="Header Files">
+      <UniqueIdentifier>{93995380-89BD-4b04-88EB-625FBE52EBFB}</UniqueIdentifier>
+      <Extensions>h;hh;hpp;hxx;hm;inl;inc;xsd</Extensions>
+    </Filter>
+    <Filter Include="Header Files\Graphics">
+      <UniqueIdentifier>{1949c6e7-6917-46bd-ba68-419731fdb135}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects">
+      <UniqueIdentifier>{bccd98a6-15ed-40e1-a5ec-4bc3f2b4bc13}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Misc">
+      <UniqueIdentifier>{cfaed532-2da6-4ea8-acf3-92c37ca2438c}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Graphics">
+      <UniqueIdentifier>{5269c818-959c-46ab-b7d4-1c392189562b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects">
+      <UniqueIdentifier>{3cd4ee33-7f48-4d79-acdd-dc3af2006e86}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Misc">
+      <UniqueIdentifier>{90a987f7-e56d-4245-a56f-66662f5a0f3b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AI">
+      <UniqueIdentifier>{6012dbad-5b00-475a-913b-327bcf8f43e9}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AI\Editor">
+      <UniqueIdentifier>{211f4488-5888-4544-97bb-16d24070e080}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AI\In-Game">
+      <UniqueIdentifier>{253396c1-b73f-4fbc-b8e3-a4cfdbc119bf}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AI">
+      <UniqueIdentifier>{0c1996d4-a76d-4343-85d5-8c632ce78740}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AI\Editor">
+      <UniqueIdentifier>{7fdd0d28-2a17-462f-b568-7d25c1f1967e}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\AI\In-Game">
+      <UniqueIdentifier>{88cf0367-1ab6-4dba-8c1d-dcbd6d061e87}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AI\In-Game\Decision Tree">
+      <UniqueIdentifier>{8014a002-22e2-483b-9c4d-5bd536652611}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\AI\In-Game\State">
+      <UniqueIdentifier>{cb8eb5d6-8061-447c-84f0-e60da76e05c2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Objects\Physics">
+      <UniqueIdentifier>{2d620a1a-ff3c-4119-bb11-ac1ceacdf8f5}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Objects\Physics">
+      <UniqueIdentifier>{6f1b88da-59df-4250-9831-a30deae2272b}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Core">
+      <UniqueIdentifier>{6f51900e-fcc1-4b22-a804-9ad2064211d2}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Source Files\Input">
+      <UniqueIdentifier>{2d0e7e28-5345-4f8a-a149-420c5d7cdb16}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Core">
+      <UniqueIdentifier>{a196d874-7ea1-49b7-bd67-efe427f5b839}</UniqueIdentifier>
+    </Filter>
+    <Filter Include="Header Files\Input">
+      <UniqueIdentifier>{c187b648-8db4-47bb-8e23-83b25b677fc4}</UniqueIdentifier>
+    </Filter>
+  </ItemGroup>
+  <ItemGroup>
+    <ClInclude Include="include\Objects\Light.h">
+      <Filter>Header Files\Objects</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Misc\Clock.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Misc\RandomItemsGenerator.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Misc\PriorityQueue.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Misc\Queue.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Misc\ArrayList.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Misc\Stack.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\In-Game\GameNode.h">
+      <Filter>Header Files\AI\In-Game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\In-Game\GameNodeHolder.h">
+      <Filter>Header Files\AI\In-Game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\Editor\NodeHolder.h">
+      <Filter>Header Files\AI\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\Editor\Node.h">
+      <Filter>Header Files\AI\Editor</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\In-Game\Astar.h">
+      <Filter>Header Files\AI\In-Game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\In-Game\AI.h">
+      <Filter>Header Files\AI\In-Game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\In-Game\State\State.h">
+      <Filter>Header Files\AI\In-Game\State</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Misc\FileReader.h">
+      <Filter>Header Files\Misc</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FastDelegateBind.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\FastDelegate.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\In-Game\Decision Tree\DecisionNode.h">
+      <Filter>Header Files\AI\In-Game\Decision Tree</Filter>
+    </ClInclude>
+    <ClInclude Include="include\PokEngineExportHeader.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\AI\In-Game\Stock\AIRandom.h">
+      <Filter>Header Files\AI\In-Game</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\PokEngineModelDataMap.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\BoneInfo.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\VertexInfo.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\AnimationInfo.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Physics\Particle.h">
+      <Filter>Header Files\Objects\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Physics\ParticleCollisionChecker.h">
+      <Filter>Header Files\Objects\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Physics\ParticleContact.h">
+      <Filter>Header Files\Objects\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Physics\ParticleContactResolver.h">
+      <Filter>Header Files\Objects\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Physics\ParticleWorld.h">
+      <Filter>Header Files\Objects\Physics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\AnimationRenderingInfo.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\BufferInfo.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\Camera.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\CommonGraphicsCommands.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\CommonUniformNames.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GeometryInfo.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GraphicsBufferManager.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GraphicsCameraManager.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GraphicsGeometryManager.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GraphicsRenderingManager.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GraphicsShaderManager.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GraphicsSharedUniformManager.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\GraphicsTextureManager.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\UniformInfo.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\RenderableInfo.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\ShaderInfo.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\TextureInfo.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\ParameterType.h">
+      <Filter>Header Files\Graphics</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\Component.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\WindowInfo.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\GameObjectManger.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\GameObject.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Core\CommonWarningDisables.h">
+      <Filter>Header Files\Core</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Input\FirstPersonCameraInput.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Input\MouseInput.h">
+      <Filter>Header Files\Input</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Input\TwoDPlaneInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Input\KeyInput.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Graphics\AnimationFrameRangeInfo.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Input\Auto\TwoDZoomCamera.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Audio\AudioController.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Physics\SphereCollision.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Physics\CollisionEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+    <ClInclude Include="include\Physics\PreCollideEvent.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
+  </ItemGroup>
+  <ItemGroup>
+    <ClCompile Include="src\dllmain.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Objects\Light.cpp">
+      <Filter>Source Files\Objects</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Misc\Clock.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Misc\FileReader.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Misc\RandomItemsGenerator.cpp">
+      <Filter>Source Files\Misc</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AI\Editor\Node.cpp">
+      <Filter>Source Files\AI\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AI\Editor\NodeHolder.cpp">
+      <Filter>Source Files\AI\Editor</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AI\In-Game\GameNode.cpp">
+      <Filter>Source Files\AI\In-Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AI\In-Game\GameNodeHolder.cpp">
+      <Filter>Source Files\AI\In-Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AI\In-Game\Astar.cpp">
+      <Filter>Source Files\AI\In-Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AI\In-Game\Decision Tree\DecisionNode.cpp">
+      <Filter>Source Files\AI\In-Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\Particle.cpp">
+      <Filter>Source Files\Objects\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\ParticleContact.cpp">
+      <Filter>Source Files\Objects\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\ParticleContactResolver.cpp">
+      <Filter>Source Files\Objects\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\ParticleWorld.cpp">
+      <Filter>Source Files\Objects\Physics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\AI\In-Game\Stock\AIRandom.cpp">
+      <Filter>Source Files\AI\In-Game</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\AnimationRenderingInfo.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\BoneInfo.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\BufferInfo.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\Camera.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\CommonGraphicsCommands.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GeometryInfo.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GraphicsBufferManager.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GraphicsCameraManager.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GraphicsGeometryManager.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GraphicsRenderingManager.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GraphicsShaderManager.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GraphicsSharedUniformManager.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\GraphicsTextureManager.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\PokEngineModelDataMap.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\RenderableInfo.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\ShaderInfo.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Graphics\VertexInfo.cpp">
+      <Filter>Source Files\Graphics</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameObject.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\GameObjectManager.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Core\WindowInfo.cpp">
+      <Filter>Source Files\Core</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Input\FirstPersonCameraInput.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Input\MouseInput.cpp">
+      <Filter>Source Files\Input</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Input\TwoDPlaneInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Input\KeyInput.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Input\Auto\TwoDZoomCamera.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Audio\AudioController.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="src\Physics\SphereCollision.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+  </ItemGroup>
+</Project>
