@@ -27,7 +27,7 @@ int main( int argc , char** argv )
 	else
 	{
 		converterWindow = new ConverterWindow;
-		converterWindow->show();
+		converterWindow->showMaximized();
 	}
 	int toreturn = app.exec();
 	if ( converterWindow ) delete converterWindow;
