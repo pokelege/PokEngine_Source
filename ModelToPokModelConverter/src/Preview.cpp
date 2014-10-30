@@ -40,7 +40,7 @@ void Preview::initializeGL()
 	CommonGraphicsCommands::initializeGlobalGraphics();
 	GameObjectManager::globalGameObjectManager.initialize();
 	std::string err;
-	ShaderInfo* shader = GraphicsShaderManager::globalShaderManager.createShaderInfo( FileReader( "Shaders/VertexShader.glsl" ).c_str() , FileReader( "Shaders/FragmentShader.glsl" ).c_str() , &err );
+	ShaderInfo* shader = GraphicsShaderManager::globalShaderManager.createShaderInfo( FileReader( "assets/shaders/VertexShader.glsl" ).c_str() , FileReader( "assets/shaders/FragmentShader.glsl" ).c_str() , &err );
 	std::cout << err.c_str() << std::endl;
 
 	renderable = GraphicsRenderingManager::globalRenderingManager.addRenderable();

@@ -7,8 +7,8 @@
 #include <QtGui\QFileDialog>
 #include <Qt\qcoreapplication.h>
 #include <Qt\qtimer.h>
-#include "Preview.h"
-#include "DebugHeap.h"
+#include <Preview.h>
+#include <DebugHeap.h>
 #include <QtGui\QComboBox>
 #include <Graphics\GeometryInfo.h>
 #include <QtGui\QSpinBox>
