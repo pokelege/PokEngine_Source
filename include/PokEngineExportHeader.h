@@ -1,5 +1,5 @@
 #pragma once
-#ifdef	POKENGINE_EXPORTS
+#ifdef	LIB_EXPORTS
 #define POKENGINE_SHARED __declspec( dllexport )
 #ifdef _DEBUG
 #include <crtdbg.h>
