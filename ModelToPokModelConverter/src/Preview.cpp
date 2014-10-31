@@ -89,6 +89,7 @@ void Preview::initializeGL()
 
 void Preview::mouseMoveEvent( QMouseEvent* e )
 {
+	e;
 	QCursor c = cursor();
 	QPoint mapFromGlobal = this->mapFromGlobal( c.pos() );
 	if ( GetAsyncKeyState( VK_LBUTTON ) < 0 && mapFromGlobal.x() >= 0 && mapFromGlobal.x() <= width() &&
