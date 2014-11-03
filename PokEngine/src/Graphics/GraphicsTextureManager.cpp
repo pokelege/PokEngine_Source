@@ -168,3 +168,19 @@ void GraphicsTextureManager::editTexture( TextureInfo* theTexture , const char* 
 	theTexture->type = GL_TEXTURE_2D;
 	theTexture->textureSlot = slot;
 }
+
+std::string GraphicsTextureManager::saveRawTexture( TextureInfo* theTexture , int* width , int* height)
+{
+	if ( !glIsTexture( theTexture->textureID ) ) return std::string();
+	glBindTexture( GL_TEXTURE_2D , theTexture->textureID );
+	int theWidth , theHeight;
+	glGetTexLevelParameteriv( GL_TEXTURE_2D , 0 , GL_TEXTURE_WIDTH , &theWidth );
+	glGetTexLevelParameteriv( GL_TEXTURE_2D , 0 , GL_TEXTURE_WIDTH , &theHeight );
+	char* textureData = new char[theWidth * theHeight * 4];
+	glGetTexImage( GL_TEXTURE_2D , 0 , GL_RGBA , GL_BYTE , textureData );
+	if ( width ) *width = theWidth;
+	if ( height ) *height = theHeight;
+	std::string toReturn( textureData );
+	delete[] textureData;
+	return toReturn;
+}

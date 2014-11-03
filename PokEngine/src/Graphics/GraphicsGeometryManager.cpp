@@ -18,7 +18,7 @@ void GraphicsGeometryManager::destroy()
 {
 	if ( geometryInfos )
 	{
-		for ( int i = 0; i < MAX_GEOMETRIES; i++ )
+		for (unsigned int i = 0; i < numGeometrySlots; i++ )
 		{
 			if ( glIsVertexArray( geometryInfos[i].dataArray ) ) glDeleteVertexArrays( 1 , &geometryInfos[i].dataArray );
 		}
@@ -47,14 +47,20 @@ GeometryInfo* GraphicsGeometryManager::addPMDGeometry( const char* filename , Gr
 	BufferInfo* buffer = bufferManager.getBuffer( dataSize );
 	if ( !buffer ) return 0;
 
-	int j;
+	int j = -1;
 
-	for ( j = 0; j < MAX_GEOMETRIES; j++ )
+	for (unsigned int i = 0; i < numGeometrySlots; ++i )
 	{
-		if ( glIsVertexArray( geometryInfos[j].dataArray ) == GL_FALSE )
+		if ( glIsVertexArray( geometryInfos[i].dataArray ) == GL_FALSE )
 		{
+			j = i;
 			break;
 		}
+	}
+	if ( j < 0 )
+	{
+		delete data;
+		return 0;
 	}
 
 	geometryInfos[j].buffer = buffer;
@@ -94,14 +100,20 @@ GeometryInfo* GraphicsGeometryManager::addRawGeometry( const char* rawData , Gra
 	BufferInfo* buffer = bufferManager.getBuffer( dataSize );
 	if ( !buffer ) return 0;
 
-	int j;
+	int j = -1;
 
-	for ( j = 0; j < MAX_GEOMETRIES; j++ )
+	for (unsigned int i = 0; i < numGeometrySlots; ++i )
 	{
-		if ( glIsVertexArray( geometryInfos[j].dataArray ) == GL_FALSE )
+		if ( glIsVertexArray( geometryInfos[i].dataArray ) == GL_FALSE )
 		{
+			j = i;
 			break;
 		}
+	}
+	if ( j < 0 )
+	{
+		delete data;
+		return 0;
 	}
 
 	geometryInfos[j].buffer = buffer;
