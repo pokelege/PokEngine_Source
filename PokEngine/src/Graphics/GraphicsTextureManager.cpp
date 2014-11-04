@@ -5,7 +5,7 @@
 #include <string>
 GraphicsTextureManager GraphicsTextureManager::globalTextureManager;
 
-GraphicsTextureManager::GraphicsTextureManager() : numTextureSlots(0) {}
+GraphicsTextureManager::GraphicsTextureManager() : numTextureSlots(0), textureInfos(0) {}
 void GraphicsTextureManager::initialize( unsigned int numTextureSlots )
 {
 	if ( textureInfos ) destroy();
