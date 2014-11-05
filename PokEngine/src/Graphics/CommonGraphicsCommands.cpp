@@ -89,6 +89,8 @@ void CommonGraphicsCommands::enable( unsigned int toEnable )
 void CommonGraphicsCommands::setViewPort( int x , int y , int width , int height )
 {
 	glViewport( x , y , width , height );
+	glScissor( x , y , width , height );
+	glEnable( GL_SCISSOR_TEST );
 }
 
 void CommonGraphicsCommands::printString( const char* string , const float& x , const float& y , glm::vec4 color )

@@ -4,7 +4,7 @@
 #include <Core\WindowInfo.h>
 #include <Graphics\GraphicsRenderingManager.h>
 #include <Graphics\CommonGraphicsCommands.h>
-Camera::Camera() : toRender(0), parent(0), up(glm::vec3(0,1,0)), direction(glm::vec3(0,0,-1)), x(0), y(0), width(1), height(1), FOV(60) {}
+Camera::Camera() : toRender(0), parent(0), up(glm::vec3(0,1,0)), direction(glm::vec3(0,0,-1)), x(0), y(0), width(1), height(1), FOV(60), nearestObject(0.01f) {}
 void Camera::attatch( GameObject* parent ) { this->parent = parent; }
 void Camera::detatch() { parent = 0; }
 
@@ -55,8 +55,8 @@ void Camera::lateUpdate() {}
 void Camera::earlyDraw() {}
 void Camera::draw()
 {
+	CommonGraphicsCommands::setViewPort( ( int ) ( WindowInfo::width * x ) , ( int ) ( WindowInfo::height * y ) , ( int ) ( WindowInfo::width * width ) , ( int ) ( WindowInfo::height * height ) );
 	CommonGraphicsCommands::clearCommon();
-	CommonGraphicsCommands::setViewPort( (int)(WindowInfo::width * x),  (int)(WindowInfo::height * y) , (int)(WindowInfo::width * width ), (int)(WindowInfo::height * height) );
 	for ( unsigned int i = 0; i < numRenders; ++i )
 	{
 		if ( toRender[i] )

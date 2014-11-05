@@ -99,6 +99,16 @@ bool RenderableInfo::addTexture( TextureInfo* texture )
 	return toReturn;
 }
 
+bool RenderableInfo::swapTexture( TextureInfo* texture , const unsigned int& index , TextureInfo** receivingTexture)
+{
+	bool toReturn = false;
+	if ( !texture || !textures || index < 0 || index >= numTextureSlots ) return toReturn;
+	if ( receivingTexture ) *receivingTexture = textures[index];
+	textures[index] = texture;
+	toReturn = true;
+	return toReturn;
+}
+
 void RenderableInfo::earlyUpdate() {}
 void RenderableInfo::update() {}
 void RenderableInfo::lateUpdate() {}

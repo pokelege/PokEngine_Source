@@ -53,6 +53,7 @@ public:
 		const void* dataPointer,
 		unsigned int size = 1 );
 	bool addTexture( TextureInfo* texture );
+	bool swapTexture( TextureInfo* texture , const unsigned int& index, TextureInfo** receivingTexture = 0 );
 };
 
 typedef RenderableInfo Renderable;

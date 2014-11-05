@@ -177,7 +177,7 @@ std::string GraphicsTextureManager::saveRawTexture( TextureInfo* theTexture , in
 	glGetTexLevelParameteriv( GL_TEXTURE_2D , 0 , GL_TEXTURE_WIDTH , &theWidth );
 	glGetTexLevelParameteriv( GL_TEXTURE_2D , 0 , GL_TEXTURE_WIDTH , &theHeight );
 	char* textureData = new char[theWidth * theHeight * 4];
-	glGetTexImage( GL_TEXTURE_2D , 0 , GL_RGBA , GL_BYTE , textureData );
+	glGetTexImage( GL_TEXTURE_2D , 0 , GL_RGBA , GL_UNSIGNED_BYTE , textureData );
 	if ( width ) *width = theWidth;
 	if ( height ) *height = theHeight;
 	std::string toReturn( textureData );
