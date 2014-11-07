@@ -34,7 +34,7 @@ public:
 	CullingType culling;
 	bool depthTestEnabled;
 	bool alphaBlendingEnabled;
-	bool visible;
+	bool slotUsed;
 	RenderableInfo();
 	~RenderableInfo();
 	void initialize( unsigned int numUniformSlots, unsigned int numTextureSlots );

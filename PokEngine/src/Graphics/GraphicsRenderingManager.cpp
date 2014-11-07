@@ -31,9 +31,10 @@ RenderableInfo* GraphicsRenderingManager::addRenderable()
 	RenderableInfo* renderable = 0;
 	for ( unsigned i = 0; i < numRenderableSlots; i++ )
 	{
-		if ( renderables[i].geometryInfo == nullptr )
+		if ( !renderables[i].slotUsed )
 		{
 			renderable = &renderables[i];
+			renderable->slotUsed = true;
 			break;
 		}
 	}

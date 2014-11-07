@@ -33,5 +33,7 @@ public:
 	//Raw data texture
 	void editTexture( TextureInfo* theTexture , const char* data , unsigned int width , unsigned int height , unsigned int slot = 0 , unsigned int inputFormat = 0x1908 , unsigned int outputFormat = 0x1908 , unsigned int dataType = 0x1401, unsigned int wrap = 0x2901 );
 
+	void deleteTexture( TextureInfo* theTexture );
+
 	std::string saveRawTexture( TextureInfo* theTexture , int* width = 0 , int* height = 0 );
 };

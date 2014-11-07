@@ -7,7 +7,7 @@
 #include <GL\glew.h>
 #include <Core\GameObject.h>
 #include <Graphics\CommonUniformNames.h>
-RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ), sharedUniforms (0), geometryInfo(0), shaderInfo(0), parent(0) {}
+RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ), sharedUniforms (0), geometryInfo(0), shaderInfo(0), parent(0), slotUsed(false) {}
 
 RenderableInfo::~RenderableInfo()
 {
@@ -116,7 +116,7 @@ void RenderableInfo::earlyDraw() {}
 
 void RenderableInfo::draw()
 {
-	if ( !visible || !parent ) return;
+	if ( !parent ) return;
 	if ( shaderInfo ) glUseProgram( shaderInfo->programID );
 
 	if(geometryInfo) glBindVertexArray( geometryInfo->dataArray );

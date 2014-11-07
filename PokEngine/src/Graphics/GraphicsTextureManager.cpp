@@ -169,6 +169,13 @@ void GraphicsTextureManager::editTexture( TextureInfo* theTexture , const char* 
 	theTexture->textureSlot = slot;
 }
 
+void GraphicsTextureManager::deleteTexture( TextureInfo* theTexture )
+{
+	if ( !theTexture ) return;
+	if ( glIsTexture( theTexture->textureID ) ) glDeleteTextures( 1 , &theTexture->textureID );
+	*theTexture = TextureInfo();
+}
+
 std::string GraphicsTextureManager::saveRawTexture( TextureInfo* theTexture , int* width , int* height)
 {
 	if ( !glIsTexture( theTexture->textureID ) ) return std::string();

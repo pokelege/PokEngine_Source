@@ -33,6 +33,7 @@ BufferInfo* GraphicsBufferManager::getBuffer( const unsigned int& requiredBuffer
 				bufferIds[i].bufferSpace = numSizePerBufferSlot;
 				bufferIds[i].offsetAddress = 0;
 				bufferInfo = &bufferIds[i];
+				break;
 			}
 			else if ( bufferIds[i].bufferSpace >= requiredBufferSpace )
 			{
