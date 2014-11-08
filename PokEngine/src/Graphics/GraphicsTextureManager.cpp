@@ -1,6 +1,7 @@
 #include <Graphics\GraphicsTextureManager.h>
 #include <Graphics\TextureInfo.h>
 #include <GL\glew.h>
+#include <fstream>
 #include <SOIL.h>
 #include <string>
 GraphicsTextureManager GraphicsTextureManager::globalTextureManager;
@@ -34,29 +35,15 @@ TextureInfo* GraphicsTextureManager::addTexture( const char * file, unsigned int
 	if ( !strlen( file ) ) return 0;
 
 	TextureInfo* texture = 0;
-	for (unsigned int i = 0; i < numTextureSlots; ++i )
-	{
-		if ( !glIsTexture(textureInfos[i].textureID) )
-		{
-			texture = &textureInfos[i];
-			break;
-		}
-	}
-	if ( !texture ) return texture;
-	
-	texture->textureID = SOIL_load_OGL_texture( file , SOIL_LOAD_RGBA , SOIL_CREATE_NEW_ID , SOIL_FLAG_INVERT_Y );
 
-	glBindTexture( GL_TEXTURE_2D , texture->textureID );
-	glPixelStorei( GL_UNPACK_ALIGNMENT , 1 );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_WRAP_S , wrap );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_WRAP_T , wrap );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_WRAP_R , wrap );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_LINEAR );
-	glTexEnvf( GL_TEXTURE_ENV , GL_TEXTURE_ENV_MODE , GL_MODULATE );
-	texture->textureSlot = slot;
-	texture->type = GL_TEXTURE_2D;
-
+	std::ifstream stream( file , std::ios::ios_base::binary | std::ios::ios_base::in );
+	int width , height;
+	stream.read( ( char* ) &width , sizeof( int ) );
+	stream.read( ( char* ) &height , sizeof( int ) );
+	unsigned char* theImage = new unsigned char[width * height * 4];
+	stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+	texture = addTexture( (char*)theImage , width , height , slot , GL_RGBA , GL_RGBA , GL_UNSIGNED_BYTE , wrap );
+	delete[] theImage;
 	return texture;
 }
 
