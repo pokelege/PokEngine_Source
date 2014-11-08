@@ -17,6 +17,7 @@
 #include <Graphics\GraphicsGeometryManager.h>
 #include <Core\GameObject.h>
 #include <Graphics\AnimationRenderingInfo.h>
+
 ConverterWindow::ConverterWindow()
 {
 	QHBoxLayout* mainLayout = new QHBoxLayout;
@@ -236,7 +237,7 @@ void ConverterWindow::save()
 
 void ConverterWindow::colorTextureButton()
 {
-	preview->setTexture( dialogbox.getOpenFileName( NULL , "Open Color Texture" ).toUtf8() );
+	preview->setTexture( dialogbox.getOpenFileName( NULL , "Open Color Texture", QCoreApplication::applicationDirPath(), "*.tex"  ).toUtf8() );
 }
 ConverterWindow::~ConverterWindow()
 {

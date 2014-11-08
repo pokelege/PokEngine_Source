@@ -6,21 +6,40 @@ void saveTexture( const char* input , const char* output );
 void saveGeometry( const char* input , const char* output );
 int main( int argc , char** argv )
 {
-	if ( argc < 2 ) return 0;
+	if ( argc < 1 ) return 0;
 
 	QFileInfo inputFile( argv[1] );
-	QFileInfo outputFile( argv[2] );
+	//QFileInfo outputFile( argv[2] );
 	QString extension = inputFile.suffix();
 	if ( QString::compare( extension , "png" , Qt::CaseInsensitive ) == 0 )
 	{
+		QFileInfo outputFile;
+		if ( argc > 1 )
+		{
+			outputFile = QFileInfo(argv[2]);
+		}
+		else
+		{
+			outputFile = QString( argv[2] ) + ".tex";
+		}
 		saveTexture( inputFile.absoluteFilePath().toUtf8() , outputFile.absoluteFilePath().toUtf8() );
 	}
 	else if ( QString::compare( extension , "obj" , Qt::CaseInsensitive ) == 0 || QString::compare( extension , "fbx" , Qt::CaseInsensitive ) == 0 )
 	{
+		QFileInfo outputFile;
+		if ( argc > 1 )
+		{
+			outputFile = QFileInfo( argv[2] );
+		}
+		else
+		{
+			outputFile = QString( argv[2] ) + ".pmd";
+		}
 		saveGeometry( inputFile.absoluteFilePath().toUtf8() , outputFile.absoluteFilePath().toUtf8() );
 	}
-	else
+	else if ( argc > 1 )
 	{
+		QFileInfo outputFile = QFileInfo( argv[2] );
 		if ( outputFile.exists() )
 		{
 			QFile::remove( outputFile.absoluteFilePath() );

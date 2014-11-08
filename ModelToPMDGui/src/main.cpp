@@ -1,10 +1,10 @@
 #include <iostream>
 #include <Windows.h>
-#include "FBXConverter.h"
+#include <FBXConverter.h>
 #include <Qt\qapplication.h>
 #include <Graphics\CommonGraphicsCommands.h>
-#include "ConverterWindow.h"
-#include "DebugHeap.h"
+#include <ConverterWindow.h>
+#include <DebugHeap.h>
 int main( int argc , char** argv )
 {
 #ifdef _DEBUG

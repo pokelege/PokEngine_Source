@@ -1,4 +1,5 @@
-#include "Preview.h"
+#include <Preview.h>
+#include <SOIL.h>
 #include <Misc\FileReader.h>
 #include <Graphics\VertexInfo.h>
 #include <iostream>
@@ -20,7 +21,7 @@
 #include <Input\MouseInput.h>
 #include <Core\WindowInfo.h>
 #include <Graphics\GraphicsTextureManager.h>
-#include "DebugHeap.h"
+#include <DebugHeap.h>
 void Preview::setModel( std::string fileName )
 {
 	GeometryInfo* theModel = GraphicsGeometryManager::globalGeometryManager.addPMDGeometry( fileName.c_str(), GraphicsBufferManager::globalBufferManager);
