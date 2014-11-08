@@ -2,7 +2,6 @@
 #include <Graphics\TextureInfo.h>
 #include <GL\glew.h>
 #include <fstream>
-#include <SOIL.h>
 #include <string>
 GraphicsTextureManager GraphicsTextureManager::globalTextureManager;
 
@@ -61,9 +60,82 @@ TextureInfo* GraphicsTextureManager::addTexture(  const char* X , const char* x 
 		}
 	}
 	if ( !texture ) return texture;
-	texture->textureID = SOIL_load_OGL_cubemap( X , x , Y , y , Z , z , SOIL_LOAD_RGBA , SOIL_CREATE_NEW_ID , 0 );
+	glGenTextures( 1 , &texture->textureID );
 
 	glBindTexture( GL_TEXTURE_CUBE_MAP , texture->textureID );
+
+	{
+		std::ifstream stream( X , std::ios::ios_base::binary | std::ios::ios_base::in );
+		int width , height;
+		stream.read( ( char* ) &width , sizeof( int ) );
+		stream.read( ( char* ) &height , sizeof( int ) );
+		unsigned char* theImage = new unsigned char[width * height * 4];
+		stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+		glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+		delete[] theImage;	
+	}
+
+		{
+			std::ifstream stream( x , std::ios::ios_base::binary | std::ios::ios_base::in );
+			int width , height;
+			stream.read( ( char* ) &width , sizeof( int ) );
+			stream.read( ( char* ) &height , sizeof( int ) );
+			unsigned char* theImage = new unsigned char[width * height * 4];
+			stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_NEGATIVE_X , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+			delete[] theImage;
+			
+		}
+
+		{
+			std::ifstream stream( Y , std::ios::ios_base::binary | std::ios::ios_base::in );
+			int width , height;
+			stream.read( ( char* ) &width , sizeof( int ) );
+			stream.read( ( char* ) &height , sizeof( int ) );
+			unsigned char* theImage = new unsigned char[width * height * 4];
+			stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_Y , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+			delete[] theImage;
+			
+		}
+
+		{
+			std::ifstream stream( y , std::ios::ios_base::binary | std::ios::ios_base::in );
+			int width , height;
+			stream.read( ( char* ) &width , sizeof( int ) );
+			stream.read( ( char* ) &height , sizeof( int ) );
+			unsigned char* theImage = new unsigned char[width * height * 4];
+			stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_NEGATIVE_Y , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+			delete[] theImage;
+			
+		}
+
+		{
+			std::ifstream stream( Z , std::ios::ios_base::binary | std::ios::ios_base::in );
+			int width , height;
+			stream.read( ( char* ) &width , sizeof( int ) );
+			stream.read( ( char* ) &height , sizeof( int ) );
+			unsigned char* theImage = new unsigned char[width * height * 4];
+			stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_Z , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+			delete[] theImage;
+			
+		}
+
+		{
+			std::ifstream stream( z , std::ios::ios_base::binary | std::ios::ios_base::in );
+			int width , height;
+			stream.read( ( char* ) &width , sizeof( int ) );
+			stream.read( ( char* ) &height , sizeof( int ) );
+			unsigned char* theImage = new unsigned char[width * height * 4];
+			stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_NEGATIVE_Z , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+			delete[] theImage;
+			
+		}
+
+
 	glPixelStorei( GL_UNPACK_ALIGNMENT , 1 );
 	glTexParameteri( GL_TEXTURE_CUBE_MAP , GL_TEXTURE_WRAP_S , wrap );
 	glTexParameteri( GL_TEXTURE_CUBE_MAP , GL_TEXTURE_WRAP_T , wrap );
@@ -105,29 +177,97 @@ TextureInfo* GraphicsTextureManager::addTexture(  const char* data , unsigned in
 
 void GraphicsTextureManager::editTexture( TextureInfo* theTexture , const char* file , unsigned int slot , unsigned int wrap )
 {
-	if ( glIsTexture( theTexture->textureID ) ) glDeleteTextures( 1 , &theTexture->textureID );
-
-	theTexture->textureID = SOIL_load_OGL_texture( file , SOIL_LOAD_RGBA , SOIL_CREATE_NEW_ID , SOIL_FLAG_INVERT_Y );
-
-	glBindTexture( GL_TEXTURE_2D , theTexture->textureID );
-	glPixelStorei( GL_UNPACK_ALIGNMENT , 1 );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_WRAP_S , wrap );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_WRAP_T , wrap );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_WRAP_R , wrap );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MAG_FILTER , GL_LINEAR );
-	glTexParameteri( GL_TEXTURE_2D , GL_TEXTURE_MIN_FILTER , GL_LINEAR );
-	glTexEnvf( GL_TEXTURE_ENV , GL_TEXTURE_ENV_MODE , GL_MODULATE );
-	theTexture->type = GL_TEXTURE_2D;
-	theTexture->textureSlot = slot;
+	if ( !strlen( file ) ) return;
+	std::ifstream stream( file , std::ios::ios_base::binary | std::ios::ios_base::in );
+	int width , height;
+	stream.read( ( char* ) &width , sizeof( int ) );
+	stream.read( ( char* ) &height , sizeof( int ) );
+	unsigned char* theImage = new unsigned char[width * height * 4];
+	stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+	editTexture( theTexture, ( char* ) theImage , width , height , slot , GL_RGBA , GL_RGBA , GL_UNSIGNED_BYTE , wrap );
+	delete[] theImage;
 }
 
 void GraphicsTextureManager::editTexture( TextureInfo* theTexture , const char* X , const char* x , const char* Y , const char* y , const char* Z , const char* z, unsigned int slot , unsigned int wrap )
 {
 	if ( glIsTexture( theTexture->textureID ) ) glDeleteTextures( 1 , &theTexture->textureID );
 
-	theTexture->textureID = SOIL_load_OGL_cubemap( X , x , Y , y , Z , z , SOIL_LOAD_RGBA , SOIL_CREATE_NEW_ID , 0 );
+	glGenTextures( 1 , &theTexture->textureID );
 
 	glBindTexture( GL_TEXTURE_CUBE_MAP , theTexture->textureID );
+
+	{
+		std::ifstream stream( X , std::ios::ios_base::binary | std::ios::ios_base::in );
+		int width , height;
+		stream.read( ( char* ) &width , sizeof( int ) );
+		stream.read( ( char* ) &height , sizeof( int ) );
+		unsigned char* theImage = new unsigned char[width * height * 4];
+		stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+		glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_X , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+		delete[] theImage;
+	}
+
+		{
+			std::ifstream stream( x , std::ios::ios_base::binary | std::ios::ios_base::in );
+			int width , height;
+			stream.read( ( char* ) &width , sizeof( int ) );
+			stream.read( ( char* ) &height , sizeof( int ) );
+			unsigned char* theImage = new unsigned char[width * height * 4];
+			stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_NEGATIVE_X , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+			delete[] theImage;
+
+		}
+
+		{
+			std::ifstream stream( Y , std::ios::ios_base::binary | std::ios::ios_base::in );
+			int width , height;
+			stream.read( ( char* ) &width , sizeof( int ) );
+			stream.read( ( char* ) &height , sizeof( int ) );
+			unsigned char* theImage = new unsigned char[width * height * 4];
+			stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_Y , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+			delete[] theImage;
+
+		}
+
+		{
+			std::ifstream stream( y , std::ios::ios_base::binary | std::ios::ios_base::in );
+			int width , height;
+			stream.read( ( char* ) &width , sizeof( int ) );
+			stream.read( ( char* ) &height , sizeof( int ) );
+			unsigned char* theImage = new unsigned char[width * height * 4];
+			stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_NEGATIVE_Y , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+			delete[] theImage;
+
+		}
+
+		{
+			std::ifstream stream( Z , std::ios::ios_base::binary | std::ios::ios_base::in );
+			int width , height;
+			stream.read( ( char* ) &width , sizeof( int ) );
+			stream.read( ( char* ) &height , sizeof( int ) );
+			unsigned char* theImage = new unsigned char[width * height * 4];
+			stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_POSITIVE_Z , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+			delete[] theImage;
+
+		}
+
+		{
+			std::ifstream stream( z , std::ios::ios_base::binary | std::ios::ios_base::in );
+			int width , height;
+			stream.read( ( char* ) &width , sizeof( int ) );
+			stream.read( ( char* ) &height , sizeof( int ) );
+			unsigned char* theImage = new unsigned char[width * height * 4];
+			stream.read( ( char* ) theImage , sizeof( unsigned char ) * ( width * height * 4 ) );
+			glTexImage2D( GL_TEXTURE_CUBE_MAP_NEGATIVE_Z , 0 , GL_RGBA , width , height , 0 , GL_RGBA , GL_UNSIGNED_BYTE , theImage );
+			delete[] theImage;
+
+		}
+
+
 	glPixelStorei( GL_UNPACK_ALIGNMENT , 1 );
 	glTexParameteri( GL_TEXTURE_CUBE_MAP , GL_TEXTURE_WRAP_S , wrap );
 	glTexParameteri( GL_TEXTURE_CUBE_MAP , GL_TEXTURE_WRAP_T , wrap );
