@@ -1,9 +1,10 @@
 #pragma once
+#include <fbxsdk.h>
 #include <vector>
+
 #include <JointData.h>
 #include <VertexData.h>
 #include <FBXConverterExportHeader.h>
-#include <fbxsdk.h>
 struct FBXCONVERTER_SHARED IndexData
 {
 	unsigned short index;

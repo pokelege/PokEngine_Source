@@ -5,7 +5,6 @@
 #include <string>
 #include <algorithm>
 #include <Graphics\AnimationFrameRangeInfo.h>
-#include <DebugHeap.h>
 #include <fbxsdk.h>
 #define DATASTRING(data) std::string( reinterpret_cast< const char* >( &data ) , sizeof( data ) );
 
