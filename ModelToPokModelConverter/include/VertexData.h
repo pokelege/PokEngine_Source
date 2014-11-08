@@ -1,12 +1,13 @@
 #pragma once
 #include <glm.hpp>
 #include <vector>
-struct BlendingIndexWeightPair
+#include <FBXConverterExportHeader.h>
+struct FBXCONVERTER_SHARED BlendingIndexWeightPair
 {
 	unsigned int blendingIndex;
 	float blendingWeight;
 };
-struct VertexData
+struct FBXCONVERTER_SHARED VertexData
 {
 	glm::vec3 position;
 	glm::vec2 uv;

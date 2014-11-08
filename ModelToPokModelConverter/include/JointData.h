@@ -2,14 +2,15 @@
 #include <string>
 #include <glm.hpp>
 #include <vector>
-struct AnimationData
+#include <FBXConverterExportHeader.h>
+struct FBXCONVERTER_SHARED AnimationData
 {
 	int frame;
 	glm::vec3 scale;
 	glm::vec3 translation;
 	glm::vec3 rotation;
 };
-struct JointData
+struct FBXCONVERTER_SHARED JointData
 {
 	bool isParent;
 	std::string name;

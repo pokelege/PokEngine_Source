@@ -1,14 +1,15 @@
 #pragma once
-#include <fbxsdk.h>
 #include <vector>
-#include "JointData.h"
-#include "VertexData.h"
-struct IndexData
+#include <JointData.h>
+#include <VertexData.h>
+#include <FBXConverterExportHeader.h>
+#include <fbxsdk.h>
+struct FBXCONVERTER_SHARED IndexData
 {
 	unsigned short index;
 	unsigned int oldControlPoint;
 };
-class FBXConverter
+class FBXCONVERTER_SHARED FBXConverter
 {
 	bool converting;
 	FbxMesh* findMesh( FbxNode* node );

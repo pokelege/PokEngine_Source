@@ -49,7 +49,6 @@ void Preview::initializeGL()
 	renderable->culling = CT_BACK;
 	renderable->depthTestEnabled = true;
 	renderable->sharedUniforms = &GraphicsSharedUniformManager::globalSharedUniformManager;
-	renderable->visible = true;
 	renderable->initialize( 10 , 1 );
 
 	colorTexture = GraphicsTextureManager::globalTextureManager.addTexture( 0 , 0 , 0 , 0 );
