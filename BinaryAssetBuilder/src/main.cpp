@@ -2,43 +2,48 @@
 #include <SOIL.h>
 #include <fstream>
 #include <FBXConverter.h>
+#include <iostream>
 void saveTexture( const char* input , const char* output );
 void saveGeometry( const char* input , const char* output );
 int main( int argc , char** argv )
 {
-	if ( argc < 1 ) return 0;
-
+	if ( argc < 2 ) return 0;
 	QFileInfo inputFile( argv[1] );
 	//QFileInfo outputFile( argv[2] );
 	QString extension = inputFile.suffix();
 	if ( QString::compare( extension , "png" , Qt::CaseInsensitive ) == 0 )
 	{
+		
 		QFileInfo outputFile;
-		if ( argc > 1 )
+		if ( argc > 2 )
 		{
+			//std::cout << "image" << std::endl;
 			outputFile = QFileInfo(argv[2]);
 		}
 		else
 		{
-			outputFile = QString( argv[2] ) + ".tex";
+			outputFile = QString( argv[1] ) + ".tex";
+			//std::cout << outputFile.absoluteFilePath().toUtf8().data_ptr() << std::endl;
 		}
 		saveTexture( inputFile.absoluteFilePath().toUtf8() , outputFile.absoluteFilePath().toUtf8() );
 	}
 	else if ( QString::compare( extension , "obj" , Qt::CaseInsensitive ) == 0 || QString::compare( extension , "fbx" , Qt::CaseInsensitive ) == 0 )
 	{
+		//std::cout << "obj" << std::endl;
 		QFileInfo outputFile;
-		if ( argc > 1 )
+		if ( argc > 2 )
 		{
 			outputFile = QFileInfo( argv[2] );
 		}
 		else
 		{
-			outputFile = QString( argv[2] ) + ".pmd";
+			outputFile = QString( argv[1] ) + ".pmd";
 		}
 		saveGeometry( inputFile.absoluteFilePath().toUtf8() , outputFile.absoluteFilePath().toUtf8() );
 	}
-	else if ( argc > 1 )
+	else if ( argc > 2 )
 	{
+		//std::cout << "copy" << std::endl;
 		QFileInfo outputFile = QFileInfo( argv[2] );
 		if ( outputFile.exists() )
 		{
