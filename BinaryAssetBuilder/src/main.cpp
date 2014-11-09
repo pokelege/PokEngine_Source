@@ -2,7 +2,6 @@
 #include <SOIL.h>
 #include <fstream>
 #include <FBXConverter.h>
-#include <iostream>
 void saveTexture( const char* input , const char* output );
 void saveGeometry( const char* input , const char* output );
 int main( int argc , char** argv )
@@ -13,23 +12,19 @@ int main( int argc , char** argv )
 	QString extension = inputFile.suffix();
 	if ( QString::compare( extension , "png" , Qt::CaseInsensitive ) == 0 )
 	{
-		
 		QFileInfo outputFile;
 		if ( argc > 2 )
 		{
-			//std::cout << "image" << std::endl;
 			outputFile = QFileInfo(argv[2]);
 		}
 		else
 		{
 			outputFile = QString( argv[1] ) + ".tex";
-			//std::cout << outputFile.absoluteFilePath().toUtf8().data_ptr() << std::endl;
 		}
 		saveTexture( inputFile.absoluteFilePath().toUtf8() , outputFile.absoluteFilePath().toUtf8() );
 	}
 	else if ( QString::compare( extension , "obj" , Qt::CaseInsensitive ) == 0 || QString::compare( extension , "fbx" , Qt::CaseInsensitive ) == 0 )
 	{
-		//std::cout << "obj" << std::endl;
 		QFileInfo outputFile;
 		if ( argc > 2 )
 		{
@@ -43,7 +38,6 @@ int main( int argc , char** argv )
 	}
 	else if ( argc > 2 )
 	{
-		//std::cout << "copy" << std::endl;
 		QFileInfo outputFile = QFileInfo( argv[2] );
 		if ( outputFile.exists() )
 		{
