@@ -22,9 +22,10 @@ void FirstPersonCameraInput::earlyUpdate()
 	if ( !camera ) return;
 	glm::vec2 delta = MouseInput::globalMouseInput.mouseDelta;
 	glm::vec3 b = glm::normalize(glm::cross( camera->direction , camera->up ));
-
-	camera->direction = glm::normalize(glm::mat3( glm::rotate( glm::mat4() , -delta.x * rotationSensitivity , camera->up ) * glm::rotate( glm::mat4() , -delta.y * rotationSensitivity , b ) ) *camera->direction);
-
+	glm::mat3 rotation( glm::rotate( glm::mat4() , -delta.y * rotationSensitivity , b ) * glm::rotate( glm::mat4() , -delta.x * rotationSensitivity , camera->up ) );
+	camera->direction = glm::normalize( rotation *camera->direction);
+	b = glm::normalize( glm::cross( camera->direction , camera->up ) );
+	camera->up = glm::normalize(glm::cross( b , camera->direction ));
 	if ( KeyInput::isDown(forward))
 	{
 		parent->translate += moveSensitivity * camera->direction;
