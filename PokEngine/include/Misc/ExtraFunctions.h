@@ -16,7 +16,7 @@ inline glm::quat rotationBetweenVectors(const glm::vec3& start , const glm::vec3
 		bool found = false;
 		for ( unsigned int i = 0; i < numFallbacks && !found; ++i )
 		{
-			rotationAxis = glm::cross(va_arg( ap , glm::vec3 ),start);
+			rotationAxis = glm::cross( va_arg( ap , glm::vec3 ) , startNormal );
 			found = glm::length( rotationAxis ) != 0;
 		}
 		if ( found )
@@ -28,7 +28,7 @@ inline glm::quat rotationBetweenVectors(const glm::vec3& start , const glm::vec3
 		return toReturn;
 	}
 
-	rotationAxis = glm::cross( start , end );
+	rotationAxis = glm::cross( startNormal , endNormal );
 	float s = sqrtf( ( 1 + cosTheta ) * 2 );
 	float invs = 1 / s;
 	toReturn = glm::quat( s * 0.5f , rotationAxis.x * invs , rotationAxis.y * invs , rotationAxis.z * invs );

@@ -1,4 +1,6 @@
+#define GLM_FORCE_RADIANS
 #include <Input\TwoDPlaneInput.h>
+#include <Misc\ExtraFunctions.h>
 #include <Input\KeyInput.h>
 #include <Core\GameObject.h>
 #include <Misc\Clock.h>
@@ -45,7 +47,8 @@ void TwoDPlaneInput::update()
 	}
 	if ( glm::length( totalTranslate ) )
 	{
-		parent->rotate = glm::quat_cast( glm::lookAt( parent->translate , parent->translate + glm::normalize( totalTranslate ) , glm::normalize( glm::vec3(0,0,1) ) ) );
+		parent->rotate = rotationBetweenVectors( glm::vec3( 1 , 0 , 0 ) , glm::normalize( totalTranslate ), 4, x, -x, y, -y );
+		//parent->rotate = glm::quat_cast( glm::lookAt( parent->translate , parent->translate + glm::normalize( totalTranslate ) , glm::normalize( glm::vec3(0,0,1) ) ) );
 	}
 	Particle* theParticle = 0;
 	if ( (theParticle = parent->getComponent<Particle>()) != 0 ) theParticle->addToTotalForce( totalTranslate);
