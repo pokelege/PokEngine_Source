@@ -9,6 +9,7 @@ class ConverterWindow : public QWidget
 {
 	Q_OBJECT;
 
+	bool changing;
 
 	private slots:
 	void browse();

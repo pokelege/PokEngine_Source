@@ -18,7 +18,7 @@
 #include <Core\GameObject.h>
 #include <Graphics\AnimationRenderingInfo.h>
 
-ConverterWindow::ConverterWindow()
+ConverterWindow::ConverterWindow() : changing(false)
 {
 	QHBoxLayout* mainLayout = new QHBoxLayout;
 	QVBoxLayout* layout = new QVBoxLayout;
@@ -120,10 +120,17 @@ void ConverterWindow::currentIndexChanged( int index )
 
 	if ( frameRange )
 	{
+
 		blockSignals( true );
+		changing = true;
+		startFrame->setMaximum( INT_MAX );
+		endFrame->setMinimum( 0 );
 		nextFrame->setValue( frameRange[index].nextAnimationFrameInfo );
 		startFrame->setValue( frameRange[index].firstFrame );
 		endFrame->setValue( frameRange[index].lastFrame );
+		//startFrame->setMaximum( frameRange[index].lastFrame );
+		//endFrame->setMinimum( frameRange[index].firstFrame );
+		changing = false;
 		blockSignals( false );
 	}
 }
@@ -187,30 +194,32 @@ void ConverterWindow::deleteFrameRange()
 
 void ConverterWindow::changeParamsNext()
 {
+	if ( changing ) return;
 	int index = frameList->currentIndex();
 	if ( index < 0 ) return;
 	unsigned int numFrames;
 	AnimationFrameRangeInfo* frameRange = preview->renderable->geometryInfo->modelData->getAnimationFrameRange( &numFrames );
 
 	frameRange[index].nextAnimationFrameInfo = nextFrame->value();
-	startFrame->setMaximum( frameRange[index].lastFrame );
-	endFrame->setMinimum( frameRange[index].firstFrame );
 	preview->renderable->parent->getComponent<Animator>()->play( frameList->currentIndex() );
 }
 void ConverterWindow::changeParamsStart()
 {
+	if ( changing ) return;
 	int index = frameList->currentIndex();
 	if ( index < 0 ) return;
 	unsigned int numFrames;
 	AnimationFrameRangeInfo* frameRange = preview->renderable->geometryInfo->modelData->getAnimationFrameRange( &numFrames );
 
 	frameRange[index].firstFrame = startFrame->value();
-	startFrame->setMaximum( frameRange[index].lastFrame );
 	endFrame->setMinimum( frameRange[index].firstFrame );
 	preview->renderable->parent->getComponent<Animator>()->play( frameList->currentIndex() );
 }
 void ConverterWindow::changeParamsEnd()
 {
+	if ( changing ) return;
+	std::cout << "changed " << frameList->currentIndex() << std::endl;
+	std::cout << endFrame->value() << std::endl;
 	int index = frameList->currentIndex();
 	if ( index < 0 ) return;
 	unsigned int numFrames;
@@ -218,7 +227,6 @@ void ConverterWindow::changeParamsEnd()
 
 	frameRange[index].lastFrame = endFrame->value();
 	startFrame->setMaximum( frameRange[index].lastFrame );
-	endFrame->setMinimum( frameRange[index].firstFrame );
 	preview->renderable->parent->getComponent<Animator>()->play( frameList->currentIndex() );
 }
 

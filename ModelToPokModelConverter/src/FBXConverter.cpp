@@ -445,7 +445,7 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 			cluster->GetTransformLinkMatrix( transformLinkMatrix );
 			//offsetMatrix = transformLinkMatrix.Inverse() * transformMatrix * geoTransform;
 
-			FbxMatrix realMatrix(transformLinkMatrix.Inverse());
+			FbxMatrix realMatrix( transformLinkMatrix.Inverse() * transformMatrix );
 			
 			for ( unsigned int row = 0; row < 4; ++row )
 			{
