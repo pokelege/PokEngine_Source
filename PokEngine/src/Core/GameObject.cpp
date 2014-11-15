@@ -133,14 +133,11 @@ void GameObject::lateDraw()
 
 glm::mat4 GameObject::getWorldTransform()
 {
-	if ( parent ) return parent->getWorldTransform() * getLocalTransform();
+	if ( parent ) return  parent->getWorldTransform() * getLocalTransform();
 	else return getLocalTransform();
 }
 
 glm::mat4 GameObject::getLocalTransform()
 {
-	glm::quat quaternion = glm::rotate( glm::quat() , rotate.x , glm::vec3( 1 , 0 , 0 ) ) *
-		glm::rotate( glm::quat() , rotate.y , glm::vec3( 0 , 1 , 0 ) ) *
-		glm::rotate( glm::quat() , rotate.z , glm::vec3( 0 , 0 , 1 ) );
-	return glm::translate( glm::mat4() , translate ) * glm::mat4_cast( quaternion ) * glm::scale( glm::mat4() , scale );
+	return glm::translate( glm::mat4() , translate ) * glm::mat4_cast( rotate ) * glm::scale( glm::mat4() , scale );
 }

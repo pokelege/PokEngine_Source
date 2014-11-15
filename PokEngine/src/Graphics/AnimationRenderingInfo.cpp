@@ -1,3 +1,4 @@
+#define GLM_FORCE_RADIANS
 #include <Graphics\AnimationRenderingInfo.h>
 #include <Graphics\BoneInfo.h>
 #include <Graphics\PokEngineModelDataMap.h>
@@ -132,9 +133,9 @@ void AnimationRenderingInfo::updateAnimationMatricesRecurse( unsigned int boneIn
 			lerpedRotation = ( interpolation * end->rotation );
 		}
 
-		glm::quat quaternion = glm::rotate( glm::quat() , lerpedRotation.x , glm::vec3( 1 , 0 , 0 ) ) *
-			glm::rotate( glm::quat() , lerpedRotation.y , glm::vec3( 0 , 1 , 0 ) ) *
-			glm::rotate( glm::quat() , lerpedRotation.z , glm::vec3( 0 , 0 , 1 ) );
+		glm::quat quaternion = glm::rotate( glm::quat() , glm::radians(lerpedRotation.x ), glm::vec3( 1 , 0 , 0 ) ) *
+			glm::rotate( glm::quat() ,glm::radians(lerpedRotation.y) , glm::vec3( 0 , 1 , 0 ) ) *
+			glm::rotate( glm::quat() , glm::radians(lerpedRotation.z) , glm::vec3( 0 , 0 , 1 ) );
 
 		animateTransform = parentMatrix * ( glm::translate( glm::mat4() , lerpedTranslate ) * glm::mat4_cast( quaternion ) * glm::scale( glm::mat4() , lerpedScale ) );
 		animationMatrices[boneIndex] = animateTransform * bones[boneIndex].offsetMatrix;

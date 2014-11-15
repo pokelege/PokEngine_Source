@@ -2,13 +2,14 @@
 #include <Core\CommonWarningDisables.h>
 #include <PokEngineExportHeader.h>
 #include <glm.hpp>
+#include <gtc\quaternion.hpp>
 #include <vector>
 class Component;
 class POKENGINE_SHARED GameObject
 {
 public:
 	glm::vec3 translate;
-	glm::vec3 rotate;
+	glm::quat rotate;
 	glm::vec3 scale;
 	bool active;
 private:

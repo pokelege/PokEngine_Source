@@ -1,3 +1,4 @@
+#define GLM_FORCE_RADIANS
 #include <Graphics\Camera.h>
 #include <gtc\matrix_transform.hpp>
 #include <Core\GameObject.h>
@@ -17,7 +18,7 @@ glm::mat4 Camera::worldToView() const
 glm::mat4 Camera::viewToProjection() const
 {
 	float apect = ( width * WindowInfo::width ) / ( height * WindowInfo::height );
-	return glm::infinitePerspective( FOV ,apect, nearestObject );
+	return glm::infinitePerspective( glm::radians(FOV) ,apect, nearestObject );
 }
 
 void Camera::initializeRenderManagers( unsigned int numRenders )

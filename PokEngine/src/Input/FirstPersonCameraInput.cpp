@@ -1,3 +1,4 @@
+#define GLM_FORCE_RADIANS
 #include <Input\FirstPersonCameraInput.h>
 #include <Input\MouseInput.h>
 #include <Graphics\Camera.h>
@@ -22,10 +23,8 @@ void FirstPersonCameraInput::earlyUpdate()
 	if ( !camera ) return;
 	glm::vec2 delta = MouseInput::globalMouseInput.mouseDelta;
 	glm::vec3 b = glm::normalize(glm::cross( camera->direction , camera->up ));
-	glm::mat3 rotation( glm::rotate( glm::mat4() , -delta.y * rotationSensitivity , b ) * glm::rotate( glm::mat4() , -delta.x * rotationSensitivity , camera->up ) );
+	glm::mat3 rotation( glm::rotate( glm::mat4() , glm::radians(-delta.y * rotationSensitivity) , b ) * glm::rotate( glm::mat4() , glm::radians(-delta.x * rotationSensitivity) , camera->up ) );
 	camera->direction = glm::normalize( rotation *camera->direction);
-	b = glm::normalize( glm::cross( camera->direction , camera->up ) );
-	camera->up = glm::normalize(glm::cross( b , camera->direction ));
 	if ( KeyInput::isDown(forward))
 	{
 		parent->translate += moveSensitivity * camera->direction;
