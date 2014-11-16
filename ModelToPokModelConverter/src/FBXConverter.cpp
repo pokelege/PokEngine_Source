@@ -1,3 +1,4 @@
+#define GLM_FORCE_RADIANS
 #include <FBXConverter.h>
 #include <iostream>
 #include <glm.hpp>
@@ -492,7 +493,7 @@ void FBXConverter::processAnimations( FbxNode* node , std::vector<JointData> &sk
 				AnimationData animData;
 				animData.frame = (int)frames[frameIndex].GetFrameCount();
 				animData.translation = glm::vec3(translation[0],translation[1],translation[2]);
-				animData.rotation = glm::vec3(rotation[0],rotation[1],rotation[2]);
+				animData.rotation = glm::angleAxis( glm::radians( (float)rotation[2] ), glm::vec3(0,0,1)) * glm::angleAxis(glm::radians((float) rotation[1]), glm::vec3(0,1,0)) * glm::angleAxis(glm::radians((float)rotation[0]), glm::vec3(1,0,0));
 				animData.scale = glm::vec3(scale[0],scale[1],scale[2]);
 				skeleton[currentJointIndex].animation.push_back( animData );
 			}

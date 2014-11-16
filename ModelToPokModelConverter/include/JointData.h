@@ -3,12 +3,13 @@
 #include <glm.hpp>
 #include <vector>
 #include <FBXConverterExportHeader.h>
+#include <gtc\quaternion.hpp>
 struct FBXCONVERTER_SHARED AnimationData
 {
 	int frame;
 	glm::vec3 scale;
+	glm::quat rotation;
 	glm::vec3 translation;
-	glm::vec3 rotation;
 };
 struct FBXCONVERTER_SHARED JointData
 {
