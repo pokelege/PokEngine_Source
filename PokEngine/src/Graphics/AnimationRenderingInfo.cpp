@@ -110,34 +110,29 @@ void AnimationRenderingInfo::updateAnimationMatricesRecurse( unsigned int boneIn
 		float interpolation = currentFrame;
 		glm::vec3 lerpedTranslate;
 		glm::vec3 lerpedScale;
-		glm::vec3 lerpedRotation;
+		glm::quat lerpedRotation;
 		if ( !end )
 		{
-			interpolation = 1;
-			lerpedTranslate = ( interpolation * start->translation );
-			lerpedScale = ( interpolation * start->scale );
-			lerpedRotation = ( interpolation * start->rotation );
+			lerpedTranslate = start->translation;
+			lerpedScale = start->scale;
+			lerpedRotation = start->rotation ;
 		}
 		else if ( start )
 		{
 			interpolation = ( interpolation - start->frame ) / ( end->frame - start->frame );
-			lerpedTranslate = ( ( 1 - interpolation ) * start->translation ) + ( interpolation * end->translation );
-			lerpedScale = ( ( 1 - interpolation ) * start->scale ) + ( interpolation * end->scale );
-			lerpedRotation = ( ( 1 - interpolation ) * start->rotation ) + ( interpolation * end->rotation );
+			lerpedTranslate = glm::mix( start->translation , end->translation , interpolation );
+			lerpedScale = glm::mix( start->scale , end->scale , interpolation );
+			lerpedRotation = glm::mix( start->rotation , end->rotation , interpolation );
 		}
 		else
 		{
 			interpolation /= end->frame;
-			lerpedTranslate = ( interpolation * end->translation );
-			lerpedScale = ( ( 1 - interpolation ) * glm::vec3( 1 , 1 , 1 ) ) + ( interpolation * end->scale );
-			lerpedRotation = ( interpolation * end->rotation );
+			lerpedTranslate = glm::mix( glm::vec3() , end->translation , interpolation );
+			lerpedScale = glm::mix( glm::vec3( 1 , 1 , 1 ) , end->scale , interpolation );
+			lerpedRotation = glm::mix( glm::quat() , end->rotation , interpolation );
 		}
 
-		glm::quat quaternion = glm::rotate( glm::quat() , glm::radians(lerpedRotation.x ), glm::vec3( 1 , 0 , 0 ) ) *
-			glm::rotate( glm::quat() ,glm::radians(lerpedRotation.y) , glm::vec3( 0 , 1 , 0 ) ) *
-			glm::rotate( glm::quat() , glm::radians(lerpedRotation.z) , glm::vec3( 0 , 0 , 1 ) );
-
-		animateTransform = parentMatrix * ( glm::translate( glm::mat4() , lerpedTranslate ) * glm::mat4_cast( quaternion ) * glm::scale( glm::mat4() , lerpedScale ) );
+		animateTransform = parentMatrix * ( glm::translate( glm::mat4() , lerpedTranslate ) * glm::mat4_cast( lerpedRotation ) * glm::scale( glm::mat4() , lerpedScale ) );
 		animationMatrices[boneIndex] = animateTransform * bones[boneIndex].offsetMatrix;
 	}
 	else
