@@ -22,9 +22,12 @@ public:
 	int addComponent(Component* component);
 	bool removeComponent( Component* component );
 	bool removeComponent( const unsigned int& component );
+
 	int addChild( GameObject* child );
 	bool removeChild( GameObject* child );
 	bool removeChild( const unsigned int& child );
+	int numChildren();
+	GameObject* getChild();
 	void earlyUpdate();
 	void update();
 	void lateUpdate();
@@ -44,4 +47,40 @@ public:
 		}
 		return toReturn;
 	}
+
+	template<class T> std::vector<T*> getComponents()
+	{
+		std::vector<T*> toReturn;
+		for ( unsigned int i = 0; i < components.size(); ++i )
+		{
+			if ( T* test = dynamic_cast< T* >( components[i] ) )
+			{
+				toReturn.push_back( test );
+			}
+		}
+		return toReturn;
+	}
+
+	template<class T> T* getComponentInChildren()
+	{
+		T* toReturn = 0;
+		for ( unsigned int i = 0; i < children.size(); ++i )
+		{
+			toReturn = children.at( i )->getComponent<T>();
+			if ( toReturn)
+			{
+				break;
+			}
+			else
+			{
+				toReturn = children.at( i )->getComponentInChildren<T>();
+				if ( toReturn )
+				{
+					break;
+				}
+			}
+		}
+		return toReturn;
+	}
+	//std::vector<Component*> getComponentsInChildren();
 };
