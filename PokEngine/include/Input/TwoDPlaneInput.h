@@ -5,9 +5,9 @@
 #include <PokEngineExportHeader.h>
 class POKENGINE_SHARED TwoDPlaneInput : public Component
 {
+protected:
 	GameObject* parent;
 
-protected:
 	virtual void attatch( GameObject* parent );
 	virtual void detatch();
 public:

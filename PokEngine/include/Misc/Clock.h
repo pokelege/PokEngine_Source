@@ -7,7 +7,7 @@ class POKENGINE_SHARED Clock
 	LARGE_INTEGER clockSpeed, startTick, intervalTick;
 
 public:
-	Clock();
+	Clock(bool autoStart = true);
 
 	void Start();
 	float Stop();

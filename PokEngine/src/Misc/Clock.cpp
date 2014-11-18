@@ -1,8 +1,9 @@
 #include <Misc\Clock.h>
 Clock Clock::globalClock;
-Clock::Clock()
+Clock::Clock(bool autoStart)
 {
 	QueryPerformanceFrequency(&clockSpeed);
+	if ( autoStart )Start();
 }
 
 void Clock::Start()
