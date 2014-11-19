@@ -1,6 +1,7 @@
 #include <Graphics\GraphicsSharedUniformManager.h>
 #include <Graphics\UniformInfo.h>
 #include <Graphics\ShaderInfo.h>
+#include <Graphics\GraphicsLightManager.h>
 GraphicsSharedUniformManager GraphicsSharedUniformManager::globalSharedUniformManager;
 
 GraphicsSharedUniformManager::GraphicsSharedUniformManager(): globalUniforms(0) {}
@@ -66,4 +67,9 @@ void GraphicsSharedUniformManager::applySharedUniforms( ShaderInfo* targetShader
 			targetShader->setUniformParameter( target->uniformName.c_str() , target->type , target->location, target->size );
 		}
 	}
+}
+
+void GraphicsSharedUniformManager::updateLights()
+{
+	if ( lights ) lights->applyLights( this );
 }

@@ -6,6 +6,7 @@
 #include <Graphics\GraphicsTextureManager.h>
 #include <Graphics\GraphicsRenderingManager.h>
 #include <Graphics\GraphicsCameraManager.h>
+#include <Graphics\GraphicsLightManager.h>
 #include <GL\glew.h>
 int CommonGraphicsCommands::base = 0;
 void CommonGraphicsCommands::initialize()
@@ -23,10 +24,14 @@ void CommonGraphicsCommands::initializeGlobalGraphics()
 	GraphicsTextureManager::globalTextureManager.initialize();
 	GraphicsRenderingManager::globalRenderingManager.initialize();
 	GraphicsCameraManager::globalCameraManager.initialize();
+	GraphicsLightManager::global.initialize();
+	GraphicsSharedUniformManager::globalSharedUniformManager.lights = &GraphicsLightManager::global;
 }
 
 void CommonGraphicsCommands::destroyGlobalGraphics()
 {
+	GraphicsLightManager::global.destroy();
+
 	GraphicsCameraManager::globalCameraManager.destroy();
 
 	GraphicsRenderingManager::globalRenderingManager.destroy();
@@ -114,5 +119,6 @@ void CommonGraphicsCommands::resetGlobalGraphics()
 	GraphicsGeometryManager::globalGeometryManager.destroy();
 	GraphicsSharedUniformManager::globalSharedUniformManager.destroy();
 	GraphicsTextureManager::globalTextureManager.destroy();
+	GraphicsLightManager::global.destroy();
 	initializeGlobalGraphics();
 }

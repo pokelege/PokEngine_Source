@@ -2,6 +2,7 @@
 unsigned int Light::_id = 0;
 Light::Light()
 {
+	Component::parent = 0;
 	id = _id++;
 }
 

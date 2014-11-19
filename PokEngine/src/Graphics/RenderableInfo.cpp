@@ -7,6 +7,7 @@
 #include <GL\glew.h>
 #include <Core\GameObject.h>
 #include <Graphics\CommonUniformNames.h>
+#include <Graphics\GraphicsLightManager.h>
 RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ), sharedUniforms (0), geometryInfo(0), shaderInfo(0), parent(0), slotUsed(false) {}
 
 RenderableInfo::~RenderableInfo()
