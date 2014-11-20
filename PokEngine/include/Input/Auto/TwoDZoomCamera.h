@@ -1,11 +1,14 @@
 #pragma once 
+#include <Core\CommonWarningDisables.h>
 #include <PokEngineExportHeader.h>
 #include <Core\Component.h>
+#include <glm.hpp>
 class POKENGINE_SHARED TwoDZoomCamera : public Component
 {
 	GameObject* parent;
 	GameObject** tracking;
 	unsigned int numTracking;
+	glm::vec3 targetPos;
 protected:
 	virtual void attatch( GameObject* parent );
 	virtual void detatch();

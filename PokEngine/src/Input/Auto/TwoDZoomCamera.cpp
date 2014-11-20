@@ -1,6 +1,7 @@
 #include <Input\Auto\TwoDZoomCamera.h>
 #include <Graphics\Camera.h>
 #include <Core\GameObject.h>
+#include <Misc\Clock.h>
 TwoDZoomCamera::TwoDZoomCamera() : parent(0) , minDistance(1) , maxDistance(10) , zoomScale(1), tracking(0) {}
 
 TwoDZoomCamera::~TwoDZoomCamera()
@@ -11,6 +12,7 @@ TwoDZoomCamera::~TwoDZoomCamera()
 void TwoDZoomCamera::attatch( GameObject* parent )
 {
 	this->parent = parent;
+	targetPos = parent->translate;
 }
 
 void TwoDZoomCamera::detatch()
@@ -88,8 +90,8 @@ void TwoDZoomCamera::lateUpdate()
 			break;
 		}
 	}
-
-	parent->translate = averagePosition + ( -theCamera->direction * ( highestDistance * zoomScale ) );
+	targetPos = averagePosition + ( -theCamera->direction * ( highestDistance * zoomScale ) );
+	parent->translate += Clock::dt * 10.0f * (targetPos - parent->translate);
 }
 void TwoDZoomCamera::earlyDraw() {}
 void TwoDZoomCamera::draw() {}
