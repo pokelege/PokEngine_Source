@@ -1,7 +1,7 @@
 #include <Graphics\GeometryInfo.h>
 #include <GL\glew.h>
 
-GeometryInfo::GeometryInfo() : modelData(0) {}
+GeometryInfo::GeometryInfo() : modelData(0) , dataArray(0) , vertexOffset(0) , numVertex(0) , indexOffset(0) , numIndex(0), indexingMode(GL_TRIANGLES) {}
 GeometryInfo::~GeometryInfo()
 {
 	if ( modelData ) delete modelData;

@@ -1,7 +1,7 @@
 #pragma once
 #include <PokEngineExportHeader.h>
 #define MAX_BUFFERS 10
-#define MAX_BUFFER_SIZE sizeof(char) * (int)1.049e+7
+#define MAX_BUFFER_SIZE sizeof(char) * (unsigned int)1.049e+7
 
 struct BufferInfo;
 class POKENGINE_SHARED GraphicsBufferManager

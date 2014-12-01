@@ -10,4 +10,5 @@ struct POKENGINE_SHARED AnimationInfo
 	glm::vec3 scale;
 	glm::quat rotation;
 	glm::vec3 translation;
+	AnimationInfo() : frame(0) , scale(glm::vec3(1 , 1 , 1)) , rotation(glm::quat()) , translation(glm::vec3()) {}
 };

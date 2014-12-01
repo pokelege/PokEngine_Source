@@ -8,7 +8,7 @@
 #include <Core\GameObject.h>
 #include <Graphics\CommonUniformNames.h>
 #include <Graphics\GraphicsLightManager.h>
-RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ) , sharedUniforms( 0 ) , geometryInfo( 0 ) , shaderInfo( 0 ) , parent( 0 ) , slotUsed( false ) , frameBufferCulling(CT_FRONT), culling(CT_NONE){}
+RenderableInfo::RenderableInfo() :uniforms( 0 ), numUniformSlots(0), textures( 0 ), numTextureSlots(0), sharedUniforms (0), geometryInfo(0), shaderInfo(0), parent(0), slotUsed(false), culling(CT_NONE), depthTestEnabled(true), alphaBlendingEnabled(false) {}
 
 RenderableInfo::~RenderableInfo()
 {

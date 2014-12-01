@@ -309,12 +309,12 @@ std::string GraphicsTextureManager::saveRawTexture( TextureInfo* theTexture , in
 	glBindTexture( GL_TEXTURE_2D , theTexture->textureID );
 	int theWidth , theHeight;
 	glGetTexLevelParameteriv( GL_TEXTURE_2D , 0 , GL_TEXTURE_WIDTH , &theWidth );
-	glGetTexLevelParameteriv( GL_TEXTURE_2D , 0 , GL_TEXTURE_WIDTH , &theHeight );
+	glGetTexLevelParameteriv( GL_TEXTURE_2D , 0 , GL_TEXTURE_HEIGHT , &theHeight );
 	char* textureData = new char[theWidth * theHeight * 4];
 	glGetTexImage( GL_TEXTURE_2D , 0 , GL_RGBA , GL_UNSIGNED_BYTE , textureData );
 	if ( width ) *width = theWidth;
 	if ( height ) *height = theHeight;
-	std::string toReturn( textureData );
+	std::string toReturn( textureData , theWidth * theHeight * 4 );
 	delete[] textureData;
 	return toReturn;
 }

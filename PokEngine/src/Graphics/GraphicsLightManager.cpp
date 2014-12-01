@@ -5,6 +5,8 @@
 #include <Graphics\CommonUniformNames.h>
 #include <Core\GameObject.h>
 #include <Graphics\Camera.h>
+#include <Graphics\TextureInfo.h>
+#include <GL\glew.h>
 GraphicsLightManager GraphicsLightManager::global;
 
 GraphicsLightManager::GraphicsLightManager() : lights(0)
@@ -47,11 +49,13 @@ void GraphicsLightManager::applyLights( GraphicsSharedUniformManager* uniformMan
 	lightPosition.clear();
 	lightPerspective.clear();
 	lightCameraMatrix.clear();
+	depthTextureSlots.clear();
 	for ( unsigned int i = 0; i < numLightSlots; ++i )
 	{
 		if ( !lights[i].parent ) continue;
 		lightColor.push_back( lights[i].getColor() );
 		lightPosition.push_back( lights[i].parent->getWorldTranslate() );
+		if ( TextureInfo* tex = lights[i].getDepthTexture() ) depthTextureSlots.push_back( tex->textureSlot );
 		Camera* theCam = lights[i].parent->getComponent<Camera>( );
 		if ( !theCam ) continue;
 		lightPerspective.push_back( theCam->viewToProjectionFrameBuffer() );
@@ -62,4 +66,17 @@ void GraphicsLightManager::applyLights( GraphicsSharedUniformManager* uniformMan
 	uniformManager->setSharedUniform( LIGHTPOSITION , PT_VEC3 , &lightPosition[0] , lightPosition.size() );
 	uniformManager->setSharedUniform( LIGHTPROJECTION , PT_MAT4 , &lightPerspective[0] , lightPerspective.size() );
 	uniformManager->setSharedUniform( LIGHTVIEW , PT_MAT4 , &lightCameraMatrix[0] , lightCameraMatrix.size() );
+	uniformManager->setSharedUniform( SHADOWTEXTURE , PT_INT , &depthTextureSlots[0] , depthTextureSlots.size() );
+}
+
+void GraphicsLightManager::bindDepthTextures()
+{
+	for ( unsigned int i = 0; i < numLightSlots; ++i )
+	{
+		if ( TextureInfo* tex = lights[i].getDepthTexture() )
+		{
+			glActiveTexture( GL_TEXTURE0 + tex->textureSlot );
+			glBindTexture( tex->type , tex->textureID );
+		}
+	}
 }

@@ -14,6 +14,7 @@ class POKENGINE_SHARED GraphicsLightManager
 	std::vector<glm::mat4> lightCameraMatrix;
 	std::vector<glm::vec4> lightColor;
 	std::vector<glm::vec3> lightPosition;
+	std::vector<int> depthTextureSlots;
 public:
 	static GraphicsLightManager global;
 	GraphicsLightManager();
@@ -22,4 +23,5 @@ public:
 	bool initialized();
 	Light* addLight();
 	void applyLights( GraphicsSharedUniformManager* renderable );
+	void bindDepthTextures();
 };

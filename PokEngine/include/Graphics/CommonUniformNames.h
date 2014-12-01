@@ -4,6 +4,7 @@
 #define VIEWTOPROJECTION "viewToProjection"
 #define CAMERAPOSITION "cameraPosition"
 #define SPECULARITY "specularity"
+#define SHADOWTEXTURE "shadowTexture"
 #define LIGHTVIEW "lightView"
 #define LIGHTPROJECTION "lightProjection"
 #define LIGHTPOSITION "lightPosition"
