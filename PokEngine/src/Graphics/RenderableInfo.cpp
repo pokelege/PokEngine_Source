@@ -8,6 +8,7 @@
 #include <Core\GameObject.h>
 #include <Graphics\CommonUniformNames.h>
 #include <Graphics\GraphicsLightManager.h>
+#include <Graphics\GraphicsLightManager.h>
 RenderableInfo::RenderableInfo() :uniforms( 0 ), numUniformSlots(0), textures( 0 ), numTextureSlots(0), sharedUniforms (0), geometryInfo(0), shaderInfo(0), parent(0), slotUsed(false), culling(CT_NONE), depthTestEnabled(true), alphaBlendingEnabled(false) {}
 
 RenderableInfo::~RenderableInfo()
@@ -110,7 +111,7 @@ bool RenderableInfo::swapTexture( TextureInfo* texture , const unsigned int& ind
 	return toReturn;
 }
 
-void RenderableInfo::draw( const bool& isFrameBuffer )
+void RenderableInfo::draw( const std::vector<GraphicsLightManager*>& lights, const bool& isFrameBuffer )
 {
 	if ( !parent ) return;
 	if ( shaderInfo ) glUseProgram( shaderInfo->programID );
@@ -137,6 +138,11 @@ void RenderableInfo::draw( const bool& isFrameBuffer )
 		if ( ( culling == CT_FRONT && !isFrameBuffer ) || ( frameBufferCulling == CT_FRONT && isFrameBuffer ) ) glCullFace( GL_FRONT );
 		else if ( ( culling == CT_BOTH && !isFrameBuffer ) || ( frameBufferCulling == CT_BOTH && isFrameBuffer ) ) glCullFace( GL_FRONT_AND_BACK );
 		else glCullFace( GL_BACK );
+	}
+
+	for each ( GraphicsLightManager* i in lights )
+	{
+		if ( i ) i->bindDepthTextures();
 	}
 
 	if ( textures != NULL )

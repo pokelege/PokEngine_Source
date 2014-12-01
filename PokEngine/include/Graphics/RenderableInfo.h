@@ -2,6 +2,8 @@
 #include <PokEngineExportHeader.h>
 #include <Graphics\ParameterType.h>
 #include <Core\Component.h>
+#include <vector>
+class GraphicsLightManager;
 struct UniformInfo;
 struct GeometryInfo;
 struct ShaderInfo;
@@ -40,7 +42,7 @@ public:
 	void initialize( unsigned int numUniformSlots, unsigned int numTextureSlots );
 	void destroy();
 
-	virtual void draw(const bool& isFrameBuffer =  false);
+	virtual void draw(const std::vector<GraphicsLightManager*>& lights = std::vector<GraphicsLightManager*>(), const bool& isFrameBuffer =  false);
 
 	UniformInfo* setRenderableUniform(
 		const char* name ,

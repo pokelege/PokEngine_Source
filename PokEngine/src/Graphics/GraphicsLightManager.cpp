@@ -62,11 +62,11 @@ void GraphicsLightManager::applyLights( GraphicsSharedUniformManager* uniformMan
 		lightCameraMatrix.push_back( theCam->worldToView() );
 	}
 	if ( !( lightColor.size() || lightPosition.size() ) ) return;
-	uniformManager->setSharedUniform( LIGHTCOLOR , PT_VEC4 , &lightColor[0] , lightColor.size() );
-	uniformManager->setSharedUniform( LIGHTPOSITION , PT_VEC3 , &lightPosition[0] , lightPosition.size() );
-	uniformManager->setSharedUniform( LIGHTPROJECTION , PT_MAT4 , &lightPerspective[0] , lightPerspective.size() );
-	uniformManager->setSharedUniform( LIGHTVIEW , PT_MAT4 , &lightCameraMatrix[0] , lightCameraMatrix.size() );
-	uniformManager->setSharedUniform( SHADOWTEXTURE , PT_INT , &depthTextureSlots[0] , depthTextureSlots.size() );
+	if ( lightColor.size() ) uniformManager->setSharedUniform( LIGHTCOLOR , PT_VEC4 , &lightColor[0] , lightColor.size() );
+	if ( lightPosition.size() ) uniformManager->setSharedUniform( LIGHTPOSITION , PT_VEC3 , &lightPosition[0] , lightPosition.size() );
+	if ( lightPerspective.size() ) uniformManager->setSharedUniform( LIGHTPROJECTION , PT_MAT4 , &lightPerspective[0] , lightPerspective.size() );
+	if ( lightCameraMatrix.size() ) uniformManager->setSharedUniform( LIGHTVIEW , PT_MAT4 , &lightCameraMatrix[0] , lightCameraMatrix.size() );
+	if ( depthTextureSlots.size() ) uniformManager->setSharedUniform( SHADOWTEXTURE , PT_INT , &depthTextureSlots[0] , depthTextureSlots.size() );
 }
 
 void GraphicsLightManager::bindDepthTextures()
