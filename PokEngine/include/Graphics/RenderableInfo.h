@@ -31,7 +31,7 @@ public:
 	ShaderInfo* shaderInfo;
 	GeometryInfo* geometryInfo;
 	GraphicsSharedUniformManager* sharedUniforms;
-	CullingType culling;
+	CullingType culling, frameBufferCulling;
 	bool depthTestEnabled;
 	bool alphaBlendingEnabled;
 	bool slotUsed;
@@ -40,12 +40,7 @@ public:
 	void initialize( unsigned int numUniformSlots, unsigned int numTextureSlots );
 	void destroy();
 
-	virtual void earlyUpdate();
-	virtual void update();
-	virtual void lateUpdate();
-	virtual void earlyDraw();
-	virtual void draw();
-	virtual void lateDraw();
+	virtual void draw(const bool& isFrameBuffer =  false);
 
 	UniformInfo* setRenderableUniform(
 		const char* name ,

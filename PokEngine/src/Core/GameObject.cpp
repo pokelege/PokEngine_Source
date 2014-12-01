@@ -141,3 +141,19 @@ glm::mat4 GameObject::getLocalTransform()
 {
 	return glm::translate( glm::mat4() , translate ) * glm::mat4_cast( rotate ) * glm::scale( glm::mat4() , scale );
 }
+
+glm::vec3 GameObject::getWorldTranslate()
+{
+	if ( parent ) return parent->getWorldTranslate() + translate;
+	else return translate;
+}
+glm::quat GameObject::getWorldRotation()
+{
+	if ( parent ) return parent->getWorldRotation() * rotate;
+	else return rotate;
+}
+glm::vec3 GameObject::getWorldScale()
+{
+	if ( parent ) return parent->getWorldScale() + scale;
+	else return scale;
+}

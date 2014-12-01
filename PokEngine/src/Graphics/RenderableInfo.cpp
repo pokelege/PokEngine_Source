@@ -8,7 +8,7 @@
 #include <Core\GameObject.h>
 #include <Graphics\CommonUniformNames.h>
 #include <Graphics\GraphicsLightManager.h>
-RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ), sharedUniforms (0), geometryInfo(0), shaderInfo(0), parent(0), slotUsed(false) {}
+RenderableInfo::RenderableInfo() :uniforms( 0 ) , textures( 0 ) , sharedUniforms( 0 ) , geometryInfo( 0 ) , shaderInfo( 0 ) , parent( 0 ) , slotUsed( false ) , frameBufferCulling(CT_FRONT), culling(CT_NONE){}
 
 RenderableInfo::~RenderableInfo()
 {
@@ -110,12 +110,7 @@ bool RenderableInfo::swapTexture( TextureInfo* texture , const unsigned int& ind
 	return toReturn;
 }
 
-void RenderableInfo::earlyUpdate() {}
-void RenderableInfo::update() {}
-void RenderableInfo::lateUpdate() {}
-void RenderableInfo::earlyDraw() {}
-
-void RenderableInfo::draw()
+void RenderableInfo::draw( const bool& isFrameBuffer )
 {
 	if ( !parent ) return;
 	if ( shaderInfo ) glUseProgram( shaderInfo->programID );
@@ -135,12 +130,12 @@ void RenderableInfo::draw()
 		glDisable( GL_BLEND );
 	}
 
-	if ( culling == CT_NONE ) glDisable( GL_CULL_FACE );
+	if ( ( culling == CT_NONE && !isFrameBuffer ) || ( frameBufferCulling == CT_NONE && isFrameBuffer ) ) glDisable( GL_CULL_FACE );
 	else
 	{
 		glEnable( GL_CULL_FACE );
-		if ( culling == CT_FRONT ) glCullFace( GL_FRONT );
-		else if ( culling == CT_BOTH ) glCullFace( GL_FRONT_AND_BACK );
+		if ( ( culling == CT_FRONT && !isFrameBuffer ) || ( frameBufferCulling == CT_FRONT && isFrameBuffer ) ) glCullFace( GL_FRONT );
+		else if ( ( culling == CT_BOTH && !isFrameBuffer ) || ( frameBufferCulling == CT_BOTH && isFrameBuffer ) ) glCullFace( GL_FRONT_AND_BACK );
 		else glCullFace( GL_BACK );
 	}
 
@@ -171,5 +166,3 @@ void RenderableInfo::draw()
 	}
 	if(geometryInfo) glDrawElements( geometryInfo->indexingMode , geometryInfo->numIndex , GL_UNSIGNED_SHORT , ( void* ) geometryInfo->indexOffset );
 }
-
-void RenderableInfo::lateDraw() {}

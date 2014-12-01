@@ -37,7 +37,7 @@ void GraphicsCameraManager::drawAllCameras()
 	{
 		if ( cameras[i].parent && cameras[i].parent->active )
 		{
-			cameras[i].draw();
+ 			cameras[i].draw();
 		}
 	}
 }

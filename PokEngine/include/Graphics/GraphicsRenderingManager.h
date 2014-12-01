@@ -17,5 +17,5 @@ public:
 	bool initialized();
 
 	RenderableInfo* addRenderable();
-	void drawAll(const Camera& camera);
+	void drawAll(const Camera& camera, const bool& isFrameBuffer = false);
 };

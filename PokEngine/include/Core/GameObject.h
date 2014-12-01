@@ -35,6 +35,9 @@ public:
 	void lateDraw();
 	glm::mat4 getWorldTransform();
 	glm::mat4 getLocalTransform();
+	glm::vec3 getWorldTranslate();
+	glm::quat getWorldRotation();
+	glm::vec3 getWorldScale();
 	template<class T> T* getComponent()
 	{
 		T* toReturn = 0;

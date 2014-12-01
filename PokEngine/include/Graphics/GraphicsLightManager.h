@@ -10,6 +10,8 @@ class POKENGINE_SHARED GraphicsLightManager
 {
 	Light* lights;
 	unsigned int numLightSlots;
+	std::vector<glm::mat4> lightPerspective;
+	std::vector<glm::mat4> lightCameraMatrix;
 	std::vector<glm::vec4> lightColor;
 	std::vector<glm::vec3> lightPosition;
 public:

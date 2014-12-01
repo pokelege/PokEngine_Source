@@ -40,9 +40,11 @@ RenderableInfo* GraphicsRenderingManager::addRenderable()
 	}
 	return renderable;
 }
-void GraphicsRenderingManager::drawAll( const Camera& camera )
+void GraphicsRenderingManager::drawAll( const Camera& camera , const bool& isFrameBuffer )
 {
-	glm::mat4 projection = camera.viewToProjection();
+	glm::mat4 projection;
+	if ( isFrameBuffer ) projection = camera.viewToProjectionFrameBuffer();
+	else projection = camera.viewToProjection();
 	glm::mat4 view = camera.worldToView();
 	for ( unsigned int i = 0; i < numRenderableSlots; ++i )
 	{
