@@ -11,6 +11,182 @@
 
 
 FBXConverter::FBXConverter() : converting(false) {}
+
+std::string FBXConverter::convertToString( const char* input )
+{
+	if ( converting ) return std::string();
+	std::string output;
+	converting = true;
+	FbxManager* fbxManger = FbxManager::Create();
+
+	FbxIOSettings* ios = FbxIOSettings::Create( fbxManger , IOSROOT );
+	fbxManger->SetIOSettings( ios );
+
+	FbxImporter* importer = FbxImporter::Create( fbxManger , "" );
+
+	bool status = importer->Initialize( input , -1 , fbxManger->GetIOSettings() );
+	if ( !status )
+	{
+		std::cout << importer->GetStatus().GetErrorString() << std::endl;
+	}
+
+	FbxScene* scene = FbxScene::Create( fbxManger , "theScene" );
+	importer->Import( scene );
+	importer->Destroy();
+
+	FbxMesh* theMesh = findMesh( scene->GetRootNode() );
+
+
+	if ( theMesh )
+	{
+		std::vector<VertexData> vertices;
+		std::vector<IndexData> indices;
+
+		FbxStringList uvSets;
+		theMesh->GetUVSetNames( uvSets );
+
+		processPolygons( theMesh , vertices , indices , uvSets );
+
+		std::vector<JointData> skeleton;
+		processSkeletonHierarchy( scene->GetRootNode() , skeleton );
+		if ( skeleton.size() ) processAnimations( theMesh->GetNode() , skeleton , vertices , indices );
+
+		std::string modelData;
+		for ( unsigned int i = 0; i < vertices.size(); ++i )
+		{
+			modelData += DATASTRING( vertices[i].position );
+			modelData += DATASTRING( vertices[i].uv );
+			modelData += DATASTRING( vertices[i].normal );
+			modelData += DATASTRING( vertices[i].tangent );
+			modelData += DATASTRING( vertices[i].bitangent );
+
+			for ( unsigned int j = 0; j < 4; ++j )
+			{
+				if ( j < vertices[i].blendingInfo.size() )
+				{
+					int blendingIndex = vertices[i].blendingInfo[j].blendingIndex;
+					modelData += DATASTRING( blendingIndex );
+				}
+				else
+				{
+					int blendingIndex = -1;
+					modelData += DATASTRING( blendingIndex );
+				}
+			}
+			for ( unsigned int j = 0; j < 4; ++j )
+			{
+				if ( j < vertices[i].blendingInfo.size() )
+				{
+					float blendingIndex = vertices[i].blendingInfo[j].blendingWeight;
+					modelData += DATASTRING( blendingIndex );
+				}
+				else
+				{
+					float blendingIndex = -1;
+					modelData += DATASTRING( blendingIndex );
+				}
+			}
+		}
+
+		for ( unsigned int i = 0; i < indices.size(); ++i )
+		{
+			modelData += DATASTRING( indices[i].index );
+		}
+
+		std::string boneData;
+		std::vector<unsigned int> boneChildren;
+		std::vector<AnimationData> boneAnimation;
+		for ( unsigned int i = 0; i < skeleton.size(); ++i )
+		{
+			boneData += DATASTRING( skeleton[i].offsetMatrix );
+			int childDataStart , childDataEnd , animationDataStart , animationDataEnd;
+			if ( skeleton[i].children.size() )
+			{
+				childDataStart = boneChildren.size();
+				for ( unsigned int j = 0; j < skeleton[i].children.size(); ++j )
+				{
+					boneChildren.push_back( skeleton[i].children[j] );
+				}
+				childDataEnd = boneChildren.size();
+			}
+			else
+			{
+				childDataStart = -1;
+				childDataEnd = -1;
+			}
+
+			if ( skeleton[i].animation.size() )
+			{
+				animationDataStart = boneAnimation.size();
+				for ( unsigned int j = 0; j < skeleton[i].animation.size(); ++j )
+				{
+					boneAnimation.push_back( skeleton[i].animation[j] );
+				}
+				animationDataEnd = boneAnimation.size();
+			}
+			else
+			{
+				animationDataStart = -1;
+				animationDataEnd = -1;
+			}
+			boneData += DATASTRING( childDataStart );
+			boneData += DATASTRING( childDataEnd );
+			boneData += DATASTRING( animationDataStart );
+			boneData += DATASTRING( animationDataEnd );
+		}
+		unsigned int sizeofAnimationRangeInfo;
+		AnimationFrameRangeInfo frameRange;
+		if ( boneAnimation.size() > 0 )
+		{
+			sizeofAnimationRangeInfo = 1;
+			frameRange.nextAnimationFrameInfo = 0;
+			frameRange.firstFrame = 1;
+			frameRange.lastFrame = boneAnimation[boneAnimation.size() - 1].frame;
+		}
+		else
+		{
+			sizeofAnimationRangeInfo = 0;
+		}
+
+		
+
+		unsigned int sizeofVertices = vertices.size();
+		output += DATASTRING( sizeofVertices );
+		unsigned int sizeofIndices = indices.size();
+		output += DATASTRING( sizeofIndices );
+
+		unsigned int sizeofBoneData = skeleton.size();
+		output += DATASTRING( sizeofBoneData );
+
+		unsigned int sizeofBoneChildData = boneChildren.size();
+		output += DATASTRING( sizeofBoneChildData );
+
+		unsigned int sizeofBoneAnimationData = boneAnimation.size();
+		output += DATASTRING( sizeofBoneAnimationData );
+
+		output += DATASTRING( sizeofAnimationRangeInfo );
+
+		output += modelData;
+
+		output += boneData;
+
+		for ( unsigned int i = 0; i < boneChildren.size(); ++i )
+		{
+			output += DATASTRING( boneChildren[i] );
+		}
+
+		for ( unsigned int i = 0; i < boneAnimation.size(); ++i )
+		{
+			output += DATASTRING( boneAnimation[i] );
+		}
+
+
+		if ( sizeofAnimationRangeInfo ) output+= DATASTRING(frameRange);
+	}
+	converting = false;
+	return output;
+}
+
 void FBXConverter::convert( const char* input , const char* output )
 {
 	if ( converting ) return;

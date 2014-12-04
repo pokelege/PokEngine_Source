@@ -21,6 +21,7 @@ class FBXCONVERTER_SHARED FBXConverter
 public:
 	FBXConverter();
 	void convert( const char* input , const char* output = "" );
+	std::string convertToString( const char* input );
 };
 
 bool frameCompare( FbxTime i , FbxTime j );
