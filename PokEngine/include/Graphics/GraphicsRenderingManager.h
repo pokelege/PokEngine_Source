@@ -1,6 +1,7 @@
 #pragma once
 #include <PokEngineExportHeader.h>
-
+#include <vector>
+class GraphicsLightManager;
 #define MAX_RENDERABLES 100
 struct RenderableInfo;
 class Camera;
@@ -17,5 +18,5 @@ public:
 	bool initialized();
 
 	RenderableInfo* addRenderable();
-	void drawAll(const Camera& camera, const bool& isFrameBuffer = false);
+	void drawAll( const Camera& camera , const std::vector<GraphicsLightManager*>& lights = std::vector<GraphicsLightManager*>() , const bool& isFrameBuffer = false );
 };

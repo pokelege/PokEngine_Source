@@ -7,7 +7,7 @@
 #include <Graphics\CommonGraphicsCommands.h>
 #include <GL\glew.h>
 #include <Graphics\TextureInfo.h>
-Camera::Camera() : toRender(0) , parent(0) , up(glm::vec3(0 , 1 , 0)) , direction(glm::vec3(0 , 0 , -1)) , x(0) , y(0) , width(1) , height(1) , FOV(60) , nearestObject(0.01f) , frameBufferID(0) , drawCamera(true) , drawFrameBuffer(true) {}
+Camera::Camera() : toRender(0), numRenders(0) , parent(0) , up(glm::vec3(0 , 1 , 0)) , direction(glm::vec3(0 , 0 , -1)) , x(0) , y(0) , width(1) , height(1) , FOV(60) , nearestObject(0.01f) , frameBufferID(0) , drawCamera(true) , drawFrameBuffer(true) {}
 void Camera::attatch( GameObject* parent ) { this->parent = parent; }
 void Camera::detatch() { parent = 0; }
 
@@ -57,6 +57,12 @@ bool Camera::addRenderList( GraphicsRenderingManager* list )
 	}
 	return false;
 }
+
+bool Camera::addLights( GraphicsLightManager* light )
+{
+	toLight.push_back( light ); return true;
+}
+
 void Camera::attatchFrameBuffer( TextureInfo* color , TextureInfo* depth )
 {
 	if ( glIsFramebuffer( frameBufferID ) ) glDeleteFramebuffers (1, (GLuint*)&frameBufferID );
@@ -92,7 +98,7 @@ void Camera::draw()
 			{
 				if ( toRender[i] )
 				{
-					toRender[i]->drawAll( *this, true );
+					toRender[i]->drawAll( *this, std::vector<GraphicsLightManager*>() , true );
 				}
 			}
 		}
@@ -107,7 +113,7 @@ void Camera::draw()
 		{
 			if ( toRender[i] )
 			{
-				toRender[i]->drawAll( *this );
+				toRender[i]->drawAll( *this, toLight );
 			}
 		}
 	}

@@ -3,13 +3,18 @@
 #include <PokEngineExportHeader.h>
 #include <Core\Component.h>
 #include <glm.hpp>
+#include <vector>
 #define MAXRENDERS 1
 class GraphicsRenderingManager;
+class GraphicsLightManager;
 struct TextureInfo;
 class POKENGINE_SHARED Camera : public Component
 {
 	GraphicsRenderingManager** toRender;
 	unsigned int numRenders;
+
+	std::vector<GraphicsLightManager*> toLight;
+
 	int frameBufferID;
 	int frameBufferWidth , frameBufferHeight;
 protected:
@@ -25,9 +30,10 @@ public:
 	float nearestObject;
 	bool drawCamera, drawFrameBuffer;
 	Camera();
-	void initializeRenderManagers( unsigned int numRenders = MAXRENDERS );
+	void initializeRenderManagers( unsigned int numRenders = MAXRENDERS);
 	void destroyRenderManagers();
 	bool addRenderList( GraphicsRenderingManager* list );
+	bool addLights( GraphicsLightManager* light );
 	glm::mat4 worldToView() const;
 	glm::mat4 viewToProjection() const;
 	glm::mat4 viewToProjectionFrameBuffer() const;

@@ -40,7 +40,7 @@ RenderableInfo* GraphicsRenderingManager::addRenderable()
 	}
 	return renderable;
 }
-void GraphicsRenderingManager::drawAll( const Camera& camera , const bool& isFrameBuffer )
+void GraphicsRenderingManager::drawAll( const Camera& camera , const std::vector<GraphicsLightManager*>& lights , const bool& isFrameBuffer )
 {
 	glm::mat4 projection;
 	if ( isFrameBuffer ) projection = camera.viewToProjectionFrameBuffer();
@@ -60,7 +60,7 @@ void GraphicsRenderingManager::drawAll( const Camera& camera , const bool& isFra
 				renderables[i].setRenderableUniform( VIEWTOPROJECTION , PT_MAT4 , reinterpret_cast< const void* >( &projection ) );
 				renderables[i].setRenderableUniform( WORLDTOVIEW , PT_MAT4 , reinterpret_cast< const void* >( &view ) );
 			}
-			renderables[i].draw();
+			renderables[i].draw(lights, isFrameBuffer);
 		}
 	}
 }

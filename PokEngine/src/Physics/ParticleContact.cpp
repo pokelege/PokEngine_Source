@@ -76,7 +76,17 @@ void ParticleContact::resolveInterpenetration()
 	if ( totalInverseMass <= 0 ) return;
 
 	glm::vec3 movePerIMass = contactNormal * ( penetration / totalInverseMass );
-
-	particle[0]->setPosition( particle[0]->getPosition() + ( movePerIMass * ( 1 / particle[0]->mass ) ) );
-	if(particle[1]) particle[1]->setPosition( particle[1]->getPosition() + (- movePerIMass * ( 1 / particle[1]->mass ) ) );
+	glm::vec3 movePerIMass1 = movePerIMass;
+	if ( particle[0]->freezeX ) movePerIMass1.x = 0;
+	if ( particle[0]->freezeY ) movePerIMass1.y = 0;
+	if ( particle[0]->freezeZ ) movePerIMass1.z = 0;
+	particle[0]->setPosition( particle[0]->getPosition() + ( movePerIMass1 * ( 1 / particle[0]->mass ) ) );
+	if ( particle[1] )
+	{
+		glm::vec3 movePerIMass2 = movePerIMass;
+		if ( particle[1]->freezeX ) movePerIMass2.x = 0;
+		if ( particle[1]->freezeY ) movePerIMass2.y = 0;
+		if ( particle[1]->freezeZ ) movePerIMass2.z = 0;
+		particle[1]->setPosition( particle[1]->getPosition() + ( -movePerIMass2 * ( 1 / particle[1]->mass ) ) );
+	}
 }
