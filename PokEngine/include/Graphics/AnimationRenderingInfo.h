@@ -11,7 +11,6 @@ struct POKENGINE_SHARED AnimationRenderingInfo : public Component
 private:
 	GameObject* parent;
 	RenderableInfo* renderable;
-	unsigned int currentlyPlaying;
 	void updateAnimationMatricesRecurse( unsigned int boneIndex , BoneInfo* bones , glm::mat4& parentMatrix );
 protected:
 	friend class GameObject;
@@ -33,6 +32,7 @@ public:
 	unsigned int sizeofAnimationMatrices;
 	unsigned int animationFrameRate;
 	float currentFrame;
+	unsigned int currentlyPlaying;
 };
 
 typedef AnimationRenderingInfo Animator;
