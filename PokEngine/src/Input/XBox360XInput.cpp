@@ -72,3 +72,14 @@ bool XBox360XInput::exists( unsigned int player )
 	DWORD result = XInputGetState( player , &state );
 	return result == ERROR_SUCCESS;
 }
+
+glm::ivec2 XBox360XInput::getBattery( unsigned int player )
+{
+	XINPUT_BATTERY_INFORMATION battery;
+	ZeroMemory( &battery , sizeof( battery ) );
+	if ( XInputGetBatteryInformation( player , BATTERY_DEVTYPE_GAMEPAD , &battery ) == ERROR_SUCCESS )
+	{
+		return glm::ivec2( battery.BatteryLevel , battery.BatteryType );
+	}
+	return glm::ivec2(-1,-1);
+}

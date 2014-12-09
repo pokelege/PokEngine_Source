@@ -11,4 +11,5 @@ public:
 	static glm::vec2 rightStick( unsigned int player = 0 );
 	static void setVibration( unsigned short left , unsigned short right , unsigned int player = 0 );
 	static bool exists( unsigned int player = 0 );
+	static glm::ivec2 getBattery( unsigned int player = 0 );
 };
