@@ -121,3 +121,17 @@ void TextureInfo::editTexture( const char* data , unsigned int width , unsigned 
 	type = GL_TEXTURE_2D;
 	textureSlot = slot;
 }
+
+TextureParams TextureInfo::getParams( )
+{
+	if ( !glIsTexture( textureID ) ) return TextureParams();
+	glBindTexture( GL_TEXTURE_2D , textureID );
+	int theWidth , theHeight;
+	glGetTexLevelParameteriv( GL_TEXTURE_2D , 0 , GL_TEXTURE_WIDTH , &theWidth );
+	glGetTexLevelParameteriv( GL_TEXTURE_2D , 0 , GL_TEXTURE_HEIGHT , &theHeight );
+
+	TextureParams params;
+	params.width = theWidth;
+	params.height = theHeight;
+	return params;
+}
