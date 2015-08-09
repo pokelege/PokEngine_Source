@@ -5,14 +5,14 @@
 struct BufferInfo;
 struct POKENGINE_SHARED GeometryInfo
 {
-	BufferInfo* buffer;
-	unsigned int dataArray;
-	unsigned int vertexOffset;
-	unsigned int numVertex;
-	unsigned int indexOffset;
-	unsigned int numIndex;
-	unsigned int indexingMode;
-	PokEngineModelDataMap* modelData;
+	BufferInfo* buffer = nullptr;
+	unsigned int dataArray = 0;
+	unsigned int vertexOffset = 0;
+	unsigned int numVertex = 0;
+	unsigned int indexOffset = 0;
+	unsigned int numIndex = 0;
+	unsigned int indexingMode = 0;
+	PokEngineModelDataMap* modelData = nullptr;
 
 	void addShaderStreamedParameter(
 		unsigned int layoutLocation ,

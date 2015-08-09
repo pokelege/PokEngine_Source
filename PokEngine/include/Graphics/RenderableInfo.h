@@ -20,19 +20,19 @@ class GraphicsSharedUniformManager;
 struct POKENGINE_SHARED RenderableInfo : public Component
 {
 private:
-	UniformInfo* uniforms;
-	unsigned int numUniformSlots;
-	TextureInfo** textures;
-	unsigned int numTextureSlots;
+	UniformInfo* uniforms = nullptr;
+	unsigned int numUniformSlots = 0;
+	TextureInfo** textures = nullptr;
+	unsigned int numTextureSlots = 0;
 protected:
 	friend class GameObject;
 	virtual void attatch( GameObject* parent );
 	virtual void detatch();
 public:
-	GameObject* parent;
-	ShaderInfo* shaderInfo;
-	GeometryInfo* geometryInfo;
-	GraphicsSharedUniformManager* sharedUniforms;
+	GameObject* parent = nullptr;
+	ShaderInfo* shaderInfo = nullptr;
+	GeometryInfo* geometryInfo = nullptr;
+	GraphicsSharedUniformManager* sharedUniforms = nullptr;
 	CullingType culling, frameBufferCulling;
 	bool depthTestEnabled;
 	bool alphaBlendingEnabled;

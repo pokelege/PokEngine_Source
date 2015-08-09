@@ -7,8 +7,8 @@ struct RenderableInfo;
 class Camera;
 class POKENGINE_SHARED GraphicsRenderingManager
 {
-	RenderableInfo* renderables;
-	unsigned int numRenderableSlots;
+	RenderableInfo* renderables = nullptr;
+	unsigned int numRenderableSlots = 0;
 public:
 	static GraphicsRenderingManager globalRenderingManager;
 
